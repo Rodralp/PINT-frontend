@@ -25,19 +25,7 @@ import {
   Star,
   Zap
 } from 'lucide-react';
-import { fetchMyBadges, fetchProfileData } from '../services/consultorService';
-import apiClient from '../services/apiClient';
-import BadgeImage from '../components/BadgeImage';
-
-const normalizeLevelId = (level) => {
-  const normalized = String(level || '').trim().toLowerCase();
-  if (normalized.includes('júnior') || normalized.includes('junior')) return 'junior';
-  if (normalized.includes('intermédio') || normalized.includes('intermedio')) return 'intermediate';
-  if (normalized.includes('sénior') || normalized.includes('senior')) return 'senior';
-  if (normalized.includes('especialista')) return 'specialist';
-  if (normalized.includes('líder') || normalized.includes('lider')) return 'knowledge_lead';
-  return null;
-};
+import { fetchProfileData } from '../services/consultorService';
 import '../css/Consultor/Dashboard_C.css';
 import '../css/profile.css';
 
@@ -90,8 +78,6 @@ function Profile() {
   const [certificationsItems, setCertificationsItems] = useState(defaultCertificationsItems);
   const [activityItems, setActivityItems] = useState(defaultActivityItems);
   const [serviceLineStats, setServiceLineStats] = useState([]);
-  const [badgeItems, setBadgeItems] = useState([]);
-  const [vitrineItems, setVitrineItems] = useState([]);
   const [profileLocation, setProfileLocation] = useState('Portugal');
   const [profileJoined, setProfileJoined] = useState('2023');
   const [statusMessage, setStatusMessage] = useState('');
@@ -101,7 +87,7 @@ function Profile() {
   const userEmail = loginData?.email || 'user@example.com';
 
   const initialSeed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
-  const initialAvatar = loginData?.avatar || `/avatars/default-avatar.svg`;
+  const initialAvatar = loginData?.avatar || `https://i.pravatar.cc/120?u=${encodeURIComponent(initialSeed)}`;
 
   const [profileAvatar, setProfileAvatar] = useState(initialAvatar);
 
@@ -152,69 +138,15 @@ function Profile() {
           setProfileJoined(data.joined);
         }
 
+        if (typeof data.avatar === 'string' && data.avatar) {
+          setProfileAvatar(data.avatar);
+        }
+
         setStatusMessage('');
       } catch {
         if (isMounted) {
           setStatusMessage('');
         }
-      }
-
-      try {
-        const badges = await fetchMyBadges();
-        if (isMounted && Array.isArray(badges)) {
-          setBadgeItems(badges.filter((b) => b.status === 'obtido'));
-        }
-      } catch {
-        // silencioso
-      }
-
-      try {
-        const imgRes = await apiClient.get('/consultor/user-image', { params: { accountId: loginData?.id } });
-        if (isMounted && imgRes.data?.image) {
-          setProfileAvatar(imgRes.data.image);
-          try {
-            const raw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              parsed.avatar = imgRes.data.image;
-              const key = sessionStorage.getItem('loginData') ? 'sessionStorage' : 'localStorage';
-              if (key === 'sessionStorage') {
-                sessionStorage.setItem('loginData', JSON.stringify(parsed));
-              } else {
-                localStorage.setItem('loginData', JSON.stringify(parsed));
-              }
-            }
-          } catch { /* ignore */ }
-        }
-      } catch {
-        // no image stored
-      }
-
-      try {
-        const vitrineRes = await apiClient.get('/consultor/vitrine', { params: { accountId: loginData?.id } });
-        if (isMounted && Array.isArray(vitrineRes.data) && vitrineRes.data.length > 0) {
-          const mapped = vitrineRes.data.map((v) => {
-            const isSpecial = v.tipo === 'Especial';
-            const resolvedLevelId = isSpecial ? 'special' : normalizeLevelId(v.nivel);
-            const typeId = resolvedLevelId
-              ? (resolvedLevelId === 'special' ? 'special' : `badge_level_${resolvedLevelId}`)
-              : undefined;
-            return {
-              id: `vitrine-${v.nbadge}`,
-              badgeDbId: v.nbadge,
-              name: v.b_nome || 'Badge',
-              badgeImage: v.imagem || '/badges/default.png',
-              points: v.pontos || 0,
-              isSpecial,
-              levelKey: resolvedLevelId || undefined,
-              typeId,
-              levelLabel: v.nivel || (isSpecial ? 'Especial' : undefined),
-            };
-          });
-          setVitrineItems(mapped);
-        }
-      } catch {
-        // fallback for users without vitrine
       }
     };
 
@@ -370,8 +302,8 @@ function Profile() {
 
           <section className="dashboard-card dashboard-panel-card">
             <div className="dashboard-panel-header">
-              <h2>Vitrine</h2>
-              <a href="#ver-todos-badges" onClick={(event) => {
+              <h2>{t('profile_certifications')}</h2>
+              <a href="#ver-todos-certificacoes" onClick={(event) => {
                 event.preventDefault();
                 setIsCertificationsModalOpen(true);
               }}>
@@ -379,24 +311,22 @@ function Profile() {
               </a>
             </div>
 
-            <div className="vitrine-grid">
-              {(vitrineItems.length > 0 ? vitrineItems : badgeItems.slice(0, 8)).map((badge) => (
-                <div key={badge.id} className="vitrine-item" title={badge.name || badge.area}>
-                  <BadgeImage
-                    className="vitrine-badge-image"
-                    src={badge.badgeImage}
-                    alt={badge.name || badge.area || 'Badge'}
-                    frameSrc={badge.badgeFrameImage}
-                    levelKey={badge.levelKey || (badge.isSpecial ? 'special' : undefined)}
-                    typeId={badge.typeId || (badge.isSpecial ? 'special' : undefined)}
-                    levelLabel={badge.levelLabel}
-                  />
-                  <span className="vitrine-badge-name">{badge.name || badge.area}</span>
-                </div>
+            <div className="dashboard-list">
+              {certificationsItems
+                .filter((c) => c.visible !== false)
+                .slice(0, 3)
+                .map(({ title, subtitleKey, accent }) => (
+                <article key={`${title}-${subtitleKey}`} className="dashboard-list-item">
+                  <div className={`dashboard-list-badge accent-${accent}`}>
+                    <GraduationCap size={18} strokeWidth={2} />
+                  </div>
+                  <div className="dashboard-list-content">
+                    <strong>{title}</strong>
+                    <span>{t(subtitleKey)}</span>
+                  </div>
+                  <ChevronsRight className="dashboard-item-chevron" size={18} />
+                </article>
               ))}
-              {vitrineItems.length === 0 && badgeItems.length === 0 && (
-                <p className="badge-admin-muted">{t('no_certifications') || 'Nenhum badge obtido.'}</p>
-              )}
             </div>
           </section>
         </div>
@@ -470,30 +400,21 @@ function Profile() {
       <SeeMore_PopUp
         isOpen={isCertificationsModalOpen}
         onClose={() => setIsCertificationsModalOpen(false)}
-        title="Vitrine"
-        items={vitrineItems.length > 0 ? vitrineItems : badgeItems}
-        renderItem={(badge) => (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 48, height: 48, flexShrink: 0 }}>
-              <BadgeImage
-                className="vitrine-badge-image"
-                src={badge.badgeImage}
-                alt={badge.name || badge.area || 'Badge'}
-                frameSrc={badge.badgeFrameImage}
-                levelKey={badge.levelKey || (badge.isSpecial ? 'special' : undefined)}
-                typeId={badge.typeId || (badge.isSpecial ? 'special' : undefined)}
-                levelLabel={badge.levelLabel}
-              />
+        title={t('profile_certifications')}
+        items={certificationsItems.filter((c) => c.visible !== false)}
+        renderItem={(item) => (
+          <article className="dashboard-list-item">
+            <div className={`dashboard-list-badge accent-${item.accent}`}>
+              <GraduationCap size={18} strokeWidth={2} />
             </div>
-            <div>
-              <strong>{badge.name || badge.area || 'Badge'}</strong>
-              <span style={{ display: 'block', fontSize: 13, color: '#6b7280' }}>
-                {badge.points} pts
-              </span>
+            <div className="dashboard-list-content">
+              <strong>{item.title}</strong>
+              <span>{t(item.subtitleKey)}</span>
             </div>
-          </div>
+            <ChevronsRight className="dashboard-item-chevron" size={18} />
+          </article>
         )}
-        emptyMessage="Nenhum badge obtido."
+        emptyMessage={t('no_certifications', 'Nenhuma certificação para mostrar.')}
       />
     </Layout>
   );

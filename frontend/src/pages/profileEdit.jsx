@@ -1,24 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, Save, ChevronUp, ChevronDown, X } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronLeft, Plus, Save, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Layout from '../components/Layout'
-import BadgeImage from '../components/BadgeImage'
 import apiClient from '../services/apiClient'
-import { fetchMyBadges } from '../services/consultorService'
 import '../css/AdminGestor/BadgeAdmin.css'
-import '../css/Consultor/CatalogoBadges_C.css'
-import { portugueseLocations } from '../utils/locations'
-
-const normalizeLevelId = (level) => {
-  const normalized = String(level || '').trim().toLowerCase();
-  if (normalized.includes('júnior') || normalized.includes('junior')) return 'junior';
-  if (normalized.includes('intermédio') || normalized.includes('intermedio')) return 'intermediate';
-  if (normalized.includes('sénior') || normalized.includes('senior')) return 'senior';
-  if (normalized.includes('especialista')) return 'specialist';
-  if (normalized.includes('líder') || normalized.includes('lider')) return 'knowledge_lead';
-  return null;
-};
 
 function readStoredLogin() {
   const session = sessionStorage.getItem('loginData')
@@ -34,181 +20,58 @@ function readStoredLogin() {
 
 function persistStoredLogin(source, data) {
   const serialized = JSON.stringify(data)
+  if (source === 'local') {
+    localStorage.setItem('loginData', serialized)
+    sessionStorage.removeItem('loginData')
+    return
+  }
   sessionStorage.setItem('loginData', serialized)
-  localStorage.setItem('loginData', serialized)
+  localStorage.removeItem('loginData')
 }
 
 export default function ProfileEdit() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const fileInputRef = useRef(null)
 
   const stored = readStoredLogin()
   const loginData = stored.data || {}
 
   const [name, setName] = useState(loginData.nome || '')
-  const [location, setLocation] = useState(loginData.location || loginData.localidade || loginData.localizacao || '')
-  const [avatar, setAvatar] = useState(loginData.avatar || `/avatars/default-avatar.svg`)
-  const [avatarFile, setAvatarFile] = useState(null)
+  const [location, setLocation] = useState(loginData.location || loginData.localidade || '')
+  const [avatar, setAvatar] = useState(loginData.avatar || `https://i.pravatar.cc/120?u=${encodeURIComponent((loginData.email||loginData.nome||'').toLowerCase())}`)
 
-  const [obtainedBadges, setObtainedBadges] = useState([])
-  const [vitrine, setVitrine] = useState([])
-  const [dragIdx, setDragIdx] = useState(null)
+  const [skills, setSkills] = useState(Array.isArray(loginData.skillsItems) ? loginData.skillsItems.map(s => ({ ...s, visible: typeof s.visible === 'boolean' ? s.visible : true })) : [])
+  const [certifications, setCertifications] = useState(Array.isArray(loginData.certificationsItems) ? loginData.certificationsItems.map(c => ({ ...c, visible: typeof c.visible === 'boolean' ? c.visible : true })) : [])
 
   const [statusMessage, setStatusMessage] = useState('')
-  const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    let isMounted = true
+  const addSkill = () => setSkills(s => [...s, { title: '', subtitleKey: '', accent: 'gold', visible: true }])
+  const removeSkill = (idx) => setSkills(s => s.filter((_,i) => i!==idx))
+  const updateSkill = (idx, patch) => setSkills(s => s.map((it,i) => i===idx ? { ...it, ...patch } : it))
 
-    const loadData = async () => {
-      try {
-        const [badgesData, vitrineData] = await Promise.all([
-          fetchMyBadges().catch(() => []),
-          apiClient.get('/consultor/vitrine', { params: { accountId: loginData.id } }).then((r) => r.data || []).catch(() => []),
-        ])
-
-        if (!isMounted) return
-
-        const obtained = (Array.isArray(badgesData) ? badgesData : []).filter((b) => b.status === 'obtido')
-        setObtainedBadges(obtained)
-
-        if (Array.isArray(vitrineData) && vitrineData.length > 0) {
-          const vitrineIds = vitrineData.map((v) => v.nbadge)
-          const matched = obtained.filter((b) => vitrineIds.includes(b.badgeDbId))
-          const ordered = vitrineData.map((v) => {
-            const found = matched.find((m) => m.badgeDbId === v.nbadge)
-            return found || {
-              badgeDbId: v.nbadge,
-              name: v.b_nome || 'Badge',
-              badgeImage: v.imagem || '/badges/default.png',
-              points: v.pontos || 0,
-              levelKey: v.tipo === 'Especial' ? 'special' : (normalizeLevelId(v.nivel) || undefined),
-              typeId: v.tipo === 'Especial' ? 'special' : (normalizeLevelId(v.nivel) ? `badge_level_${normalizeLevelId(v.nivel)}` : undefined),
-              isSpecial: v.tipo === 'Especial',
-            }
-          })
-          setVitrine(ordered)
-        } else {
-          setVitrine(obtained.slice(0, 6))
-        }
-
-        try {
-          const imgRes = await apiClient.get('/consultor/user-image', { params: { accountId: loginData.id } })
-          if (isMounted && imgRes.data?.image) {
-            setAvatar(imgRes.data.image)
-          }
-        } catch { /* no image */ }
-      } catch { /* silent */ }
-    }
-
-    loadData()
-    return () => { isMounted = false }
-  }, [loginData.id])
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (file.size > 5 * 1024 * 1024) {
-      setStatusMessage('A imagem deve ter menos de 5MB.')
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      setAvatar(reader.result)
-      setAvatarFile(file)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const addBadgeToVitrine = (badge) => {
-    if (vitrine.length >= 8) {
-      setStatusMessage('A vitrine pode ter no maximo 8 badges.')
-      return
-    }
-    if (vitrine.some((v) => v.badgeDbId === badge.badgeDbId)) return
-    setVitrine((prev) => [...prev, badge])
-  }
-
-  const removeBadgeFromVitrine = (badgeDbId) => {
-    setVitrine((prev) => prev.filter((v) => v.badgeDbId !== badgeDbId))
-  }
-
-  const moveVitrineBadge = (index, direction) => {
-    setVitrine((prev) => {
-      const next = [...prev]
-      const targetIndex = index + direction
-      if (targetIndex < 0 || targetIndex >= next.length) return prev
-      const temp = next[index]
-      next[index] = next[targetIndex]
-      next[targetIndex] = temp
-      return next
-    })
-  }
-
-  const handleDragStart = (idx) => {
-    setDragIdx(idx)
-  }
-
-  const handleDragOver = (e, idx) => {
-    e.preventDefault()
-    if (dragIdx === null || dragIdx === idx) return
-    setVitrine((prev) => {
-      const next = [...prev]
-      const dragged = next[dragIdx]
-      next.splice(dragIdx, 1)
-      next.splice(idx, 0, dragged)
-      return next
-    })
-    setDragIdx(idx)
-  }
-
-  const handleDragEnd = () => {
-    setDragIdx(null)
-  }
-
-  const availableBadges = obtainedBadges.filter((b) => !vitrine.some((v) => v.badgeDbId === b.badgeDbId))
+  const addCert = () => setCertifications(s => [...s, { title: '', subtitleKey: '', accent: 'blue', visible: true }])
+  const removeCert = (idx) => setCertifications(s => s.filter((_,i) => i!==idx))
+  const updateCert = (idx, patch) => setCertifications(s => s.map((it,i) => i===idx ? { ...it, ...patch } : it))
 
   const onSave = async () => {
-    setSaving(true)
-    setStatusMessage('')
-
     const newData = {
       ...loginData,
       nome: name,
-      localizacao: location,
+      location,
       avatar,
+      skillsItems: skills,
+      certificationsItems: certifications,
     }
 
     persistStoredLogin(stored.source, newData)
 
     try {
-      await apiClient.put('/consultor/profile', {
-        accountId: loginData.id,
-        nome: name,
-        localizacao: location,
-      })
-    } catch { /* silent */ }
-
-    if (avatarFile) {
-      try {
-        await apiClient.post('/consultor/user-image', {
-          accountId: loginData.id,
-          image: avatar,
-        })
-      } catch { /* silent */ }
+      await apiClient.put('/consultor/profile', { accountId: loginData.id, nome: name })
+      setStatusMessage('')
+    } catch {
+      // falha silenciosa — a edição local foi guardada
     }
 
-    try {
-      await apiClient.post('/consultor/vitrine', {
-        accountId: loginData.id,
-        badges: vitrine.map((b, i) => ({ nbadge: b.badgeDbId, ordem: i })),
-      })
-    } catch { /* silent */ }
-
-    setSaving(false)
     navigate('/profile')
   }
 
@@ -229,9 +92,9 @@ export default function ProfileEdit() {
             <button type="button" className="badge-admin-btn ghost" onClick={() => navigate('/profile')}>
               {t('cancel') || 'Cancelar'}
             </button>
-            <button type="button" className="badge-admin-btn primary" onClick={onSave} disabled={saving}>
+            <button type="button" className="badge-admin-btn primary" onClick={onSave}>
               <Save size={16} />
-              {saving ? 'A guardar...' : (t('save') || 'Guardar')}
+              {t('save') || 'Guardar'}
             </button>
           </div>
         </header>
@@ -242,21 +105,13 @@ export default function ProfileEdit() {
 
         <section className="badge-admin-card">
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-            <div style={{ flexShrink: 0, cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
+            <div className="badge-admin-image-preview-wrap" style={{ flexShrink: 0 }}>
               <img
                 className="badge-admin-image-preview"
-                style={{ width: 120, height: 120, borderRadius: 12, objectFit: 'cover', border: '2px dashed #d1d5db' }}
+                style={{ width: 120, height: 120, borderRadius: 12, objectFit: 'cover' }}
                 src={avatar}
                 alt="avatar"
               />
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-              />
-              <p style={{ fontSize: 12, color: '#6b7280', textAlign: 'center', marginTop: 4 }}>Clique para mudar foto</p>
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', gap: 16 }}>
@@ -266,128 +121,118 @@ export default function ProfileEdit() {
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="Ex: Joao Silva"
+                    placeholder="Ex: João Silva"
                   />
                 </label>
                 <label className="badge-admin-field" style={{ flex: 1 }}>
-                  <span>Localizacao</span>
+                  <span>Localização</span>
                   <input
                     type="text"
                     value={location}
                     onChange={e => setLocation(e.target.value)}
                     placeholder="Ex: Lisboa, Portugal"
-                    list="location-suggestions"
                   />
-                  <datalist id="location-suggestions">
-                    {portugueseLocations.map((loc) => (
-                      <option key={loc} value={loc} />
-                    ))}
-                  </datalist>
                 </label>
               </div>
+              <label className="badge-admin-field">
+                <span>Imagem de Perfil</span>
+                <input
+                  type="text"
+                  value={avatar}
+                  onChange={e => setAvatar(e.target.value)}
+                  placeholder="https://..."
+                />
+              </label>
             </div>
           </div>
         </section>
 
         <section className="badge-admin-card">
-          <div className="badge-admin-section-title">Vitrine de Badges (max. 8)</div>
-          <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 16 }}>
-            Seleciona as badges que queres mostrar no teu perfil. Usa as setas ou arrasta para reordenar.
-          </p>
-
-          {vitrine.length > 0 ? (
-            <div className="vitrine-edit-grid">
-              {vitrine.map((badge, idx) => (
-                <div
-                  key={badge.badgeDbId}
-                  className={`vitrine-edit-card ${dragIdx === idx ? 'dragging' : ''}`}
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
-                  onDragOver={(e) => handleDragOver(e, idx)}
-                  onDragEnd={handleDragEnd}
+          <div className="badge-admin-section-title">{t('profile_skills') || 'Competências'}</div>
+          <div className="badge-admin-reqs">
+            {skills.map((s, idx) => (
+              <div key={idx} className="badge-admin-req-row standard">
+                <input
+                  type="text"
+                  value={s.title}
+                  onChange={e => updateSkill(idx, { title: e.target.value })}
+                  placeholder={t('skill_title') || 'Título'}
+                />
+                <input
+                  type="text"
+                  value={s.subtitleKey}
+                  onChange={e => updateSkill(idx, { subtitleKey: e.target.value })}
+                  placeholder={t('skill_subtitle') || 'Subtítulo'}
+                />
+                <label className="badge-admin-field" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={s.visible}
+                    onChange={e => updateSkill(idx, { visible: e.target.checked })}
+                    style={{ width: 18, height: 18 }}
+                  />
+                  <span style={{ fontSize: 13 }}>{t('visible') || 'Mostrar'}</span>
+                </label>
+                <button
+                  type="button"
+                  className="badge-admin-btn icon"
+                  onClick={() => removeSkill(idx)}
+                  aria-label={t('remove') || 'Remover'}
                 >
-                  <div className="vitrine-edit-card-top">
-                    <div className="vitrine-edit-badge-img">
-                      <BadgeImage
-                        src={badge.badgeImage}
-                        alt={badge.name || 'Badge'}
-                        levelKey={badge.levelKey || (badge.isSpecial ? 'special' : undefined)}
-                        typeId={badge.typeId || (badge.isSpecial ? 'special' : undefined)}
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      className="vitrine-edit-remove"
-                      onClick={() => removeBadgeFromVitrine(badge.badgeDbId)}
-                      title="Remover da vitrine"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                  <div className="vitrine-edit-card-name">
-                    {badge.name || badge.area || 'Badge'}
-                  </div>
-                  <div className="vitrine-edit-card-controls">
-                    <button
-                      type="button"
-                      className="vitrine-edit-arrow"
-                      onClick={() => moveVitrineBadge(idx, -1)}
-                      disabled={idx === 0}
-                      title="Mover para cima"
-                    >
-                      <ChevronUp size={16} />
-                    </button>
-                    <span className="vitrine-edit-position">{idx + 1}</span>
-                    <button
-                      type="button"
-                      className="vitrine-edit-arrow"
-                      onClick={() => moveVitrineBadge(idx, 1)}
-                      disabled={idx === vitrine.length - 1}
-                      title="Mover para baixo"
-                    >
-                      <ChevronDown size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="badge-admin-muted" style={{ marginBottom: 16 }}>
-              Nenhuma badge na vitrine. Adiciona badges abaixo.
-            </p>
-          )}
-
-          {availableBadges.length > 0 && (
-            <div>
-              <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 10, fontWeight: 500 }}>
-                Badges disponiveis para adicionar:
-              </p>
-              <div className="vitrine-available-grid">
-                {availableBadges.map((badge) => (
-                  <button
-                    key={badge.badgeDbId}
-                    type="button"
-                    className="vitrine-available-chip"
-                    onClick={() => addBadgeToVitrine(badge)}
-                  >
-                    <div className="vitrine-available-img">
-                      <BadgeImage
-                        src={badge.badgeImage}
-                        alt={badge.name || 'Badge'}
-                        levelKey={badge.levelKey || (badge.isSpecial ? 'special' : undefined)}
-                        typeId={badge.typeId || (badge.isSpecial ? 'special' : undefined)}
-                      />
-                    </div>
-                    <span className="vitrine-available-name">{badge.name || badge.area}</span>
-                  </button>
-                ))}
+                  <Trash2 size={16} />
+                </button>
               </div>
-            </div>
-          )}
+            ))}
 
-          {obtainedBadges.length === 0 && (
-            <p className="badge-admin-muted">Nenhuma badge obtida ainda.</p>
-          )}
+            <button type="button" className="badge-admin-btn ghost" onClick={addSkill}>
+              <Plus size={16} />
+              {t('add_skill') || 'Adicionar Competência'}
+            </button>
+          </div>
+        </section>
+
+        <section className="badge-admin-card">
+          <div className="badge-admin-section-title">{t('profile_certifications') || 'Certificações'}</div>
+          <div className="badge-admin-reqs">
+            {certifications.map((c, idx) => (
+              <div key={idx} className="badge-admin-req-row standard">
+                <input
+                  type="text"
+                  value={c.title}
+                  onChange={e => updateCert(idx, { title: e.target.value })}
+                  placeholder={t('cert_title') || 'Título'}
+                />
+                <input
+                  type="text"
+                  value={c.subtitleKey}
+                  onChange={e => updateCert(idx, { subtitleKey: e.target.value })}
+                  placeholder={t('cert_subtitle') || 'Subtítulo'}
+                />
+                <label className="badge-admin-field" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={c.visible}
+                    onChange={e => updateCert(idx, { visible: e.target.checked })}
+                    style={{ width: 18, height: 18 }}
+                  />
+                  <span style={{ fontSize: 13 }}>{t('visible') || 'Mostrar'}</span>
+                </label>
+                <button
+                  type="button"
+                  className="badge-admin-btn icon"
+                  onClick={() => removeCert(idx)}
+                  aria-label={t('remove') || 'Remover'}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+
+            <button type="button" className="badge-admin-btn ghost" onClick={addCert}>
+              <Plus size={16} />
+              {t('add_cert') || 'Adicionar Certificação'}
+            </button>
+          </div>
         </section>
       </div>
     </Layout>

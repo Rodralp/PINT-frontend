@@ -43,7 +43,11 @@ function SeeMore_PopUp({
           )}
         </div>
 
-
+        <div className="reminder-modal-actions" style={{ marginTop: 12, padding: '0 24px 20px' }}>
+          <button type="button" className="reminder-cancel-btn" onClick={onClose}>
+            {closeLabel}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -127,8 +127,7 @@
   padding: var(--sp-1);
 }
 
-.dashboard-list-item-compact:nth-child(2),
-.dashboard-list-item-compact:nth-child(4) {
+.dashboard-list-item-compact:nth-child(even) {
   background-color: #fafafa;
   border-radius: var(--radius-md);
   margin: var(--sp-2) 0;

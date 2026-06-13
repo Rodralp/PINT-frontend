@@ -43,6 +43,7 @@ import Exportacoes from './pages/Consultor/Exportacoes'
 import MensagensAvisos from './pages/Consultor/MensagensAvisos'
 import Notificacoes from './pages/Consultor/Notificacoes'
 import Profile from './pages/profile'
+import ProfileEdit from './pages/profileEdit'
 import MeusPedidos from './pages/Consultor/MeusPedidos'
 import RankingConsultores from './pages/Consultor/RankingConsultores'
 import Lembretes from './pages/Consultor/Lembretes'
@@ -135,6 +136,7 @@ function App() {
         <Route path='/entrar' element={<Entrar />} />
         <Route path='/dashboard' element={<Navigate to='/consultor/dashboard' replace />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/profile/edit' element={<ProfileEdit />} />
 
         <Route element={<ConsultorPreferencesGuard />}>
           <Route path='/consultor/preferencias' element={<Preferencias />} />
