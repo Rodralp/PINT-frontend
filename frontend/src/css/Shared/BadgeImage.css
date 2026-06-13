@@ -1,0 +1,43 @@
+.badge-image-composite {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.badge-image-composite-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.badge-image-composite-frame,
+.badge-image-composite-inner {
+  position: absolute;
+  display: block;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.badge-image-composite-frame {
+  z-index: 2;
+  object-fit: contain;
+  object-position: center;
+}
+
+.badge-image-composite-inner {
+  z-index: 1;
+  object-fit: contain;
+  object-position: center;
+}
+
+.badge-image-composite--round {
+  border-radius: 50%;
+}
+
+.badge-image--round {
+  border-radius: 50%;
+  object-fit: cover;
+}

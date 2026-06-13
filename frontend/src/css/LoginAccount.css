@@ -1,0 +1,544 @@
+/* LoginAccount.css */
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Root / Background */
+.entrar-root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #0a0a0a;
+  background: linear-gradient(to bottom, #0088FF, #002F59);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.entrar-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 1;
+  padding: 76px 20px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100dvh;
+}
+
+.entrar-form-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px 30px;
+  max-width: 480px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.entrar-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.entrar-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px 0;
+}
+
+.entrar-header p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.entrar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.entrar-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.entrar-checkbox-group {
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+}
+
+.entrar-checkbox-group input {
+  width: auto;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.entrar-checkbox-group label {
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+
+/* Inputs */
+.entrar-input {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: #f9f9f9;
+}
+
+.entrar-input:focus {
+  outline: none;
+  border-color: #0088FF;
+  box-shadow: 0 0 0 3px rgba(0, 136, 255, 0.1);
+  background: white;
+}
+
+.entrar-input.erro {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.entrar-input.erro:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.entrar-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.entrar-password-wrapper .entrar-input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.entrar-eye-icon {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.entrar-eye-icon:hover {
+  color: #333;
+}
+
+.entrar-erro {
+  font-size: 12px;
+  color: #dc3545;
+  margin-top: 3px;
+}
+
+/* Buttons */
+.entrar-btn-continuar {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #0088FF 0%, #0066CC 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 10px;
+}
+
+.entrar-btn-continuar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 136, 255, 0.3);
+}
+
+.entrar-btn-continuar:active {
+  transform: translateY(0);
+}
+
+/* Entrar-specific links */
+.entrar-forgot-link {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.entrar-forgot-link a {
+  color: #0088FF;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.entrar-forgot-link a:hover {
+  color: #0066CC;
+  text-decoration: underline;
+}
+
+.entrar-signup-link {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.entrar-signup-link span {
+  color: #666;
+}
+
+.entrar-signup-link a {
+  color: #0088FF;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 3px;
+  transition: color 0.2s;
+}
+
+.entrar-signup-link a:hover {
+  color: #0066CC;
+  text-decoration: underline;
+}
+
+/* Criar page login link now uses unified prefix */
+.entrar-login-link {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.entrar-login-link span {
+  color: #666;
+}
+
+.entrar-login-link a {
+  color: #0088FF;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 3px;
+  transition: color 0.2s;
+}
+
+.entrar-login-link a:hover {
+  color: #0066CC;
+  text-decoration: underline;
+}
+
+/* Footer links */
+.entrar-footer-links {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+  margin-top: 0;
+}
+
+.entrar-footer-links p {
+  margin: 0 0 8px 0;
+}
+
+.entrar-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.entrar-links a {
+  color: #0088FF;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.entrar-links a:hover {
+  color: #0066CC;
+  text-decoration: underline;
+}
+
+/* SUCCESS MODAL */
+.entrar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.entrar-success-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 60px 40px;
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.entrar-success-icon {
+  color: #28a745;
+  margin-bottom: 20px;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+.entrar-success-modal h2 {
+  font-size: 28px;
+  color: #1a1a1a;
+  margin: 20px 0 15px 0;
+  font-weight: 700;
+}
+
+.entrar-success-modal p {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 30px 0;
+  line-height: 1.5;
+}
+
+.entrar-success-btn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #0066CC 0%, #0088FF 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.entrar-success-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 136, 255, 0.3);
+}
+
+.entrar-success-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .entrar-container {
+    padding: 76px 14px 16px;
+    min-height: 100dvh;
+  }
+
+  .entrar-form-container {
+    padding: 40px 24px;
+  }
+
+  .entrar-header h1 {
+    font-size: 24px;
+  }
+
+  .entrar-header p {
+    font-size: 14px;
+  }
+}
+
+/* ##==========================================## */
+/* ##                TermsModal                ## */
+/* ##==========================================## */
+
+.terms-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  pointer-events: auto;
+}
+
+.terms-modal-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.terms-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #ececec;
+  padding: 14px 16px;
+}
+
+.terms-modal-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.2;
+  padding-right: 8px;
+}
+
+.terms-modal-close {
+  position: static;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666666;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  z-index: 10001;
+}
+
+.terms-modal-close:hover {
+  background-color: #f0f0f0;
+  color: #000000;
+}
+
+.terms-modal-content {
+  color: #333333;
+  overflow-y: auto;
+  flex: 1;
+  padding: 24px 40px 40px;
+}
+
+.terms-section {
+  margin-bottom: 24px;
+}
+
+.terms-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+.terms-section p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 10px;
+}
+
+.terms-section ul {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555555;
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.terms-section li {
+  margin-bottom: 8px;
+}
+
+/* Scrollbar styling for better UX */
+.terms-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terms-modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.terms-modal-content::-webkit-scrollbar-thumb {
+  background: #0088FF;
+  border-radius: 10px;
+}
+
+.terms-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #0066cc;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767.98px) {
+  .terms-modal-overlay {
+    padding: 10px;
+  }
+
+  .terms-modal-container {
+    max-height: 90vh;
+  }
+
+  .terms-modal-close {
+    z-index: 10001;
+  }
+
+  .terms-modal-header {
+    padding: 12px 14px;
+  }
+
+  .terms-modal-title {
+    font-size: 20px;
+  }
+
+  .terms-modal-content {
+    padding: 18px 20px 24px;
+  }
+
+  .terms-section h2 {
+    font-size: 15px;
+  }
+
+  .terms-section p,
+  .terms-section ul {
+    font-size: 13px;
+  }
+}

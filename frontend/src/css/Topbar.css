@@ -1,0 +1,191 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 50; /* Above sidebar and content */
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-logo-img {
+  height: 45px;
+  object-fit: contain;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.topbar-icon-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.topbar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 8px;
+}
+
+.topbar-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.topbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.topbar-more-btn {
+  margin-left: -8px; /* Pulled slightly closer to the user info */
+}
+
+/* Dropdown styles */
+.topbar-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 100;
+  border: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #1a1a1a;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.topbar-dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.topbar-dropdown-item svg {
+  color: #1a1a1a;
+}
+
+.topbar-language-current {
+  margin-left: auto;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.topbar-language-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 10px 6px;
+}
+
+.topbar-language-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #1f2937;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.topbar-language-option.active {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.topbar-language-flag {
+  width: 18px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* Responsivo para telemóveis */
+@media (max-width: 767.98px) {
+  .topbar-logo-img {
+    height: 30px; /* Imagem mais pequena em tablets/telemóveis */
+  }
+}
+
+@media (max-width: 575.98px) {
+  .topbar {
+    padding: 0 12px;
+  }
+  
+  .topbar-right {
+    gap: 4px;
+  }
+  
+  .topbar-user-name {
+    display: none; /* Esconde o nome no telemóvel para poupar espaço */
+  }
+  
+  .topbar-user-info {
+    margin-left: 0;
+    gap: 8px;
+  }
+
+  .topbar-icon-btn {
+    padding: 6px;
+  }
+}
+
+

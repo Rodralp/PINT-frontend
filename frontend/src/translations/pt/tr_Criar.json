@@ -1,0 +1,28 @@
+{
+  "register_success_title": "Conta Criada com Sucesso!",
+  "register_success_subtitle": "Um administrador irá verificar seus dados e ativar sua conta em breve.",
+  "register_success_cta": "Voltar para Home",
+  "register_title": "Criar conta",
+  "register_subtitle": "Insira seus dados e aguarde a verificação",
+  "register_placeholder_name": "Nome",
+  "register_placeholder_confirm_password": "Confirmar Palavra-passe",
+  "register_continue": "Continuar",
+  "register_have_account": "Já tem conta?",
+  "register_login_link": "Entre",
+
+  "login_placeholder_email": "email@dominio.com",
+  "login_placeholder_password": "Palavra-passe",
+
+  "err_required_name": "Nome é obrigatório",
+  "err_required_email": "Email é obrigatório",
+  "err_invalid_email": "Email inválido",
+  "err_required_password": "Palavra-passe é obrigatória",
+  "err_password_min": "Palavra-passe deve ter pelo menos 8 caracteres",
+  "err_required_confirm_password": "Confirmação é obrigatória",
+  "err_password_mismatch": "Palavras-passe não correspondem",
+
+  "legal_agree_prefix": "Ao clicar em continuar, você concorda com os nossos",
+  "legal_terms": "Termos de Serviço",
+  "legal_and": "e com a",
+  "legal_privacy": "Política de Privacidade"
+}

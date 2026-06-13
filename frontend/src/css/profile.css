@@ -1,0 +1,153 @@
+.dashboard-profile-header {
+  grid-column: 1 / -1;
+}
+
+.profile-header-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-info h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.profile-role {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+}
+
+.profile-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.profile-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-btn-space {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 0.65rem;
+}
+.profile-edit-btn {
+  padding: 0.5rem 1rem;
+  background-color: #1187ff;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+.profile-edit-btn:hover {
+  opacity: 0.7;
+}
+.profile-home-btn {
+  padding: 0.5rem 1rem;
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+.profile-home-btn:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .profile-header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .profile-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .profile-btn-space {
+    width: 100%;
+    margin-left: 0;
+    align-items: stretch;
+  }
+
+  .profile-home-btn,
+  .profile-edit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+
+.dashboard-list-compact {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-list-item-compact {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.2rem;
+}
+
+.dashboard-list-item-compact:nth-child(2),
+.dashboard-list-item-compact:nth-child(4) {
+  background-color: #fafafa;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+.dashboard-list-item-compact:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.dashboard-list-item-compact:last-child {
+  padding-bottom: 0;
+}
+
+.dashboard-list-item-compact .dashboard-list-badge {
+  flex-shrink: 0;
+}
+.dashboard-list-item-compact .dashboard-list-content {
+  flex: 1;
+}
+.dashboard-list-item-compact .dashboard-item-chevron {
+  flex-shrink: 0;
+  color: #d0d0d0;
+}

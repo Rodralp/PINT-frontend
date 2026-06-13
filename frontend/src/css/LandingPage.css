@@ -1,0 +1,369 @@
+/* =====================
+   SOFTINSA — LANDING PAGE
+   ===================== */
+
+:root {
+  --blue-primary: #0088FF;
+  --blue-accent: #00aaff;
+  --blue-dark: #003a8c;
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --text-muted: #555555;
+  --footer-bg: #111111;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.lp-root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--black);
+  background: linear-gradient(to bottom, #0088FF, #002F59);
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* =====================
+   NAVBAR
+   ===================== */
+.lp-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+}
+
+.lp-navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.lp-logo-img {
+  height: 45px;
+  object-fit: contain;
+}
+
+.lp-navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.lp-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.lp-nav-link:hover {
+  color: var(--blue-primary);
+}
+
+.lp-link-icon {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Buttons */
+.lp-btn {
+  padding: 8px 22px;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.lp-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.lp-btn-entrar {
+  background: var(--blue-primary);
+  color: var(--white);
+}
+
+.lp-btn-registar {
+  background: var(--black);
+  color: var(--white);
+}
+
+.lp-lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lp-lang-icon {
+  font-size: 1rem;
+}
+
+/* =====================
+   HERO
+   ===================== */
+.lp-hero {
+  position: relative;
+  /* Espaçamento superior igual à altura da navbar (60px) para não se sobreporem ou gerarem buracos brancos */
+  padding-top: 60px;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.lp-hero-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1080px;
+  height: 600px;
+  background-image: url('/LP_BG.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* =====================
+   INFO SECTION
+   ===================== */
+.lp-info {
+  background: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.lp-info-inner {
+  display: flex;
+  width: 100%;
+  max-width: 1080px;
+  padding: 60px 40px;
+  background: var(--white);
+  border-bottom: 4px solid var(--black);
+}
+
+.lp-info-col {
+  flex: 1;
+  padding: 0 40px 0 0;
+}
+
+.lp-info-col + .lp-info-col {
+  padding-left: 60px;
+  padding-right: 0;
+  border-left: 1px solid #e5e5e5;
+}
+
+.lp-info-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  margin-bottom: 14px;
+}
+
+.lp-info-lead {
+  font-size: 0.97rem;
+  color: #222;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.lp-info-body {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* =====================
+   FOOTER
+   ===================== */
+.lp-footer {
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  margin-top: auto;
+}
+
+.lp-footer-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1080px;
+  padding: 48px 40px;
+  background: var(--footer-bg);
+  color: var(--white);
+}
+
+.lp-footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lp-footer-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.lp-footer-btn {
+  display: inline-block;
+  background: var(--blue-primary);
+  color: var(--white);
+  padding: 11px 24px;
+  border-radius: 100px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  width: fit-content;
+}
+
+.lp-footer-btn:hover {
+  background: var(--blue-dark);
+
+}
+
+.lp-footer-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: right;
+}
+
+.lp-footer-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.lp-footer-link:hover {
+  color: var(--white);
+}
+
+/* =====================
+   RESPONSIVE
+   ===================== */
+@media (max-width: 900px) {
+  .lp-navbar {
+    position: sticky;
+    padding: 12px 16px;
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .lp-navbar-links {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+
+  .lp-navbar-links .lp-nav-link {
+    flex: 1 1 100%;
+    font-size: 1rem;
+  }
+
+  .lp-navbar-links .lp-btn {
+    flex: 1 1 calc(50% - 6px);
+    text-align: center;
+    padding: 10px 14px;
+  }
+
+  .lp-lang {
+    flex: 1 1 100%;
+    font-size: 1rem;
+  }
+
+  .lp-hero {
+    margin-top: 0;
+  }
+
+  .lp-hero-inner {
+    height: clamp(320px, 52vh, 460px);
+    background-position: center;
+  }
+
+  .lp-info-inner {
+    flex-direction: column;
+    padding: 40px 24px;
+    gap: 36px;
+  }
+
+  .lp-info-col {
+    padding: 0;
+  }
+
+  .lp-info-col + .lp-info-col {
+    border-left: none;
+    border-top: 1px solid #e5e5e5;
+    padding-left: 0;
+    padding-top: 36px;
+  }
+
+  .lp-footer-inner {
+    flex-direction: column;
+    gap: 36px;
+    padding: 40px 24px;
+  }
+
+  .lp-footer-right {
+    text-align: left;
+  }
+}
+
+@media (max-width: 520px) {
+  .lp-navbar {
+    padding: 10px 12px;
+  }
+
+  .lp-logo-img {
+    height: 28px;
+  }
+
+  .lp-navbar-links .lp-nav-link {
+    font-size: 0.95rem;
+  }
+
+  .lp-navbar-links .lp-btn {
+    flex: 1 1 100%;
+  }
+
+  .lp-hero-inner {
+    height: 58vh;
+    min-height: 300px;
+  }
+
+  .lp-footer-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

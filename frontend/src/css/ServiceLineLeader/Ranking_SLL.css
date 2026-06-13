@@ -1,0 +1,39 @@
+.sll-ranking-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sll-ranking-page .ranking-shell .catalog-controls.sll-ranking-controls {
+  grid-template-columns: minmax(0, 1fr) 240px;
+}
+
+.sll-ranking-service-line {
+  margin: 0;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(247, 197, 0, 0.45);
+  background: rgba(247, 197, 0, 0.12);
+  color: #6b4f00;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@media (max-width: 920px) {
+  .sll-ranking-page .ranking-shell .catalog-controls.sll-ranking-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .sll-ranking-heading {
+    gap: 3px;
+  }
+
+  .sll-ranking-service-line {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}

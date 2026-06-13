@@ -1,0 +1,12 @@
+{
+    "profile_title" : "Perfil",
+    "profile_type" : "Consultor",
+    "profile_edit" : "Editar Perfil",
+    "profile_pub" : "Página Pública",
+    
+    "profile_activity_title" : "Atividade Recente",
+    "profile_skills" : "Habilidades",
+    "profile_certifications" : "Certificações",
+    "profile_skills_empty" : "Sem habilidades registadas.",
+    "profile_certifications_empty" : "Sem certificações registadas."
+}

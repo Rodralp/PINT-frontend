@@ -1,0 +1,34 @@
+{
+  "nav_public_gallery": "Galeria Pública",
+  "nav_login": "Entrar",
+  "nav_register": "Registar",
+  "nav_back_dashboard": "Voltar ao Dashboard",
+  "nav_language": "Idioma",
+
+  "lang_portuguese": "Português",
+  "lang_english": "English",
+  "lang_spanish": "Español",
+
+  "about_title": "Quem Somos",
+  "about_lead": "Especialistas em serviços de gestão aplicacional e de infraestruturas.",
+  "about_body": "O sucesso da Softinsa tem como base a inovação e a capacidade de nos reinventarmos continuamente.",
+
+  "services_title": "Serviços",
+  "services_lead": "Soluções integradas e à medida do cliente.",
+  "services_body": "Procuramos satisfazer as necessidades de negócios dos nossos clientes.",
+
+  "public_gallery_title": "Galeria Publica",
+  "public_gallery_subtitle": "Explore badges e consultores em destaque.",
+  "public_gallery_tab_aria": "Filtros de conteudo da galeria",
+  "public_gallery_badges": "Badges",
+  "public_gallery_consultores": "Consultores",
+  "public_gallery_level": "Nivel",
+
+  "footer_title": "Vamos conversar?",
+  "footer_button": "Nos Envie Sua Mensagem →",
+
+  "footer_softinsa": "Softinsa",
+  "footer_privacy": "Política de Privacidade",
+  "footer_terms": "Condições de Utilização",
+  "footer_contacts": "Contactos"
+}

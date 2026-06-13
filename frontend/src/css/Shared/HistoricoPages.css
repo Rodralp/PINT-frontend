@@ -1,0 +1,279 @@
+.historico-page {
+  gap: 18px;
+}
+
+.historico-page .tm-export-header h1 {
+  font-size: 30px;
+  color: #1f2a37;
+}
+
+.historico-page .tm-export-scope-note {
+  margin: -4px 0 10px;
+  color: #5f6c80;
+  font-size: 14px;
+}
+
+.historico-page .tm-export-shell {
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 16px 36px rgba(15, 23, 42, 0.06);
+  padding: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.historico-page .tm-export-tabs {
+  display: inline-flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: none;
+}
+
+.historico-page .tm-export-tab {
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+  color: #6a768a;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 16px;
+  transition: all 0.2s ease;
+}
+
+.historico-page .tm-export-tab.active {
+  color: #0f6fc8;
+  border-color: #7fb4e6;
+  background: #e9f4ff;
+}
+
+.historico-page .tm-export-tab:hover {
+  border-color: #9fb7d1;
+}
+
+.historico-toolbar-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.historico-page .tm-export-toolbar {
+  margin-bottom: 16px;
+}
+
+.historico-page .tm-export-search {
+  height: 42px;
+  border: 1px solid #cbd8e8;
+  background: #ffffff;
+  border-radius: 10px;
+}
+
+.historico-page .tm-export-search:focus-within {
+  border-color: #3f8fda;
+  box-shadow: 0 0 0 3px rgba(63, 143, 218, 0.16);
+}
+
+.historico-page .orders-table-wrap {
+  background: #ffffff;
+  border: 1px solid #dfe8f3;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.historico-page .orders-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.historico-page .orders-table th {
+  background: #edf4fb;
+  color: #4f627a;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 800;
+  padding: 12px 14px;
+  border-bottom: 1px solid #d7e4f2;
+}
+
+.historico-page .orders-table td {
+  color: #334155;
+  font-size: 14px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf2f8;
+}
+
+.historico-page .orders-table tr:last-child td {
+  border-bottom: none;
+}
+
+.historico-page .orders-table tbody tr:hover td {
+  background: #f8fbff;
+}
+
+.historico-page .orders-empty-row {
+  text-align: center;
+  color: #728399;
+  font-size: 14px;
+  padding: 22px 10px;
+}
+
+.historico-action-btn {
+  height: 34px;
+  border: 1px solid #8db7dd;
+  background: #ecf5ff;
+  color: #1268b8;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  justify-content: center;
+  gap: 6px;
+}
+
+.historico-action-btn:hover {
+  background: #dcebff;
+  border-color: #75a8d6;
+}
+
+.historico-section-title {
+  margin: 16px 2px 8px;
+  font-size: 15px;
+  color: #1f2a37;
+  font-weight: 700;
+}
+
+.historico-page .orders-pagination {
+  margin-top: 16px;
+}
+
+.historico-page .orders-page-btn {
+  border: 1px solid #d0deee;
+  background: #f4f8fd;
+  color: #4d637f;
+}
+
+.historico-page .orders-page-btn.active {
+  background: #1676cc;
+  border-color: #1676cc;
+  color: #ffffff;
+}
+
+.historico-page .orders-page-btn.ghost {
+  background: #ffffff;
+}
+
+/* Base modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 92%;
+  max-width: 820px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5eaf2;
+  flex-shrink: 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2a37;
+}
+
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #1f2a37;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-section h3,
+.modal-section h4 {
+  margin: 0;
+  color: #1f2a37;
+}
+
+.modal-section h4 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Scoped overrides for historico pages */
+.historico-page .modal-content {
+  border: 1px solid #dbe6f2;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.2);
+}
+
+.historico-page .modal-header {
+  background: #f3f8ff;
+}
+
+.historico-page .modal-info {
+  border-bottom: 1px solid #dbe6f2;
+  padding-bottom: 14px;
+}
+
+@media (max-width: 768px) {
+  .historico-page .tm-export-header h1 {
+    font-size: 24px;
+  }
+
+  .historico-page .tm-export-shell {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .historico-page .tm-export-tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .historico-page .orders-table th,
+  .historico-page .orders-table td {
+    padding: 10px 10px;
+  }
+}

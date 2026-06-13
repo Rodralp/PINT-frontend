@@ -1,0 +1,821 @@
+/* Shared detail pages stylesheet inspired by the SLL layout */
+
+:is(.sll-order-detail-page, .tm-order-detail-page, .ag-order-detail-page, .badge-details-page) {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.badge-details-page {
+  max-width: 1120px;
+}
+
+:is(.sll-order-detail-header, .tm-order-detail-header, .ag-order-detail-header, .badge-details-header) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+:is(.sll-order-detail-header h1, .tm-order-detail-header h1, .ag-order-detail-header h1, .badge-details-header h1) {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+:is(.sll-orders-back-btn, .tm-orders-back-btn, .ag-orders-back-btn, .badge-details-back-btn) {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #344054;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+:is(.sll-orders-back-btn, .tm-orders-back-btn, .ag-orders-back-btn, .badge-details-back-btn):hover {
+  background: rgba(148, 163, 184, 0.14);
+}
+
+:is(.sll-order-hero-grid, .tm-order-hero-grid, .ag-order-hero-grid) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  align-items: start;
+}
+
+:is(.sll-order-hero-main, .tm-order-hero-main, .ag-order-hero-main) {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+:is(.sll-order-hero-card, .tm-order-hero-card, .ag-order-hero-card, .badge-hero-card),
+:is(.sll-order-review-card, .tm-order-submission-card, .tm-order-verdict-card, .tm-order-evaluated-card, .ag-order-submission-card, .ag-order-verdict-card, .ag-order-reviewed-card, .badge-requirements-card, .badge-review-card) {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+:is(.sll-order-hero-card, .tm-order-hero-card, .ag-order-hero-card, .badge-hero-card) {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+}
+
+:is(.sll-order-badge-frame, .tm-order-badge-frame, .ag-order-badge-frame, .badge-hero-media) {
+  width: 190px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:is(.sll-order-badge-image, .tm-order-badge-image, .ag-order-badge-image, .badge-hero-image) {
+  width: 170px;
+  height: 150px;
+  object-fit: contain;
+}
+
+:is(.sll-order-hero-content, .tm-order-hero-content, .ag-order-hero-content, .badge-hero-content) {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+:is(.sll-order-hero-content h2, .tm-order-hero-content h2, .ag-order-hero-content h2, .badge-hero-content h2) {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+:is(.sll-order-hero-content p, .tm-order-hero-content p, .ag-order-hero-content p) {
+  margin: 8px 0 10px;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #374151;
+}
+
+.badge-hero-content p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.15;
+  color: #374151;
+}
+
+:is(.sll-order-hero-meta, .tm-order-hero-meta, .ag-order-hero-meta, .badge-hero-meta) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+:is(.sll-order-hero-meta span, .tm-order-hero-meta span, .ag-order-hero-meta span, .badge-hero-meta span) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+:is(.sll-order-hero-meta strong, .tm-order-hero-meta strong, .ag-order-hero-meta strong, .badge-hero-meta strong) {
+  color: #111827;
+  font-weight: 700;
+}
+
+:is(.sll-order-status-banner, .tm-order-status-banner, .ag-order-status-banner, .badge-status-banner) {
+  margin-top: 12px;
+  min-height: 34px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+:is(.sll-order-status-banner.validacao, .tm-order-status-banner.validacao, .ag-order-status-banner.validacao, .badge-status-banner.is-validation) {
+  border-color: #f4b400;
+  background: rgba(244, 180, 0, 0.16);
+  color: #c68b00;
+}
+
+:is(.sll-order-status-banner.rejeitado, .tm-order-status-banner.rejeitado, .ag-order-status-banner.rejeitado, .badge-status-banner.is-rejected) {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.16);
+  color: #de2015;
+}
+
+:is(.sll-order-status-banner.aprovado, .tm-order-status-banner.enviado, .ag-order-status-banner.aprovado, .badge-status-banner.is-obtained) {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.16);
+  color: #16a34a;
+}
+
+:is(.sll-order-status-banner.is-progress, .badge-status-banner.is-progress) {
+  border-color: #1b84f4;
+  background: rgba(27, 132, 244, 0.16);
+  color: #1b84f4;
+}
+
+:is(.sll-order-breadcrumb, .tm-order-breadcrumb, .ag-order-breadcrumb, .badge-breadcrumb) {
+  margin: 0;
+  color: #9aa3b2;
+  font-size: 13px;
+}
+
+:is(.sll-order-requirements-card, .tm-order-requirements-card, .ag-order-requirements-card, .badge-requirements-card) {
+  padding: 18px;
+}
+
+:is(.sll-order-requirements-card h3, .tm-order-requirements-card h3, .ag-order-requirements-card h3, .badge-requirements-card h3) {
+  margin: 0 0 14px;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+:is(.sll-order-requirements-list, .tm-order-requirements-list, .ag-order-requirements-list, .badge-requirements-list) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+:is(.sll-order-requirement-item, .tm-order-requirement-item, .ag-order-requirement-item, .badge-requirement-item) {
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+}
+
+:is(.sll-order-requirement-item.is-open, .tm-order-requirement-item.is-open, .ag-order-requirement-item.is-open, .badge-requirement-item.is-open) {
+  padding-bottom: 12px;
+}
+
+:is(.sll-order-requirement-head, .tm-order-requirement-head, .ag-order-requirement-head, .badge-requirement-head) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+:is(.sll-order-requirement-head p, .tm-order-requirement-head p, .ag-order-requirement-head p, .badge-requirement-head p) {
+  margin: 0;
+  color: #2f3747;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+:is(.sll-order-requirement-head span, .tm-order-requirement-head span, .ag-order-requirement-head span, .badge-requirement-head span) {
+  display: block;
+  margin-top: 6px;
+  color: #9aa3b2;
+  font-size: 13px;
+}
+
+:is(.sll-order-requirement-view-btn, .tm-order-requirement-view-btn, .ag-order-requirement-view-btn, .badge-requirement-view-btn) {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:is(.sll-order-requirement-view-btn, .tm-order-requirement-view-btn, .ag-order-requirement-view-btn, .badge-requirement-view-btn):hover {
+  background: #f1f5f9;
+}
+
+:is(.sll-order-requirement-detail, .tm-order-requirement-detail, .ag-order-requirement-detail, .badge-requirement-detail) {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #e8edf4;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+:is(.sll-order-requirement-detail-media, .tm-order-requirement-detail-media, .ag-order-requirement-detail-media, .badge-requirement-detail-image, .badge-requirement-detail-media) {
+  flex: 0 0 auto;
+}
+
+:is(.sll-order-requirement-detail-media, .tm-order-requirement-detail-media, .ag-order-requirement-detail-media) {
+  width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:is(.sll-order-requirement-detail-image, .tm-order-requirement-detail-image, .ag-order-requirement-detail-image, .badge-requirement-detail-image) {
+  object-fit: contain;
+}
+
+:is(.sll-order-requirement-detail-image, .tm-order-requirement-detail-image, .ag-order-requirement-detail-image) {
+  width: 82px;
+  height: 82px;
+}
+
+.badge-requirement-detail-image {
+  width: 84px;
+  height: 84px;
+}
+
+:is(.sll-order-requirement-detail p, .tm-order-requirement-detail p, .ag-order-requirement-detail p, .badge-requirement-detail p) {
+  margin: 0;
+  color: #637085;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+:is(.sll-order-requirement-detail-content, .tm-order-requirement-detail-content, .ag-order-requirement-detail-content, .badge-requirement-detail-content) {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+:is(.sll-order-requirement-files-list, .tm-order-requirement-files-list, .ag-order-requirement-files-list) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+:is(.sll-order-requirement-files-list li, .tm-order-requirement-files-list li, .ag-order-requirement-files-list li) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #2f3747;
+  font-size: 13px;
+}
+
+:is(.sll-order-file-main, .tm-order-file-main, .ag-order-file-main) {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+:is(.sll-order-file-main span:last-child, .tm-order-file-main span:last-child, .ag-order-file-main span:last-child) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is(.sll-order-file-icon, .tm-order-file-icon, .ag-order-file-icon) {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+:is(.sll-order-file-download-btn, .tm-order-file-download-btn, .ag-order-file-download-btn) {
+  height: 30px;
+  border: 1px solid #dbe4f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+:is(.sll-order-file-download-btn, .tm-order-file-download-btn, .ag-order-file-download-btn):hover {
+  background: #f8fafc;
+}
+
+:is(.sll-order-sidebar, .tm-order-sidebar, .ag-order-sidebar) {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+:is(.sll-order-review-card, .tm-order-submission-card, .tm-order-verdict-card, .tm-order-evaluated-card, .ag-order-submission-card, .ag-order-verdict-card, .ag-order-reviewed-card, .badge-review-card) {
+  padding: 18px;
+}
+
+:is(.sll-order-review-card h3, .tm-order-submission-card h3, .tm-order-verdict-card h3, .tm-order-evaluated-card h3, .ag-order-submission-card h3, .ag-order-verdict-card h3, .ag-order-reviewed-card h3) {
+  margin: 0 0 12px;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+:is(.sll-order-subtitle, .tm-order-subtitle) {
+  margin-top: 16px !important;
+}
+
+:is(.sll-order-person-card, .tm-order-person-card, .ag-order-person-card) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+:is(.sll-order-person-card.compact, .tm-order-person-card.compact, .ag-order-person-card.compact) {
+  align-items: flex-start;
+}
+
+:is(.sll-order-person-card.final, .ag-order-person-card.final) {
+  margin-top: 16px;
+}
+
+:is(.sll-order-person-avatar, .tm-order-person-avatar, .ag-order-person-avatar) {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  flex: 0 0 auto;
+}
+
+.tm-order-person-avatar {
+  background: linear-gradient(180deg, #dbeafe, #bfdbfe);
+  color: #1b84f4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.tm-order-person-avatar.evaluated {
+  background: linear-gradient(180deg, #d1fae5, #bbf7d0);
+  color: #047857;
+}
+
+:is(.sll-order-person-card strong, .tm-order-person-card strong, .ag-order-person-card strong) {
+  display: block;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+:is(.sll-order-person-card span, .tm-order-person-card span, .ag-order-person-card span) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: #8b94a4;
+  font-size: 12px;
+}
+
+:is(.sll-order-note, .tm-order-evaluated-card p, .ag-order-review-note, .badge-review-card p) {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.badge-review-card p {
+  margin-top: 14px;
+  padding: 14px 16px;
+}
+
+.badge-review-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.badge-review-head h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.badge-review-head span {
+  color: #9aa3b2;
+  font-size: 15px;
+}
+
+:is(.sll-order-verdict-option, .tm-order-verdict-option, .ag-order-verdict-option) {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #e6ebf2;
+  background: #ffffff;
+  color: #2f3747;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 16px;
+  text-align: left;
+}
+
+:is(.sll-order-verdict-option, .tm-order-verdict-option, .ag-order-verdict-option):hover {
+  background: #f8fafc;
+}
+
+:is(.sll-order-verdict-option.active, .tm-order-verdict-option.active, .ag-order-verdict-option.active) {
+  border-color: #1b84f4;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+:is(.sll-order-comment, .tm-order-comment, .ag-order-comment) {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid #e6ebf2;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #374151;
+  font-size: 14px;
+  resize: vertical;
+  padding: 12px;
+  outline: none;
+}
+
+:is(.sll-order-comment, .tm-order-comment, .ag-order-comment):focus {
+  border-color: #1b84f4;
+  background: #ffffff;
+}
+
+:is(.sll-order-submit-btn, .tm-order-submit-btn, .ag-order-submit-btn, .badge-submit-btn) {
+  border: none;
+  border-radius: 10px;
+  background: #1b84f4;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+:is(.sll-order-submit-btn, .tm-order-submit-btn, .ag-order-submit-btn, .badge-submit-btn):disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+:is(.sll-order-submit-btn, .tm-order-submit-btn, .ag-order-submit-btn, .badge-submit-btn):not(:disabled):hover {
+  background: #1877dc;
+}
+
+:is(.sll-order-feedback-note, .tm-order-feedback-note, .ag-order-feedback-note, .badge-feedback) {
+  margin: 10px 0 0;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+:is(.sll-order-motives, .tm-order-motives, .ag-order-motives) {
+  margin-top: 14px;
+  border-top: 1px solid #e8edf4;
+  padding-top: 12px;
+}
+
+:is(.sll-order-motives h4, .tm-order-motives h4, .ag-order-motives h4) {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+:is(.sll-order-motives-list, .tm-order-motives-list, .ag-order-motives-list) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+:is(.sll-order-motives-list li, .tm-order-motives-list li, .ag-order-motives-list li) {
+  border: 1px solid #e6ebf2;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+}
+
+:is(.sll-order-motives-list strong, .tm-order-motives-list strong, .ag-order-motives-list strong) {
+  display: block;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+:is(.sll-order-motives-list span, .tm-order-motives-list span, .ag-order-motives-list span) {
+  display: inline-block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+:is(.sll-order-motives-list p, .tm-order-motives-list p, .ag-order-motives-list p) {
+  margin: 8px 0 0;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.badge-requirement-files {
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.badge-file-input-label {
+  display: block;
+  margin: 0;
+  color: #1f2937;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.badge-file-input {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid #d3dbe7;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.badge-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.badge-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e5ebf4;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px 10px;
+}
+
+.badge-file-name {
+  color: #334155;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-file-remove-btn {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  flex: 0 0 auto;
+}
+
+.badge-file-remove-btn:hover {
+  background: #f8fafc;
+}
+
+.badge-file-none {
+  border: 1px dashed #d8e2ee;
+  border-radius: 10px;
+  color: #64748b;
+  font-size: 13px;
+  padding: 9px 10px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.badge-actions-row {
+  margin-top: 2px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.badge-submit-btn {
+  min-width: 280px;
+  height: 48px;
+  padding: 0 26px;
+}
+
+.badge-share-icon-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #1b84f4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-share-primary-btn {
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  background: #1b84f4;
+  color: #ffffff;
+  min-width: 220px;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 24px;
+}
+
+@media (max-width: 1200px) {
+  :is(.sll-order-hero-grid, .tm-order-hero-grid, .ag-order-hero-grid) {
+    grid-template-columns: 1fr;
+  }
+
+  :is(.sll-order-detail-header h1, .tm-order-detail-header h1, .ag-order-detail-header h1, .badge-details-header h1) {
+    font-size: 28px;
+  }
+
+  :is(.sll-order-hero-content h2, .tm-order-hero-content h2, .ag-order-hero-content h2, .badge-hero-content h2) {
+    font-size: 22px;
+  }
+
+  :is(.sll-order-hero-content p, .tm-order-hero-content p, .ag-order-hero-content p, .badge-hero-content p) {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  :is(.sll-order-hero-card, .tm-order-hero-card, .ag-order-hero-card, .badge-hero-card) {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  :is(.sll-order-badge-frame, .tm-order-badge-frame, .ag-order-badge-frame, .badge-hero-media) {
+    width: 100%;
+    height: 140px;
+    justify-content: flex-start;
+  }
+
+  :is(.sll-order-badge-image, .tm-order-badge-image, .ag-order-badge-image, .badge-hero-image) {
+    width: 140px;
+    height: 120px;
+  }
+
+  :is(.sll-order-requirements-card, .tm-order-requirements-card, .ag-order-requirements-card, .badge-requirements-card) {
+    padding: 16px;
+  }
+
+  :is(.sll-order-requirement-item, .tm-order-requirement-item, .ag-order-requirement-item, .badge-requirement-item) {
+    padding: 10px 12px;
+  }
+
+  :is(.sll-order-requirement-detail, .tm-order-requirement-detail, .ag-order-requirement-detail, .badge-requirement-detail) {
+    gap: 12px;
+    padding-top: 10px;
+  }
+
+  :is(.sll-order-requirement-detail-image, .tm-order-requirement-detail-image, .ag-order-requirement-detail-image, .badge-requirement-detail-image) {
+    width: 74px;
+    height: 74px;
+  }
+
+  .badge-actions-row {
+    justify-content: stretch;
+  }
+
+  :is(.badge-submit-btn, .badge-share-primary-btn) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .badge-share-icon-btn {
+    width: 48px;
+    height: 48px;
+    flex: 1 1 48px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  :is(.sll-order-detail-page, .tm-order-detail-page, .ag-order-detail-page, .badge-details-page) {
+    gap: 12px;
+  }
+
+  :is(.sll-order-detail-header h1, .tm-order-detail-header h1, .ag-order-detail-header h1, .badge-details-header h1) {
+    font-size: 24px;
+  }
+
+  :is(.sll-order-hero-content h2, .tm-order-hero-content h2, .ag-order-hero-content h2, .badge-hero-content h2) {
+    font-size: 20px;
+  }
+
+  :is(.sll-order-hero-content p, .tm-order-hero-content p, .ag-order-hero-content p, .badge-hero-content p) {
+    font-size: 15px;
+  }
+
+  :is(.sll-order-hero-meta, .tm-order-hero-meta, .ag-order-hero-meta, .badge-hero-meta) {
+    gap: 10px;
+  }
+
+  :is(.sll-order-requirements-card h3, .tm-order-requirements-card h3, .ag-order-requirements-card h3, .badge-requirements-card h3) {
+    font-size: 18px;
+  }
+
+  :is(.sll-order-requirement-head p, .tm-order-requirement-head p, .ag-order-requirement-head p, .badge-requirement-head p) {
+    font-size: 14px;
+  }
+
+  :is(.sll-order-requirement-detail, .tm-order-requirement-detail, .ag-order-requirement-detail, .badge-requirement-detail) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  :is(.sll-order-requirement-detail-image, .tm-order-requirement-detail-image, .ag-order-requirement-detail-image, .badge-requirement-detail-image) {
+    width: 90px;
+    height: 54px;
+  }
+
+  .badge-submit-btn,
+  .badge-share-primary-btn {
+    height: 48px;
+    font-size: 16px;
+  }
+}

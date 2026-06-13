@@ -1,0 +1,130 @@
+/* SeeMore PopUp Modal - Reutilizável */
+
+.seemore-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.seemore-modal {
+  width: min(100%, 620px);
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.seemore-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  flex-shrink: 0;
+}
+
+.seemore-modal-header h2 {
+  margin: 0;
+  color: #2f3747;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.seemore-modal-close-btn {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  color: #626f86;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.seemore-modal-close-btn:hover {
+  background: #f2f7fd;
+  color: #2f3747;
+}
+
+.seemore-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+.seemore-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seemore-list-item {
+  border-radius: 12px;
+  border: 1px solid #e6ebf2;
+  background: #f9fbfe;
+  padding: 12px 16px;
+  transition: background 0.2s;
+}
+
+.seemore-list-item:hover {
+  background: #f2f7fd;
+  border-color: #d5deea;
+}
+
+.seemore-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #626f86;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Scroll customizado */
+.seemore-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.seemore-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.seemore-modal-content::-webkit-scrollbar-thumb {
+  background: #d5deea;
+  border-radius: 4px;
+}
+
+.seemore-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #b5c4d4;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .seemore-modal {
+    width: calc(100% - 32px);
+    max-height: 85vh;
+  }
+
+  .seemore-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .seemore-modal-content {
+    padding: 12px 16px;
+  }
+
+  .seemore-list-item {
+    padding: 10px 12px;
+  }
+}
