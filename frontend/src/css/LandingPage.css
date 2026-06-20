@@ -30,106 +30,12 @@
 }
 
 /* =====================
-   NAVBAR
-   ===================== */
-.lp-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
-}
-
-.lp-navbar-logo {
-  display: flex;
-  align-items: center;
-}
-
-.lp-logo-img {
-  height: 45px;
-  object-fit: contain;
-}
-
-.lp-navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.lp-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-  color: #333;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.lp-nav-link:hover {
-  color: var(--blue-primary);
-}
-
-.lp-link-icon {
-  font-size: 0.85rem;
-  opacity: 0.7;
-}
-
-/* Buttons */
-.lp-btn {
-  padding: 8px 22px;
-  border-radius: 100px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: opacity 0.2s, transform 0.1s;
-}
-
-.lp-btn:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
-}
-
-.lp-btn-entrar {
-  background: var(--blue-primary);
-  color: var(--white);
-}
-
-.lp-btn-registar {
-  background: var(--black);
-  color: var(--white);
-}
-
-.lp-lang {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  color: #333;
-  cursor: pointer;
-  user-select: none;
-}
-
-.lp-lang-icon {
-  font-size: 1rem;
-}
-
-/* =====================
    HERO
    ===================== */
 .lp-hero {
   position: relative;
   /* Espaçamento superior igual à altura da navbar (60px) para não se sobreporem ou gerarem buracos brancos */
-  padding-top: 60px;
+  padding-top: var(--sp-14);
   background: transparent;
   display: flex;
   justify-content: center;
@@ -163,38 +69,38 @@
   display: flex;
   width: 100%;
   max-width: 1080px;
-  padding: 60px 40px;
+  padding: var(--sp-14) var(--sp-10);
   background: var(--white);
   border-bottom: 4px solid var(--black);
 }
 
 .lp-info-col {
   flex: 1;
-  padding: 0 40px 0 0;
+  padding: 0 var(--sp-10) 0 0;
 }
 
 .lp-info-col + .lp-info-col {
-  padding-left: 60px;
+  padding-left: var(--sp-14);
   padding-right: 0;
   border-left: 1px solid #e5e5e5;
 }
 
 .lp-info-title {
-  font-size: 1.35rem;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--blue-primary);
-  margin-bottom: 14px;
+  margin-bottom: var(--sp-3);
 }
 
 .lp-info-lead {
-  font-size: 0.97rem;
+  font-size: var(--fs-md);
   color: #222;
-  margin-bottom: 10px;
+  margin-bottom: var(--sp-2);
   line-height: 1.6;
 }
 
 .lp-info-body {
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   color: var(--text-muted);
   line-height: 1.65;
 }
@@ -215,7 +121,7 @@
   justify-content: space-between;
   width: 100%;
   max-width: 1080px;
-  padding: 48px 40px;
+  padding: var(--sp-12) var(--sp-10);
   background: var(--footer-bg);
   color: var(--white);
 }
@@ -227,7 +133,7 @@
 }
 
 .lp-footer-title {
-  font-size: 1.25rem;
+  font-size: var(--fs-2xl);
   font-weight: 600;
   color: var(--white);
 }
@@ -236,9 +142,9 @@
   display: inline-block;
   background: var(--blue-primary);
   color: var(--white);
-  padding: 11px 24px;
-  border-radius: 100px;
-  font-size: 0.9rem;
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-base);
   font-weight: 600;
   text-decoration: none;
   transition: background 0.2s;
@@ -260,7 +166,7 @@
 .lp-footer-link {
   color: #ccc;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   transition: color 0.2s;
 }
 
@@ -272,37 +178,6 @@
    RESPONSIVE
    ===================== */
 @media (max-width: 900px) {
-  .lp-navbar {
-    position: sticky;
-    padding: 12px 16px;
-    height: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .lp-navbar-links {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 10px 12px;
-  }
-
-  .lp-navbar-links .lp-nav-link {
-    flex: 1 1 100%;
-    font-size: 1rem;
-  }
-
-  .lp-navbar-links .lp-btn {
-    flex: 1 1 calc(50% - 6px);
-    text-align: center;
-    padding: 10px 14px;
-  }
-
-  .lp-lang {
-    flex: 1 1 100%;
-    font-size: 1rem;
-  }
-
   .lp-hero {
     margin-top: 0;
   }
@@ -314,7 +189,7 @@
 
   .lp-info-inner {
     flex-direction: column;
-    padding: 40px 24px;
+    padding: var(--sp-10) var(--sp-6);
     gap: 36px;
   }
 
@@ -326,13 +201,13 @@
     border-left: none;
     border-top: 1px solid #e5e5e5;
     padding-left: 0;
-    padding-top: 36px;
+    padding-top: var(--sp-8);
   }
 
   .lp-footer-inner {
     flex-direction: column;
     gap: 36px;
-    padding: 40px 24px;
+    padding: var(--sp-10) var(--sp-6);
   }
 
   .lp-footer-right {
@@ -341,22 +216,6 @@
 }
 
 @media (max-width: 520px) {
-  .lp-navbar {
-    padding: 10px 12px;
-  }
-
-  .lp-logo-img {
-    height: 28px;
-  }
-
-  .lp-navbar-links .lp-nav-link {
-    font-size: 0.95rem;
-  }
-
-  .lp-navbar-links .lp-btn {
-    flex: 1 1 100%;
-  }
-
   .lp-hero-inner {
     height: 58vh;
     min-height: 300px;

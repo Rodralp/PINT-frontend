@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import '../css/Shared/BadgeImage.css';
+
+const BADGE_NOT_FOUND = '/badges/badge-not-found.svg';
 
 const badgeFrameByLevel = {
   badge_level_junior: '/badges/J%C3%BAnior.png',
@@ -114,24 +117,43 @@ function BadgeImage({
   typeId,
   levelLabel,
 }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const [frameFailed, setFrameFailed] = useState(false);
   const resolvedFrameSrc = frameSrc === false
     ? null
     : frameSrc || resolveBadgeFrameImage({ levelKey, typeId, levelLabel });
-  const resolvedImageSrc = src || resolvedFrameSrc;
+  const hasImage = !!src && !imgFailed;
+  const resolvedImageSrc = imgFailed ? BADGE_NOT_FOUND : src || null;
   const resolvedMaskSrc = resolveBadgeMaskImage({ levelKey, typeId, levelLabel });
-  const shouldCompose =
-    resolvedFrameSrc &&
-    resolvedImageSrc &&
-    normalizeImageKey(resolvedImageSrc) !== normalizeImageKey(resolvedFrameSrc);
   const isRoundFrame = normalizeImageKey(resolvedFrameSrc || '').includes('especial');
 
-  if (!shouldCompose) {
+  if (!resolvedFrameSrc || !hasImage) {
+    if (!resolvedFrameSrc) {
+      return (
+        <img
+          className={`${className}${isRoundFrame ? ' badge-image--round' : ''}`.trim()}
+          src={resolvedImageSrc || BADGE_NOT_FOUND}
+          alt={alt}
+          onError={() => { if (!imgFailed) setImgFailed(true); }}
+        />
+      );
+    }
     return (
-      <img
-        className={`${className}${isRoundFrame ? ' badge-image--round' : ''}`.trim()}
-        src={resolvedImageSrc}
-        alt={alt}
-      />
+      <span
+        className={`badge-image-composite${isRoundFrame ? ' badge-image-composite--round' : ''} ${className}`.trim()}
+        role={alt ? 'img' : undefined}
+        aria-label={alt || undefined}
+        aria-hidden={alt ? undefined : true}
+      >
+        <span className="badge-image-composite-stage" aria-hidden="true" style={{ background: '#fff' }}>
+          <img
+            className="badge-image-composite-frame"
+            src={frameFailed ? null : resolvedFrameSrc}
+            alt=""
+            onError={() => { if (!frameFailed) setFrameFailed(true); }}
+          />
+        </span>
+      </span>
     );
   }
 
@@ -147,6 +169,7 @@ function BadgeImage({
           className="badge-image-composite-inner"
           src={resolvedImageSrc}
           alt=""
+          onError={() => { if (!imgFailed) setImgFailed(true); }}
           style={resolvedMaskSrc ? {
             WebkitMaskImage: `url('${resolvedMaskSrc}')`,
             WebkitMaskSize: 'contain',
@@ -158,7 +181,12 @@ function BadgeImage({
             maskRepeat: 'no-repeat',
           } : undefined}
         />
-        <img className="badge-image-composite-frame" src={resolvedFrameSrc} alt="" />
+        <img
+          className="badge-image-composite-frame"
+          src={frameFailed ? null : resolvedFrameSrc}
+          alt=""
+          onError={() => { if (!frameFailed) setFrameFailed(true); }}
+        />
       </span>
     </span>
   );

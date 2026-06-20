@@ -105,8 +105,8 @@ function PedidoTM() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="tm-order-detail-page">
-          <header className="tm-order-detail-header">
+        <div className="page tm-order-detail-page">
+          <header className="page-header tm-order-detail-header">
             <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -122,8 +122,8 @@ function PedidoTM() {
   if (!request) {
     return (
       <Layout>
-        <div className="tm-order-detail-page">
-          <header className="tm-order-detail-header">
+        <div className="page tm-order-detail-page">
+          <header className="page-header tm-order-detail-header">
             <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -201,8 +201,8 @@ function PedidoTM() {
 
   return (
     <Layout>
-      <div className="tm-order-detail-page">
-        <header className="tm-order-detail-header">
+      <div className="page tm-order-detail-page">
+        <header className="page-header tm-order-detail-header">
           <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
             <ArrowLeft size={22} />
           </button>

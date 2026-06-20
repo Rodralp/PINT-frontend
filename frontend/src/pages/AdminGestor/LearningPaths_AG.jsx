@@ -1123,8 +1123,8 @@ function LearningPathsAG() {
 
   return (
     <Layout>
-      <div className="learning-paths-page is-classic is-admin">
-        <header className="lp-header">
+      <div className="page learning-paths-page is-classic is-admin">
+        <header className="page-header lp-header">
           <div className="lp-header-left">
             {selectedServiceLine && (
               <button type="button" className="lp-back-btn" onClick={handleGoBack} aria-label="Voltar">

@@ -15,6 +15,21 @@ const http = axios.create({
   timeout: REQUEST_TIMEOUT_MS,
 });
 
+http.interceptors.request.use((config) => {
+  const loginDataRaw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
+  if (loginDataRaw) {
+    try {
+      const loginData = JSON.parse(loginDataRaw);
+      if (loginData && loginData.token) {
+        config.headers.Authorization = `Bearer ${loginData.token}`;
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }
+  return config;
+});
+
 const request = async (path, options = {}) => {
   try {
     const response = await http({
@@ -27,11 +42,19 @@ const request = async (path, options = {}) => {
       status: response.status,
     };
   } catch (error) {
+    const statusCode = error?.response?.status;
+
+    if (statusCode === 401) {
+      sessionStorage.removeItem('loginData');
+      localStorage.removeItem('loginData');
+      window.location.href = '/entrar';
+      return;
+    }
+
     const message = error?.response?.data?.message || error?.message || 'HTTP request failed';
     const requestError = new Error(message);
     const errorDetails = error?.response?.data?.details;
     const errorCode = error?.response?.data?.code;
-    const statusCode = error?.response?.status;
 
     // Attach full server response data for debugging
     if (error?.response?.data) {

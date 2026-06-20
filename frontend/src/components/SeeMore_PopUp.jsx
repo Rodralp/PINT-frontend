@@ -20,20 +20,20 @@ function SeeMore_PopUp({
   const displayItems = maxItems ? items.slice(0, maxItems) : items;
 
   return (
-    <div className="reminder-modal-overlay" onClick={onClose}>
-      <div className="reminder-modal" onClick={(event) => event.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h2 style={{ margin: 0 }}>{title}</h2>
-          <button type="button" onClick={onClose} className="reminders-back-btn" aria-label="Fechar">
+    <div className="seemore-modal-overlay" onClick={onClose}>
+      <div className="seemore-modal" onClick={(event) => event.stopPropagation()}>
+        <div className="seemore-modal-header">
+          <h2>{title}</h2>
+          <button type="button" onClick={onClose} className="seemore-modal-close-btn" aria-label="Fechar">
             <X size={18} />
           </button>
         </div>
 
-        <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: 8 }}>
+        <div className="seemore-modal-content">
           {displayItems.length > 0 ? (
             <div className="seemore-list">
               {displayItems.map((item, index) => (
-                <div key={index}>
+                <div key={index} className="seemore-list-item">
                   {renderItem(item, index)}
                 </div>
               ))}
@@ -43,11 +43,7 @@ function SeeMore_PopUp({
           )}
         </div>
 
-        <div className="reminder-modal-actions" style={{ marginTop: 12 }}>
-          <button type="button" className="reminder-cancel-btn" onClick={onClose}>
-            {closeLabel}
-          </button>
-        </div>
+
       </div>
     </div>
   );

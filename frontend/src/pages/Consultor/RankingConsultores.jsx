@@ -5,10 +5,9 @@ import {
   SlidersHorizontal,
   Trophy,
   Award,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import Pagination from '../../components/Pagination';
 import { fetchRankingConsultores } from '../../services/consultorService';
 import '../../css/Consultor/Ranking_C.css';
 
@@ -16,7 +15,7 @@ const ITEMS_PER_PAGE = 12;
 
 const buildAvatarUrl = (consultant) =>
   consultant.avatar
-  || `https://i.pravatar.cc/120?u=${encodeURIComponent(consultant.email || consultant.name || consultant.id)}`;
+  || `/avatars/default-avatar.svg`;
 
 function RankingConsultores() {
   const [consultants, setConsultants] = useState([]);
@@ -204,24 +203,16 @@ function RankingConsultores() {
     setPage(1);
   };
 
-  const previousPage = () => {
-    setPage((current) => Math.max(1, current - 1));
-  };
-
-  const nextPage = () => {
-    setPage((current) => Math.min(totalPages, current + 1));
-  };
-
   return (
     <Layout>
-      <div className="ranking-page">
-        <header className="ranking-header">
+      <div className="page">
+        <header className="page-header">
           <h1>Ranking de Consultores</h1>
         </header>
 
-        <section className="ranking-shell">
-          <div className="catalog-controls">
-            <div className="catalog-search-wrap">
+        <section className="shell">
+          <div className="toolbar catalog-controls">
+            <div className="search-wrap">
               <Search size={20} />
               <input
                 type="text"
@@ -235,7 +226,7 @@ function RankingConsultores() {
             <div className="catalog-dropdown" ref={filterDropdownRef}>
               <button
                 type="button"
-                className={`catalog-action-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
+                className={`action-btn catalog-action-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
                 onClick={() => {
                   setShowFilterDropdown((current) => !current);
                   setShowSortDropdown(false);
@@ -246,12 +237,12 @@ function RankingConsultores() {
               </button>
 
               {showFilterDropdown && (
-                <div className="catalog-dropdown-menu" role="menu" aria-label="Filtrar por service line">
+                <div className="dropdown-menu" role="menu" aria-label="Filtrar por service line">
                   {serviceLineOptions.map((option) => (
                     <button
                       key={option}
                       type="button"
-                      className={`catalog-dropdown-item ${activeServiceLine === option ? 'active' : ''}`}
+                      className={`dropdown-item ${activeServiceLine === option ? 'active' : ''}`}
                       onClick={() => onFilterSelect(option)}
                     >
                       {option === 'all' ? 'Todas as Service Lines' : option}
@@ -264,7 +255,7 @@ function RankingConsultores() {
             <div className="catalog-dropdown" ref={sortDropdownRef}>
               <button
                 type="button"
-                className={`catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                className={`action-btn catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
                 onClick={() => {
                   setShowSortDropdown((current) => !current);
                   setShowFilterDropdown(false);
@@ -275,12 +266,12 @@ function RankingConsultores() {
               </button>
 
               {showSortDropdown && (
-                <div className="catalog-dropdown-menu" role="menu" aria-label="Ordenar ranking">
+                <div className="dropdown-menu" role="menu" aria-label="Ordenar ranking">
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
                       type="button"
-                      className={`catalog-dropdown-item ${sortBy === option.id ? 'active' : ''}`}
+                      className={`dropdown-item ${sortBy === option.id ? 'active' : ''}`}
                       onClick={() => onSortSelect(option.id)}
                     >
                       {option.label}
@@ -310,7 +301,7 @@ function RankingConsultores() {
                     src={buildAvatarUrl(consultant)}
                     alt={consultant.name}
                     onError={(event) => {
-                      event.currentTarget.src = `https://i.pravatar.cc/120?u=${encodeURIComponent(consultant.email || consultant.name || consultant.id)}`;
+                      event.currentTarget.src = `/avatars/default-avatar.svg`;
                     }}
                   />
 
@@ -338,29 +329,10 @@ function RankingConsultores() {
           </div>
 
           {sortedConsultants.length === 0 && (
-            <div className="ranking-empty-state">Nao ha consultores para os filtros escolhidos.</div>
+            <div className="empty-state ranking-empty-state">Nao ha consultores para os filtros escolhidos.</div>
           )}
 
-          <div className="ranking-pagination" role="navigation" aria-label="Paginacao de ranking">
-            <button type="button" className="ranking-page-btn ghost" onClick={previousPage} disabled={page === 1}>
-              <ChevronLeft size={16} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`ranking-page-btn ${pageNumber === page ? 'active' : ''}`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button type="button" className="ranking-page-btn ghost" onClick={nextPage} disabled={page === totalPages}>
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
         </section>
       </div>
     </Layout>

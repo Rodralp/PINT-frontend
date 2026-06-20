@@ -1,6 +1,11 @@
 import './css/App.css'
-import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import './translations/i18n'
+import { loginAccount } from './services/authService'
+
+// Remove Bitwarden notification bar if present.
+document.querySelectorAll('#bit-notification-bar').forEach((el) => el.remove());
 import LandingPage from './LandingPage'
 import GaleriaPublica from './GaleriaPublica'
 import BadgePublica from './BadgePublica'
@@ -46,9 +51,81 @@ import Preferencias from './pages/Consultor/Preferencias'
 import ConsultorPreferencesGuard from './components/ConsultorPreferencesGuard'
 import Definicoes from './pages/Definicoes'
 
+const DASHBOARD_PATH_BY_ROLE = {
+  consultor: '/consultor/dashboard',
+  'talent-manager': '/talent-manager/dashboard',
+  'service-line-leader': '/service-line-leader/dashboard',
+  'admin-gestor': '/admin-gestor/dashboard',
+};
+
+const DADOS_LOGIN_KEY = 'dadosLogin';
+const INICIAR_AUTO_KEY = 'iniciarAuto';
+
+const normalizeRoles = (rolesValue) => {
+  const rawRoles = Array.isArray(rolesValue) ? rolesValue : typeof rolesValue === 'string' ? rolesValue.split(';') : [];
+  const parsed = rawRoles.map((r) => String(r).trim().toLowerCase()).filter(Boolean);
+  return parsed.length > 0 ? [...new Set(parsed)] : ['consultor'];
+};
+
+function AutoLoginRedirect() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const PUBLIC_PATHS = ['/', '/entrar', '/criar', '/galeria-publica'];
+    const isPublic = PUBLIC_PATHS.some((p) => location.pathname === p || location.pathname.startsWith('/galeria-publica'));
+    if (!isPublic) return;
+
+    try {
+      const raw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data?.token) {
+          const path = DASHBOARD_PATH_BY_ROLE[data.role] || '/consultor/dashboard';
+          window.location.replace(path);
+          return;
+        }
+      }
+    } catch { /* ignore */ }
+
+    if (localStorage.getItem(INICIAR_AUTO_KEY) === '1') {
+      try {
+        const dadosRaw = localStorage.getItem(DADOS_LOGIN_KEY);
+        if (!dadosRaw) return;
+        const dados = JSON.parse(dadosRaw);
+        if (!dados?.email || !dados?.senha) return;
+
+        loginAccount({ email: dados.email, senha: dados.senha })
+          .then((account) => {
+            const roles = normalizeRoles(account.roles ?? account.role);
+            const hasPreferences = Boolean(account.hasPreferences);
+            const loginData = {
+              id: account.id,
+              nome: account.nome,
+              email: account.email,
+              role: roles[0],
+              roles,
+              status: account.status,
+              hasPreferences,
+              token: account.token,
+              guardarDados: true,
+            };
+            localStorage.setItem('loginData', JSON.stringify(loginData));
+            sessionStorage.setItem('loginData', JSON.stringify(loginData));
+            const path = DASHBOARD_PATH_BY_ROLE[roles[0]] || '/consultor/dashboard';
+            window.location.replace(path);
+          })
+          .catch(() => {});
+      } catch { /* ignore */ }
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <AutoLoginRedirect />
       <Routes>
         <Route path='/' element={<LandingPage />} />
         <Route path='/galeria-publica' element={<GaleriaPublica />} />

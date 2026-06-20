@@ -25,7 +25,19 @@ import {
   Star,
   Zap
 } from 'lucide-react';
-import { fetchProfileData } from '../services/consultorService';
+import { fetchMyBadges, fetchProfileData } from '../services/consultorService';
+import apiClient from '../services/apiClient';
+import BadgeImage from '../components/BadgeImage';
+
+const normalizeLevelId = (level) => {
+  const normalized = String(level || '').trim().toLowerCase();
+  if (normalized.includes('júnior') || normalized.includes('junior')) return 'junior';
+  if (normalized.includes('intermédio') || normalized.includes('intermedio')) return 'intermediate';
+  if (normalized.includes('sénior') || normalized.includes('senior')) return 'senior';
+  if (normalized.includes('especialista')) return 'specialist';
+  if (normalized.includes('líder') || normalized.includes('lider')) return 'knowledge_lead';
+  return null;
+};
 import '../css/Consultor/Dashboard_C.css';
 import '../css/profile.css';
 
@@ -78,6 +90,8 @@ function Profile() {
   const [certificationsItems, setCertificationsItems] = useState(defaultCertificationsItems);
   const [activityItems, setActivityItems] = useState(defaultActivityItems);
   const [serviceLineStats, setServiceLineStats] = useState([]);
+  const [badgeItems, setBadgeItems] = useState([]);
+  const [vitrineItems, setVitrineItems] = useState([]);
   const [profileLocation, setProfileLocation] = useState('Portugal');
   const [profileJoined, setProfileJoined] = useState('2023');
   const [statusMessage, setStatusMessage] = useState('');
@@ -87,7 +101,7 @@ function Profile() {
   const userEmail = loginData?.email || 'user@example.com';
 
   const initialSeed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
-  const initialAvatar = loginData?.avatar || `https://i.pravatar.cc/120?u=${encodeURIComponent(initialSeed)}`;
+  const initialAvatar = loginData?.avatar || `/avatars/default-avatar.svg`;
 
   const [profileAvatar, setProfileAvatar] = useState(initialAvatar);
 
@@ -138,15 +152,69 @@ function Profile() {
           setProfileJoined(data.joined);
         }
 
-        if (typeof data.avatar === 'string' && data.avatar) {
-          setProfileAvatar(data.avatar);
-        }
-
         setStatusMessage('');
       } catch {
         if (isMounted) {
           setStatusMessage('');
         }
+      }
+
+      try {
+        const badges = await fetchMyBadges();
+        if (isMounted && Array.isArray(badges)) {
+          setBadgeItems(badges.filter((b) => b.status === 'obtido'));
+        }
+      } catch {
+        // silencioso
+      }
+
+      try {
+        const imgRes = await apiClient.get('/consultor/user-image', { params: { accountId: loginData?.id } });
+        if (isMounted && imgRes.data?.image) {
+          setProfileAvatar(imgRes.data.image);
+          try {
+            const raw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              parsed.avatar = imgRes.data.image;
+              const key = sessionStorage.getItem('loginData') ? 'sessionStorage' : 'localStorage';
+              if (key === 'sessionStorage') {
+                sessionStorage.setItem('loginData', JSON.stringify(parsed));
+              } else {
+                localStorage.setItem('loginData', JSON.stringify(parsed));
+              }
+            }
+          } catch { /* ignore */ }
+        }
+      } catch {
+        // no image stored
+      }
+
+      try {
+        const vitrineRes = await apiClient.get('/consultor/vitrine', { params: { accountId: loginData?.id } });
+        if (isMounted && Array.isArray(vitrineRes.data) && vitrineRes.data.length > 0) {
+          const mapped = vitrineRes.data.map((v) => {
+            const isSpecial = v.tipo === 'Especial';
+            const resolvedLevelId = isSpecial ? 'special' : normalizeLevelId(v.nivel);
+            const typeId = resolvedLevelId
+              ? (resolvedLevelId === 'special' ? 'special' : `badge_level_${resolvedLevelId}`)
+              : undefined;
+            return {
+              id: `vitrine-${v.nbadge}`,
+              badgeDbId: v.nbadge,
+              name: v.b_nome || 'Badge',
+              badgeImage: v.imagem || '/badges/default.png',
+              points: v.pontos || 0,
+              isSpecial,
+              levelKey: resolvedLevelId || undefined,
+              typeId,
+              levelLabel: v.nivel || (isSpecial ? 'Especial' : undefined),
+            };
+          });
+          setVitrineItems(mapped);
+        }
+      } catch {
+        // fallback for users without vitrine
       }
     };
 
@@ -188,7 +256,7 @@ function Profile() {
               <button className="profile-home-btn" onClick={() => navigate(`/galeria-publica/consultor/${encodeURIComponent(loginData?.id)}`)}>
                 {t('profile_pub')}
               </button>
-              <button className="profile-edit-btn">
+              <button className="profile-edit-btn" onClick={() => navigate('/profile/edit')}>
                 <Edit3 size={18} /> {t('profile_edit')}
               </button>
             </div>
@@ -255,30 +323,37 @@ function Profile() {
               </a>
             </div>
 
-            <div className="dashboard-list">
+            <div className="dashboard-list-compact">
               {Array.isArray(serviceLineStats) && serviceLineStats.length > 0 ? (
                 (() => {
-                  const maxBadges = Math.max(...serviceLineStats.map((s) => s.badges || 0), 1);
-                  return serviceLineStats.map((stat) => {
+                  const filteredStats = serviceLineStats.filter((s) => (s.badges || 0) > 0);
+                  if (filteredStats.length === 0) {
+                    return <p className="badge-admin-muted">{t('no_skills') || 'Nenhuma habilidade para mostrar.'}</p>;
+                  }
+                  const maxBadges = Math.max(...filteredStats.map((s) => s.badges || 0), 1);
+                  return filteredStats.slice(0, 3).map((stat) => {
                     const percentage = ((stat.badges || 0) / maxBadges) * 100;
                     return (
-                      <article key={`sl-${stat.serviceLine}`} className="pp-service-line-item">
-                        <div className="pp-service-line-header">
+                      <div key={`sl-${stat.serviceLine}`} className="dashboard-list-item-compact" style={{ flexDirection: 'column', alignItems: 'stretch', padding: '0.5rem 0.2rem' }}>
+                        <div className="pp-service-line-header" style={{ width: '100%' }}>
                           <strong>{stat.serviceLine}</strong>
                           <span className="pp-service-line-meta">
                             {stat.badges} {t('badges')} · {stat.points} {t('points')}
                           </span>
                         </div>
-                        <div className="pp-progress-bar-bg">
+                        <div className="pp-progress-bar-bg" style={{ width: '100%' }}>
                           <div style={{ width: `${percentage}%` }} className="pp-progress-bar-fill" />
                         </div>
-                      </article>
+                      </div>
                     );
                   });
                 })()
               ) : (
-                skillsItems.map(({ title, subtitleKey, accent }) => (
-                  <article key={`${title}-${subtitleKey}`} className="dashboard-list-item">
+                skillsItems
+                  .filter((s) => s.visible !== false)
+                  .slice(0, 3)
+                  .map(({ title, subtitleKey, accent }) => (
+                  <div key={`${title}-${subtitleKey}`} className="dashboard-list-item-compact">
                     <div className={`dashboard-list-badge accent-${accent}`}>
                       <Award size={18} strokeWidth={2} />
                     </div>
@@ -287,7 +362,7 @@ function Profile() {
                       <span>{t(subtitleKey)}</span>
                     </div>
                     <ChevronsRight className="dashboard-item-chevron" size={18} />
-                  </article>
+                  </div>
                 ))
               )}
             </div>
@@ -295,8 +370,8 @@ function Profile() {
 
           <section className="dashboard-card dashboard-panel-card">
             <div className="dashboard-panel-header">
-              <h2>{t('profile_certifications')}</h2>
-              <a href="#ver-todos-certificacoes" onClick={(event) => {
+              <h2>Vitrine</h2>
+              <a href="#ver-todos-badges" onClick={(event) => {
                 event.preventDefault();
                 setIsCertificationsModalOpen(true);
               }}>
@@ -304,19 +379,24 @@ function Profile() {
               </a>
             </div>
 
-            <div className="dashboard-list">
-              {certificationsItems.map(({ title, subtitleKey, accent }) => (
-                <article key={`${title}-${subtitleKey}`} className="dashboard-list-item">
-                  <div className={`dashboard-list-badge accent-${accent}`}>
-                    <GraduationCap size={18} strokeWidth={2} />
-                  </div>
-                  <div className="dashboard-list-content">
-                    <strong>{title}</strong>
-                    <span>{t(subtitleKey)}</span>
-                  </div>
-                  <ChevronsRight className="dashboard-item-chevron" size={18} />
-                </article>
+            <div className="vitrine-grid">
+              {(vitrineItems.length > 0 ? vitrineItems : badgeItems.slice(0, 8)).map((badge) => (
+                <div key={badge.id} className="vitrine-item" title={badge.name || badge.area}>
+                  <BadgeImage
+                    className="vitrine-badge-image"
+                    src={badge.badgeImage}
+                    alt={badge.name || badge.area || 'Badge'}
+                    frameSrc={badge.badgeFrameImage}
+                    levelKey={badge.levelKey || (badge.isSpecial ? 'special' : undefined)}
+                    typeId={badge.typeId || (badge.isSpecial ? 'special' : undefined)}
+                    levelLabel={badge.levelLabel}
+                  />
+                  <span className="vitrine-badge-name">{badge.name || badge.area}</span>
+                </div>
               ))}
+              {vitrineItems.length === 0 && badgeItems.length === 0 && (
+                <p className="badge-admin-muted">{t('no_certifications') || 'Nenhum badge obtido.'}</p>
+              )}
             </div>
           </section>
         </div>
@@ -350,10 +430,11 @@ function Profile() {
         isOpen={isSkillsModalOpen}
         onClose={() => setIsSkillsModalOpen(false)}
         title={t('profile_skills')}
-        items={Array.isArray(serviceLineStats) && serviceLineStats.length > 0 ? serviceLineStats : skillsItems}
+        items={Array.isArray(serviceLineStats) && serviceLineStats.length > 0 ? serviceLineStats.filter((s) => (s.badges || 0) > 0) : skillsItems.filter((s) => s.visible !== false)}
         renderItem={(item) => {
           if (Array.isArray(serviceLineStats) && serviceLineStats.length > 0) {
-            const maxBadges = Math.max(...serviceLineStats.map((s) => s.badges || 0), 1);
+            const filteredStats = serviceLineStats.filter((s) => (s.badges || 0) > 0);
+            const maxBadges = filteredStats.length > 0 ? Math.max(...filteredStats.map((s) => s.badges || 0), 1) : 1;
             const percentage = ((item.badges || 0) / maxBadges) * 100;
             return (
               <article className="pp-service-line-item">
@@ -389,21 +470,30 @@ function Profile() {
       <SeeMore_PopUp
         isOpen={isCertificationsModalOpen}
         onClose={() => setIsCertificationsModalOpen(false)}
-        title={t('profile_certifications')}
-        items={certificationsItems}
-        renderItem={(item) => (
-          <article className="dashboard-list-item">
-            <div className={`dashboard-list-badge accent-${item.accent}`}>
-              <GraduationCap size={18} strokeWidth={2} />
+        title="Vitrine"
+        items={vitrineItems.length > 0 ? vitrineItems : badgeItems}
+        renderItem={(badge) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 48, height: 48, flexShrink: 0 }}>
+              <BadgeImage
+                className="vitrine-badge-image"
+                src={badge.badgeImage}
+                alt={badge.name || badge.area || 'Badge'}
+                frameSrc={badge.badgeFrameImage}
+                levelKey={badge.levelKey || (badge.isSpecial ? 'special' : undefined)}
+                typeId={badge.typeId || (badge.isSpecial ? 'special' : undefined)}
+                levelLabel={badge.levelLabel}
+              />
             </div>
-            <div className="dashboard-list-content">
-              <strong>{item.title}</strong>
-              <span>{t(item.subtitleKey)}</span>
+            <div>
+              <strong>{badge.name || badge.area || 'Badge'}</strong>
+              <span style={{ display: 'block', fontSize: 13, color: '#6b7280' }}>
+                {badge.points} pts
+              </span>
             </div>
-            <ChevronsRight className="dashboard-item-chevron" size={18} />
-          </article>
+          </div>
         )}
-        emptyMessage={t('no_certifications', 'Nenhuma certificação para mostrar.')}
+        emptyMessage="Nenhum badge obtido."
       />
     </Layout>
   );

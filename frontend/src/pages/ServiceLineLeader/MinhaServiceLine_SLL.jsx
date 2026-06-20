@@ -91,8 +91,8 @@ function MinhaServiceLineSLL() {
 
   return (
     <Layout>
-      <div className="learning-paths-page is-classic">
-        <header className="lp-header">
+      <div className="page learning-paths-page is-classic">
+        <header className="page-header lp-header">
           <div className="lp-header-left">
             <div className="lp-header-copy">
               <h1>Minha Service Line</h1>

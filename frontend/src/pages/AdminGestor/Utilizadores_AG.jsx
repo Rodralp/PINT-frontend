@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Search, ShieldCheck, UserPlus2, X } from 'lucide-react';
 import Layout from '../../components/Layout';
+import Pagination from '../../components/Pagination';
 import '../../css/AdminGestor/Utilizadores_AG.css';
 import {
   createAdminUser,
@@ -43,9 +44,9 @@ const toRoleLabel = (roles) => {
   return list.map((role) => roleLabels[role] || role).join(' + ');
 };
 
-const toAvatar = (seed) => {
-  const normalizedSeed = String(seed || 'user').toLowerCase().replace('@', '.');
-  return `https://i.pravatar.cc/120?u=${encodeURIComponent(normalizedSeed)}`;
+const toAvatar = (user) => {
+  if (user?.avatar) return user.avatar;
+  return '/avatars/default-avatar.svg';
 };
 
 const DEFAULT_ROLE = 'consultor';
@@ -517,36 +518,36 @@ function UtilizadoresAG() {
 
   return (
     <Layout>
-      <div className="ag-users-page">
-        <header className="ag-users-header">
+      <div className="page">
+        <header className="page-header">
           <h1>Utilizadores</h1>
         </header>
 
-        <section className="ag-users-card">
-          <div className="ag-users-tabs" role="tablist" aria-label="Separadores de utilizadores">
-            <button
-              type="button"
-              role="tab"
-              className={`ag-users-tab ${activeTab === 'users' ? 'active' : ''}`}
-              aria-selected={activeTab === 'users'}
-              onClick={() => setActiveTab('users')}
-            >
-              Utilizadores
-            </button>
-            <button
-              type="button"
-              role="tab"
-              className={`ag-users-tab ${activeTab === 'pending' ? 'active' : ''}`}
-              aria-selected={activeTab === 'pending'}
-              onClick={() => setActiveTab('pending')}
-            >
-              Pedidos Pendentes
-              <span className="ag-users-tab-badge">{pendingCount}</span>
-            </button>
-          </div>
+        <div className="ag-users-tabs" role="tablist" aria-label="Separadores de utilizadores">
+          <button
+            type="button"
+            role="tab"
+            className={`ag-users-tab ${activeTab === 'users' ? 'active' : ''}`}
+            aria-selected={activeTab === 'users'}
+            onClick={() => setActiveTab('users')}
+          >
+            Utilizadores
+          </button>
+          <button
+            type="button"
+            role="tab"
+            className={`ag-users-tab ${activeTab === 'pending' ? 'active' : ''}`}
+            aria-selected={activeTab === 'pending'}
+            onClick={() => setActiveTab('pending')}
+          >
+            Pedidos Pendentes
+            {pendingCount > 0 && <span className="ag-users-tab-badge">{pendingCount}</span>}
+          </button>
+        </div>
 
-          <div className="ag-users-toolbar">
-            <label className="ag-users-search" htmlFor="ag-users-search-input">
+        <section className="shell">
+          <div className="toolbar ag-users-toolbar">
+            <label className="search-wrap ag-users-search" htmlFor="ag-users-search-input">
               <Search size={18} />
               <input
                 id="ag-users-search-input"
@@ -592,8 +593,8 @@ function UtilizadoresAG() {
             </p>
           )}
 
-          <div className="ag-users-table-wrap">
-            <table className="ag-users-table">
+          <div className="table-wrap">
+            <table className="table">
               <thead>
                 {activeTab === 'users' ? (
                   <tr>
@@ -617,7 +618,7 @@ function UtilizadoresAG() {
               <tbody>
                 {isLoading && (
                   <tr>
-                    <td className="ag-users-empty" colSpan={activeTab === 'users' ? 7 : 3}>
+                    <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
                       A carregar...
                     </td>
                   </tr>
@@ -625,7 +626,7 @@ function UtilizadoresAG() {
 
                 {!isLoading && pagedUsers.length === 0 && (
                   <tr>
-                    <td className="ag-users-empty" colSpan={activeTab === 'users' ? 7 : 3}>
+                    <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
                       Sem resultados.
                     </td>
                   </tr>
@@ -637,7 +638,7 @@ function UtilizadoresAG() {
                       <tr key={user.id}>
                         <td>
                           <div className="ag-users-name-cell">
-                            <img src={toAvatar(user.email)} alt={user.nome} />
+                            <img src={toAvatar(user)} alt={user.nome} />
                             <div>
                               <strong>{user.nome}</strong>
                               <span>{user.email}</span>
@@ -679,7 +680,7 @@ function UtilizadoresAG() {
                       <tr key={user.id}>
                         <td>
                           <div className="ag-users-name-cell">
-                            <img src={toAvatar(user.email)} alt={user.nome} />
+                            <img src={toAvatar(user)} alt={user.nome} />
                             <div>
                               <strong>{user.nome}</strong>
                               <span>{user.email}</span>
@@ -712,34 +713,7 @@ function UtilizadoresAG() {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <footer className="ag-users-pagination">
-              <button
-                type="button"
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-                disabled={page <= 1}
-              >
-                &lt;
-              </button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  type="button"
-                  onClick={() => setPage(pageNum)}
-                  className={page === pageNum ? 'current' : ''}
-                >
-                  {pageNum}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-                disabled={page >= totalPages}
-              >
-                &gt;
-              </button>
-            </footer>
-          )}
+          {totalPages > 1 && <Pagination page={page} totalPages={totalPages} setPage={setPage} />}
         </section>
 
         {showCreateModal && (

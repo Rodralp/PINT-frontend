@@ -31,6 +31,7 @@ const sanitizeAccount = (account) => {
     roles,
     status: account.status || DEFAULT_STATUS,
     hasPreferences: Boolean(account.hasPreferences),
+    token: account.token || null,
   };
 };
 

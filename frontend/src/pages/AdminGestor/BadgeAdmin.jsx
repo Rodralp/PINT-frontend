@@ -620,15 +620,14 @@ function BadgeAdmin() {
 
   return (
     <Layout>
-      <div className="badge-admin-page">
-        <header className="badge-admin-header">
+      <div className="page">
+        <header className="page-header">
           <button type="button" className="badge-admin-back" onClick={handleBack}>
             <ChevronLeft size={18} />
           </button>
 
-          <div className="badge-admin-title">
-            <p>{isCreate ? 'Criar badge' : 'Editar badge'}</p>
-            <h1>{form.name || 'Badge'}</h1>
+          <div>
+            <h1>{isCreate ? 'Criar badge' : 'Editar badge'}</h1>
           </div>
 
           <div className="badge-admin-actions">

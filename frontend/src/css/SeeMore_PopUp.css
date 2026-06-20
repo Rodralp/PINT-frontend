@@ -8,14 +8,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: var(--sp-4);
 }
 
 .seemore-modal {
   width: min(100%, 620px);
   max-height: 80vh;
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: var(--radius-2xl);
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.25);
   display: flex;
   flex-direction: column;
@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 24px 16px;
+  padding: var(--sp-5) var(--sp-6) var(--sp-4);
   border-bottom: 1px solid rgba(148, 163, 184, 0.12);
   flex-shrink: 0;
 }
@@ -33,7 +33,7 @@
 .seemore-modal-header h2 {
   margin: 0;
   color: #2f3747;
-  font-size: 24px;
+  font-size: var(--fs-3xl);
   font-weight: 700;
 }
 
@@ -46,7 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -59,7 +59,7 @@
 .seemore-modal-content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 24px;
+  padding: var(--sp-4) var(--sp-6);
 }
 
 .seemore-list {
@@ -69,16 +69,13 @@
 }
 
 .seemore-list-item {
-  border-radius: 12px;
-  border: 1px solid #e6ebf2;
-  background: #f9fbfe;
-  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  padding: var(--sp-1) var(--sp-3);
   transition: background 0.2s;
 }
 
 .seemore-list-item:hover {
   background: #f2f7fd;
-  border-color: #d5deea;
 }
 
 .seemore-empty-state {
@@ -87,7 +84,7 @@
   justify-content: center;
   min-height: 200px;
   color: #626f86;
-  font-size: 14px;
+  font-size: var(--fs-base);
   text-align: center;
 }
 
@@ -102,7 +99,7 @@
 
 .seemore-modal-content::-webkit-scrollbar-thumb {
   background: #d5deea;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
 }
 
 .seemore-modal-content::-webkit-scrollbar-thumb:hover {
@@ -117,14 +114,14 @@
   }
 
   .seemore-modal-header h2 {
-    font-size: 20px;
+    font-size: var(--fs-2xl);
   }
 
   .seemore-modal-content {
-    padding: 12px 16px;
+    padding: var(--sp-3) var(--sp-4);
   }
 
   .seemore-list-item {
-    padding: 10px 12px;
+    padding: var(--sp-3) var(--sp-3);
   }
 }

@@ -13,6 +13,10 @@
   font-size: 14px;
 }
 
+.shell {
+  border-radius: var(--radius-4xl) !important;
+}
+
 .historico-page .tm-export-shell {
   border-radius: 20px;
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -138,26 +142,6 @@
   font-size: 15px;
   color: #1f2a37;
   font-weight: 700;
-}
-
-.historico-page .orders-pagination {
-  margin-top: 16px;
-}
-
-.historico-page .orders-page-btn {
-  border: 1px solid #d0deee;
-  background: #f4f8fd;
-  color: #4d637f;
-}
-
-.historico-page .orders-page-btn.active {
-  background: #1676cc;
-  border-color: #1676cc;
-  color: #ffffff;
-}
-
-.historico-page .orders-page-btn.ghost {
-  background: #ffffff;
 }
 
 /* Base modal overlay */

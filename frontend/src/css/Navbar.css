@@ -1,7 +1,7 @@
 /* Navbar */
 
 .main-navbar {
-  padding: 0 12px !important;
+  padding: 0 var(--sp-3) !important;
 }
 
 .main-navbar .container-fluid {
@@ -19,96 +19,16 @@
   margin-left: auto;
 }
 
-.lp-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.lp-navbar-logo {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.lp-navbar-logo:hover {
-  opacity: 0.8;
-}
-
-.lp-logo-img {
-  height: 45px;
-  object-fit: contain;
-}
-
-.lp-navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.lp-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-  color: #333;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.lp-nav-link:hover {
-  color: #0088FF;
-}
-
-.lp-link-icon {
-  font-size: 0.85rem;
-  opacity: 0.7;
-}
-
-/* Buttons */
-.lp-btn {
-  padding: 8px 22px;
-  border-radius: 100px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: opacity 0.2s, transform 0.1s;
-}
-
-.lp-btn:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
-}
-
-.lp-btn-entrar {
-  background: #0088FF;
-  color: white;
-}
-
 /* Language Dropdown */
 .navbar-lang-dropdown-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  margin-left: 12px;
+  margin-left: var(--sp-3);
 }
 
 .navbar-lang-btn {
-  padding: 8px 0 !important;
+  padding: var(--sp-2) 0 !important;
 }
 
 .navbar-lang-dropdown-mobile {
@@ -122,7 +42,7 @@
   background: white;
   border: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: fit-content;
   min-width: max-content;
@@ -138,9 +58,9 @@
     overflow-y: auto;
     border: none;
     border-top: 1px solid #ddd;
-    border-radius: 0 0 0 12px;
+    border-radius: 0 0 0 var(--radius-xl);
     box-shadow: none;
-    margin-top: 10px;
+    margin-top: var(--sp-2);
     min-width: auto;
   }
 
@@ -165,24 +85,24 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 10px 14px;
+  padding: var(--sp-2) var(--sp-3);
   background: none;
   border: none;
   text-align: left;
   white-space: nowrap;
   color: #333;
-  font-size: 0.875rem;
+  font-size: var(--fs-base);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .navbar-lang-option:first-child {
-  border-radius: 5px 5px 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
 .navbar-lang-option:last-child {
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 }
 
 .navbar-lang-option:hover {
@@ -198,7 +118,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: var(--fs-xl);
   line-height: 1;
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Symbol", sans-serif;
 }
@@ -207,7 +127,7 @@
   width: 20px;
   height: 14px;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   display: inline-block;
   flex-shrink: 0;
 }
@@ -233,12 +153,12 @@
   }
 
   .navbar-lang-option {
-    padding: 10px 12px;
-    font-size: 0.875rem;
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--fs-base);
   }
 
   .lang-flag {
-    font-size: 1rem;
+    font-size: var(--fs-lg);
   }
 
   .lang-flag-img {
@@ -259,29 +179,10 @@
   }
 }
 
-.lp-btn-registar {
-  background: #0a0a0a;
-  color: white;
-}
-
-.lp-lang {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  color: #333;
-  cursor: pointer;
-  user-select: none;
-}
-
-.lp-lang-icon {
-  font-size: 1rem;
-}
-
 /* Responsivo */
 @media (max-width: 768px) {
   .main-navbar {
-    padding: 0 12px !important;
+    padding: 0 var(--sp-3) !important;
   }
 
   .main-navbar .navbar-brand {
@@ -294,7 +195,7 @@
   }
 
   .main-navbar .navbar-toggler {
-    padding: 0.25rem 0.35rem !important;
+    padding: var(--sp-1) var(--sp-1) !important;
     margin-left: auto;
     margin-right: 0;
   }
@@ -308,8 +209,8 @@
     min-width: 0;
     max-width: calc(100vw - 8px);
     margin-top: 0 !important;
-    padding: 10px 12px;
-    border-radius: 0 0 0 12px;
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: 0 0 0 var(--radius-xl);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     z-index: 101;
     background: #fff;

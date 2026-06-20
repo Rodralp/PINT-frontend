@@ -324,11 +324,11 @@ function DashboardC() {
             </div>
 
             <div className="dashboard-list">
-              {inProgressItems.map((item) => {
+              {inProgressItems.map((item, index) => {
                 const ProgressIcon = item.icon;
 
                 return (
-                  <article key={`${item.title}-${item.subtitleKey}`} className="dashboard-list-item">
+                  <article key={`${item.title}-${index}`} className="dashboard-list-item">
                     <div className={`dashboard-list-badge accent-${item.accent}`}>
                     <Sparkles size={18} strokeWidth={2} />
                   </div>
@@ -360,8 +360,8 @@ function DashboardC() {
             </div>
 
             <div className="dashboard-list dashboard-suggestions-list">
-              {suggestionItems.map(({ title, subtitleKey, accent }) => (
-                <article key={`${title}-${subtitleKey}`} className="dashboard-list-item dashboard-suggestion-item">
+              {suggestionItems.map(({ title, subtitleKey, accent }, index) => (
+                <article key={`${title}-${index}`} className="dashboard-list-item dashboard-suggestion-item">
                   <div className={`dashboard-list-badge accent-${accent}`}>
                     <GraduationCap size={18} strokeWidth={2} />
                   </div>
