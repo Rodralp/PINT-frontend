@@ -1,6 +1,0 @@
-/* App-level styles placeholder. */
-
-/* Hide Bitwarden notification bar injected by browser extension */
-#bit-notification-bar {
-  display: none !important;
-}
