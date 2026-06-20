@@ -1,0 +1,838 @@
+.sll-orders-page,
+.sll-order-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sll-orders-header,
+.sll-order-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sll-orders-header h1,
+.sll-order-detail-header h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.sll-orders-back-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #344054;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.sll-orders-back-btn:hover {
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.sll-orders-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sll-request-card {
+  min-height: 88px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.sll-request-card-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sll-request-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  align-items: flex-end;
+}
+
+.sll-request-card-content span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sll-request-card-content strong {
+  font-size: 30px;
+  line-height: 1;
+  color: #111827;
+}
+
+.sll-request-card.blue {
+  border-color: #1b84f4;
+  background: rgba(27, 132, 244, 0.14);
+  color: #1b84f4;
+}
+
+.sll-request-card.gray {
+  border-color: #d1d5db;
+  background: #f3f4f6;
+  color: #64748b;
+}
+
+.sll-request-card.amber {
+  border-color: #f4b400;
+  background: rgba(244, 180, 0, 0.16);
+  color: #c68b00;
+}
+
+.sll-request-card.red {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.16);
+  color: #de2015;
+}
+
+.sll-request-card.green {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.16);
+  color: #16a34a;
+}
+
+.sll-orders-main-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 10px 30px rgba(15, 23, 42, 0.04);
+  padding: 18px;
+}
+
+.sll-orders-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sll-orders-board-header h2 {
+  margin: 0;
+  color: #2f3747;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sll-orders-board-header p {
+  margin: 0;
+  color: #8b94a4;
+  font-size: 14px;
+}
+
+.sll-orders-filter-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sll-orders-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sll-filter-chip {
+  border: none;
+  border-radius: 999px;
+  height: 30px;
+  padding: 0 12px;
+  background: #edf1f6;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sll-filter-chip.aprovado.active {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.sll-filter-chip.pendente.active {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.sll-filter-chip.rejeitado.active {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.sll-filter-chip.inactive {
+  opacity: 0.75;
+}
+
+.sll-orders-table-wrap {
+  overflow-x: auto;
+}
+
+.sll-orders-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+}
+
+.sll-orders-table th {
+  text-transform: uppercase;
+  color: #8290a3;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  letter-spacing: 0.03em;
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.sll-orders-table th.sortable {
+  cursor: pointer;
+}
+
+.sll-orders-sort-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sll-orders-table td {
+  color: #4b5563;
+  font-size: 14px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f4f8;
+}
+
+.sll-orders-empty-row {
+  text-align: center;
+  color: #7a869b;
+  font-size: 14px;
+  padding: 20px 12px;
+}
+
+.sll-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  height: 26px;
+  border-radius: 999px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sll-status-pill.approved {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.sll-status-pill.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.sll-status-pill.rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.sll-view-btn {
+  width: 96px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid #4b5563;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sll-view-btn:hover {
+  background: #f8fafc;
+}
+
+.sll-order-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 18px;
+  align-items: start;
+}
+
+.sll-order-hero-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sll-order-hero-card,
+.sll-order-review-card,
+.sll-order-verdict-card,
+.sll-order-requirements-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.sll-order-hero-card {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+}
+
+.sll-order-badge-frame {
+  width: 190px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sll-order-badge-image {
+  width: 170px;
+  height: 150px;
+  object-fit: contain;
+}
+
+.sll-order-hero-content h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.sll-order-hero-content p {
+  margin: 8px 0 10px;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #374151;
+}
+
+.sll-order-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #8b94a4;
+  font-size: 13px;
+}
+
+.sll-order-hero-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sll-order-hero-meta strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.sll-order-status-banner {
+  margin-top: 12px;
+  min-height: 34px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sll-order-status-banner.validacao {
+  border-color: #f4b400;
+  background: rgba(244, 180, 0, 0.16);
+  color: #c68b00;
+}
+
+.sll-order-status-banner.rejeitado {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.16);
+  color: #de2015;
+}
+
+.sll-order-status-banner.aprovado {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.16);
+  color: #16a34a;
+}
+
+.sll-order-breadcrumb {
+  margin: 0;
+  color: #9aa3b2;
+  font-size: 13px;
+}
+
+.sll-order-requirements-card {
+  padding: 18px;
+}
+
+.sll-order-requirements-card h3 {
+  margin: 0 0 14px;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sll-order-requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sll-order-requirement-item {
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.sll-order-requirement-item.is-open {
+  padding-bottom: 12px;
+}
+
+.sll-order-requirement-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sll-order-requirement-head p {
+  margin: 0;
+  color: #2f3747;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.sll-order-requirement-head span {
+  display: block;
+  margin-top: 6px;
+  color: #9aa3b2;
+  font-size: 13px;
+}
+
+.sll-order-requirement-view-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sll-order-requirement-view-btn:hover {
+  background: #f1f5f9;
+}
+
+.sll-order-requirement-detail {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #e8edf4;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sll-order-requirement-detail-media {
+  width: 140px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sll-order-requirement-detail-image {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+}
+
+.sll-order-requirement-detail p {
+  margin: 0;
+  color: #637085;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sll-order-requirement-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sll-order-requirement-files-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sll-order-requirement-files-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #2f3747;
+  font-size: 13px;
+}
+
+.sll-order-file-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sll-order-file-main span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sll-order-file-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.sll-order-file-download-btn {
+  height: 30px;
+  border: 1px solid #dbe4f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+.sll-order-file-download-btn:hover {
+  background: #f8fafc;
+}
+
+.sll-order-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.sll-order-review-card,
+.sll-order-verdict-card {
+  padding: 18px;
+}
+
+.sll-order-review-card h3,
+.sll-order-verdict-card h3 {
+  margin: 0 0 12px;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sll-order-subtitle {
+  margin-top: 16px !important;
+}
+
+.sll-order-person-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sll-order-person-card.compact {
+  align-items: flex-start;
+}
+
+.sll-order-person-card.final {
+  margin-top: 16px;
+}
+
+.sll-order-person-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
+.sll-order-person-card strong {
+  display: block;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.sll-order-person-card span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: #8b94a4;
+  font-size: 12px;
+}
+
+.sll-order-note {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sll-order-verdict-option {
+  width: 100%;
+  height: 44px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #e6ebf2;
+  background: #ffffff;
+  color: #2f3747;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  font-size: 16px;
+  text-align: left;
+}
+
+.sll-order-verdict-option.active {
+  border-color: #1b84f4;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.sll-order-verdict-option:hover {
+  background: #f8fafc;
+}
+
+.sll-order-comment {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid #e6ebf2;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #374151;
+  font-size: 14px;
+  resize: vertical;
+  padding: 12px;
+  outline: none;
+}
+
+.sll-order-comment:focus {
+  border-color: #1b84f4;
+  background: #ffffff;
+}
+
+.sll-order-submit-btn {
+  margin-top: 8px;
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: #1b84f4;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sll-order-submit-btn:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.sll-order-submit-btn:not(:disabled):hover {
+  background: #1877dc;
+}
+
+.sll-order-feedback-note {
+  margin: 10px 0 0;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.sll-order-motives {
+  margin-top: 14px;
+  border-top: 1px solid #e8edf4;
+  padding-top: 12px;
+}
+
+.sll-order-motives h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.sll-order-motives-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sll-order-motives-list li {
+  border: 1px solid #e6ebf2;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+}
+
+.sll-order-motives-list strong {
+  display: block;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.sll-order-motives-list span {
+  display: inline-block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.sll-order-motives-list p {
+  margin: 8px 0 0;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (max-width: 1200px) {
+  .sll-orders-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sll-order-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sll-orders-header h1,
+  .sll-order-detail-header h1 {
+    font-size: 30px;
+  }
+
+  .sll-order-hero-content h2 {
+    font-size: 22px;
+  }
+
+  .sll-order-hero-content p {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sll-orders-board-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sll-orders-filter-inline {
+    flex-wrap: wrap;
+  }
+
+  .sll-orders-page,
+  .sll-order-detail-page {
+    gap: 10px;
+  }
+
+  .sll-orders-header,
+  .sll-order-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sll-orders-header h1,
+  .sll-order-detail-header h1 {
+    font-size: 24px;
+  }
+
+  .sll-orders-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sll-orders-main-card,
+  .sll-order-hero-card,
+  .sll-order-requirements-card,
+  .sll-order-review-card,
+  .sll-order-verdict-card {
+    padding: 14px;
+  }
+
+  .sll-order-hero-card {
+    grid-template-columns: 1fr;
+  }
+
+  .sll-order-badge-frame {
+    width: 100%;
+    height: 130px;
+  }
+
+  .sll-order-badge-image {
+    width: 140px;
+    height: 120px;
+  }
+
+  .sll-order-requirement-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .sll-order-requirement-detail-media {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .sll-order-requirement-detail-image {
+    width: 72px;
+    height: 72px;
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "register_success_title": "¡Cuenta creada con éxito!",
+  "register_success_subtitle": "Un administrador verificará tus datos y activará tu cuenta pronto.",
+  "register_success_cta": "Volver al inicio",
+  "register_title": "Crear cuenta",
+  "register_subtitle": "Introduce tus datos y espera la verificación",
+  "register_placeholder_name": "Nombre",
+  "register_placeholder_confirm_password": "Confirmar contraseña",
+  "register_continue": "Continuar",
+  "register_have_account": "¿Ya tienes cuenta?",
+  "register_login_link": "Entrar",
+
+  "login_placeholder_email": "email@dominio.com",
+  "login_placeholder_password": "Contraseña",
+
+  "err_required_name": "El nombre es obligatorio",
+  "err_required_email": "El email es obligatorio",
+  "err_invalid_email": "Email no válido",
+  "err_required_password": "La contraseña es obligatoria",
+  "err_password_min": "La contraseña debe tener al menos 8 caracteres",
+  "err_required_confirm_password": "La confirmación es obligatoria",
+  "err_password_mismatch": "Las contraseñas no coinciden",
+
+  "legal_agree_prefix": "Al hacer clic en continuar, aceptas nuestros",
+  "legal_terms": "Términos de Servicio",
+  "legal_and": "y la",
+  "legal_privacy": "Política de Privacidad"
+}
