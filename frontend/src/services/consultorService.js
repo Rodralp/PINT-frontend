@@ -282,6 +282,10 @@ export async function fetchProfileData() {
       patch.serviceLine = data.serviceLine;
     }
 
+    if (data.avatar) {
+      patch.avatar = data.avatar;
+    }
+
     if (Object.keys(patch).length > 0) {
       updateStoredLoginData(patch);
     }
@@ -333,33 +337,4 @@ export async function uploadEvidence(pedidoId, nreq, files) {
   const response = await apiClient.post(`/consultor/pedidos/${encodeURIComponent(pedidoId)}/evidencias`, form);
 
   return response.data;
-}
-
-export async function fetchUserImage() {
-  const accountId = await ensureLoggedAccountId();
-  if (!accountId) {
-    throw new Error('Missing logged account id.');
-  }
-
-  const response = await apiClient.get(`/consultor/user-image?accountId=${accountId}`);
-  return response.data;
-}
-
-export async function uploadUserImage(imageData) {
-  const accountId = await ensureLoggedAccountId();
-  if (!accountId) {
-    throw new Error('Missing logged account id.');
-  }
-
-  const response = await apiClient.post('/consultor/user-image', { accountId, image: imageData });
-  return response.data;
-}
-
-export async function deleteUserImage() {
-  const accountId = await ensureLoggedAccountId();
-  if (!accountId) {
-    throw new Error('Missing logged account id.');
-  }
-
-  await apiClient.delete(`/consultor/user-image?accountId=${accountId}`);
 }

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fetchProfileData } from '../services/consultorService';
-import apiClient from '../services/apiClient';
 import { 
   ChevronDown,
   ChevronUp,
@@ -118,7 +117,6 @@ function Sidebar() {
   const { t } = useTranslation();
   const location = useLocation();
   const loginData = getStoredLoginData();
-  const [sidebarAvatar, setSidebarAvatar] = useState(null);
   const userRoles = normalizeRoles(loginData?.roles ?? loginData?.role);
   const filteredSections = sidebarConfig.filter((section) =>
     section.allowedRoles.some((role) => userRoles.includes(role))
@@ -263,24 +261,6 @@ function Sidebar() {
 
     loadUserPoints();
 
-    if (loginData?.id && !loginData?.avatar) {
-      apiClient.get(`/consultor/user-image?accountId=${loginData.id}`).then((res) => {
-        if (res.data?.image) {
-          setSidebarAvatar(res.data.image);
-          try {
-            const raw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              parsed.avatar = res.data.image;
-              const isSession = !!sessionStorage.getItem('loginData');
-              if (isSession) sessionStorage.setItem('loginData', JSON.stringify(parsed));
-              else localStorage.setItem('loginData', JSON.stringify(parsed));
-            }
-          } catch { /* ignore */ }
-        }
-      }).catch(() => {});
-    }
-
     return () => {
       isMounted = false;
     };
@@ -296,14 +276,22 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-profile">
-        <img
-          src={sidebarAvatar || loginData?.avatar || `/avatars/default-avatar.svg`}
-          alt="Usuário"
-          className="sidebar-avatar"
-          onError={(event) => {
-            event.currentTarget.src = `/avatars/default-avatar.svg`;
-          }}
-        />
+        {
+          (() => {
+            const seed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
+            const avatarUrl = loginData?.avatar || `https://i.pravatar.cc/120?u=${encodeURIComponent(seed)}`;
+            return (
+              <img
+                src={avatarUrl}
+                alt="Usuário"
+                className="sidebar-avatar"
+                onError={(event) => {
+                  event.currentTarget.src = `https://i.pravatar.cc/120?u=${encodeURIComponent(seed)}`;
+                }}
+              />
+            );
+          })()
+        }
         <div className="sidebar-profile-info">
           <span className="sidebar-name">{userName}</span>
           <span className="sidebar-points">{userPoints} {t('app_points_suffix')}</span>

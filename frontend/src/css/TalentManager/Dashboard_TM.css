@@ -41,6 +41,18 @@
   flex-direction: column;
 }
 
+.metric-card-medium {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  padding: 22px 18px 14px;
+  min-height: 126px;
+  height: 100%;
+  gap: 6px;
+}
+
 .metric-stat-body {
   display: flex;
   align-items: center;
@@ -62,6 +74,15 @@
   width: 46px;
   height: 46px;
   color: #2a9df4;
+}
+
+.middle-stack {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .tm-stats-grid {
@@ -99,11 +120,65 @@
   margin-bottom: 4px;
 }
 
+.metric-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b94a4;
+  margin-bottom: 10px;
+}
+
+.metric-value {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 8px 0 0;
+}
+
+.metric-value.users-online {
+  color: #1f2937;
+}
+
+.metric-value.pending {
+  color: #6366f1;
+}
+
 .metric-note {
   font-size: 13px;
   font-weight: 600;
   color: #8b94a4;
   margin-top: 2px;
+}
+
+.metric-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 12px;
+  color: #6b7280;
+  gap: 8px;
+}
+
+.footer-item {
+  flex: 1;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.footer-item span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-value {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 700;
+  color: #101828;
+  padding: 0 6px;
 }
 
 /* TM Charts (Consultor system) */
@@ -141,6 +216,15 @@
   min-width: 0;
 }
 
+.tm-line-chart-wrap {
+  height: 220px;
+  flex: 1;
+  min-width: 0;
+  padding: 14px 8px 30px 0;
+  display: flex;
+  align-items: stretch;
+}
+
 .tm-line-chart-grid {
   position: relative;
   gap: 0;
@@ -175,6 +259,12 @@
 
 .tm-line-day-label {
   margin-top: 2px;
+}
+
+.tm-line-label {
+  fill: #8d96a5;
+  font-size: 12px;
+  text-anchor: middle;
 }
 
 .tm-chart-grid-lines {
@@ -301,29 +391,6 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #f3f4f6;
-}
-
-.consultor-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.consultor-rank {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: #1b84f4;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  margin-right: 6px;
 }
 
 .icon-color {
@@ -464,6 +531,11 @@
     padding: 10px 6px 22px 0;
   }
 
+  .tm-line-chart-wrap {
+    height: 140px;
+    padding: 10px 6px 22px 0;
+  }
+
   .tm-chart-axis {
     width: 22px;
     padding: 10px 0 20px;
@@ -496,6 +568,10 @@
     font-size: 9px;
   }
 
+  .tm-line-label {
+    font-size: 11px;
+  }
+
   .consultores-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -511,9 +587,24 @@
     border-radius: 16px;
   }
 
+  .metric-card-medium {
+    min-height: 106px;
+    padding: 10px;
+  }
+
+  .metric-value {
+    font-size: 22px;
+  }
+
   .metric-note,
-  .metric-card-title {
+  .metric-subtitle,
+  .metric-card-title,
+  .footer-item {
     font-size: 11px;
+  }
+
+  .footer-value {
+    font-size: 22px;
   }
 
   .tm-lower-grid .consultores-grid {
@@ -538,6 +629,10 @@
 
   .consultores-grid {
     grid-template-columns: 1fr;
+  }
+
+  .metric-value {
+    font-size: 36px;
   }
 
   .section-header {

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Search, Eye, X } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Eye, X } from 'lucide-react';
 import Layout from '../../components/Layout';
-import Pagination from '../../components/Pagination';
 import {
   fetchHistoricoAreasSLL,
   fetchHistoricoBadgesSLL,
@@ -153,6 +151,9 @@ function HistoricoSLL() {
     return filteredData.slice(start, end);
   }, [filteredData, page]);
 
+  const previousPage = () => setPage((p) => Math.max(1, p - 1));
+  const nextPage = () => setPage((p) => Math.min(totalPages, p + 1));
+
   const openModal = async (type, id) => {
     const accountId = Number(loginData?.id);
     if (!Number.isInteger(accountId) || accountId <= 0) return;
@@ -217,8 +218,8 @@ function HistoricoSLL() {
 
   return (
     <Layout>
-      <div className="page tm-export-page historico-page">
-        <header className="page-header tm-export-header">
+      <div className="tm-export-page historico-page">
+        <header className="tm-export-header">
           <h1>Histórico da Service Line</h1>
         </header>
 
@@ -226,7 +227,7 @@ function HistoricoSLL() {
           Acompanhe o desempenho e a evolução dos consultores da sua Service Line.
         </p>
 
-        <div className="shell tm-export-shell">
+        <div className="tm-export-shell">
           <div className="tm-export-tabs">
             {tabs.map((tab) => (
               <button
@@ -241,8 +242,8 @@ function HistoricoSLL() {
           </div>
 
           {activeTab !== 'minha-sl' && (
-            <div className="toolbar tm-export-toolbar historico-toolbar-single">
-              <div className="search-wrap tm-export-search">
+            <div className="tm-export-toolbar historico-toolbar-single">
+              <div className="tm-export-search">
                 <Search size={18} />
                 <input
                   type="text"
@@ -261,8 +262,8 @@ function HistoricoSLL() {
             <>
               {activeTab === 'minha-sl' && (
                 <>
-                  <div className="table-wrap orders-table-wrap">
-                    <table className="table orders-table">
+                  <div className="orders-table-wrap">
+                    <table className="orders-table">
                       <thead>
                         <tr>
                           <th>Service Line</th>
@@ -274,7 +275,7 @@ function HistoricoSLL() {
                       <tbody>
                         {!serviceLineData && (
                           <tr>
-                            <td colSpan={4} className="empty-state orders-empty-row">Service Line não encontrada.</td>
+                            <td colSpan={4} className="orders-empty-row">Service Line não encontrada.</td>
                           </tr>
                         )}
                         {serviceLineData && (
@@ -286,7 +287,7 @@ function HistoricoSLL() {
                               <div className="historico-actions-group">
                                 <button
                                   type="button"
-                                  className="action-btn tm-export-control-btn historico-action-btn"
+                                  className="tm-export-control-btn historico-action-btn"
                                   onClick={() => openModal('serviceLinePendentes', serviceLineData.id)}
                                 >
                                   <Eye size={16} />
@@ -294,7 +295,7 @@ function HistoricoSLL() {
                                 </button>
                                 <button
                                   type="button"
-                                  className="action-btn tm-export-control-btn historico-action-btn"
+                                  className="tm-export-control-btn historico-action-btn"
                                   onClick={() => openModal('serviceLineAceites', serviceLineData.id)}
                                 >
                                   <Eye size={16} />
@@ -302,7 +303,7 @@ function HistoricoSLL() {
                                 </button>
                                 <button
                                   type="button"
-                                  className="action-btn tm-export-control-btn historico-action-btn"
+                                  className="tm-export-control-btn historico-action-btn"
                                   onClick={() => openModal('serviceLineRejeitados', serviceLineData.id)}
                                 >
                                   <Eye size={16} />
@@ -317,8 +318,8 @@ function HistoricoSLL() {
                   </div>
 
                   <h3 className="historico-section-title">Áreas da Service Line</h3>
-                  <div className="table-wrap orders-table-wrap">
-                    <table className="table orders-table">
+                  <div className="orders-table-wrap">
+                    <table className="orders-table">
                       <thead>
                         <tr>
                           <th>Área</th>
@@ -329,7 +330,7 @@ function HistoricoSLL() {
                       <tbody>
                         {pagedData.length === 0 && (
                           <tr>
-                            <td colSpan={3} className="empty-state orders-empty-row">Nenhuma área encontrada.</td>
+                            <td colSpan={3} className="orders-empty-row">Nenhuma área encontrada.</td>
                           </tr>
                         )}
                         {pagedData.map((item) => (
@@ -340,7 +341,7 @@ function HistoricoSLL() {
                               <div className="historico-actions-group">
                                 <button
                                   type="button"
-                                  className="action-btn tm-export-control-btn historico-action-btn"
+                                  className="tm-export-control-btn historico-action-btn"
                                   onClick={() => openModal('areaPendentes', item.id)}
                                 >
                                   <Eye size={16} />
@@ -348,7 +349,7 @@ function HistoricoSLL() {
                                 </button>
                                 <button
                                   type="button"
-                                  className="action-btn tm-export-control-btn historico-action-btn"
+                                  className="tm-export-control-btn historico-action-btn"
                                   onClick={() => openModal('areaAceites', item.id)}
                                 >
                                   <Eye size={16} />
@@ -356,7 +357,7 @@ function HistoricoSLL() {
                                 </button>
                                 <button
                                   type="button"
-                                  className="action-btn tm-export-control-btn historico-action-btn"
+                                  className="tm-export-control-btn historico-action-btn"
                                   onClick={() => openModal('areaRejeitados', item.id)}
                                 >
                                   <Eye size={16} />
@@ -373,8 +374,8 @@ function HistoricoSLL() {
               )}
 
               {activeTab === 'badges' && (
-                <div className="table-wrap orders-table-wrap">
-                  <table className="table orders-table">
+                <div className="orders-table-wrap">
+                  <table className="orders-table">
                     <thead>
                       <tr>
                         <th>Badge</th>
@@ -386,7 +387,7 @@ function HistoricoSLL() {
                     <tbody>
                       {pagedData.length === 0 && (
                         <tr>
-                          <td colSpan={4} className="empty-state orders-empty-row">Nenhum badge encontrado.</td>
+                          <td colSpan={4} className="orders-empty-row">Nenhum badge encontrado.</td>
                         </tr>
                       )}
                       {pagedData.map((item) => (
@@ -398,7 +399,7 @@ function HistoricoSLL() {
                             <div className="historico-actions-group">
                               <button
                                 type="button"
-                                className="action-btn tm-export-control-btn historico-action-btn"
+                                className="tm-export-control-btn historico-action-btn"
                                 onClick={() => openModal('badgePendentes', item.id)}
                               >
                                 <Eye size={16} />
@@ -406,7 +407,7 @@ function HistoricoSLL() {
                               </button>
                               <button
                                 type="button"
-                                className="action-btn tm-export-control-btn historico-action-btn"
+                                className="tm-export-control-btn historico-action-btn"
                                 onClick={() => openModal('badgeAceites', item.id)}
                               >
                                 <Eye size={16} />
@@ -414,7 +415,7 @@ function HistoricoSLL() {
                               </button>
                               <button
                                 type="button"
-                                className="action-btn tm-export-control-btn historico-action-btn"
+                                className="tm-export-control-btn historico-action-btn"
                                 onClick={() => openModal('badgeRejeitados', item.id)}
                               >
                                 <Eye size={16} />
@@ -430,8 +431,8 @@ function HistoricoSLL() {
               )}
 
               {activeTab === 'consultores' && (
-                <div className="table-wrap orders-table-wrap">
-                  <table className="table orders-table">
+                <div className="orders-table-wrap">
+                  <table className="orders-table">
                     <thead>
                       <tr>
                         <th>Consultor</th>
@@ -444,7 +445,7 @@ function HistoricoSLL() {
                     <tbody>
                       {pagedData.length === 0 && (
                         <tr>
-                          <td colSpan={5} className="empty-state orders-empty-row">Nenhum consultor encontrado.</td>
+                          <td colSpan={5} className="orders-empty-row">Nenhum consultor encontrado.</td>
                         </tr>
                       )}
                       {pagedData.map((item) => (
@@ -452,7 +453,7 @@ function HistoricoSLL() {
                           <td>
                             <div className="consultant-cell">
                               <img
-                                src={item.avatar || `/avatars/default-avatar.svg`}
+                                src={item.avatar || `https://i.pravatar.cc/120?u=${item.email}`}
                                 alt={item.name}
                                 className="consultant-avatar-small"
                               />
@@ -466,7 +467,7 @@ function HistoricoSLL() {
                             <div className="historico-actions-group">
                               <button
                                 type="button"
-                                className="action-btn tm-export-control-btn historico-action-btn"
+                                className="tm-export-control-btn historico-action-btn"
                                 onClick={() => openModal('consultorPendentes', item.id)}
                               >
                                 <Eye size={16} />
@@ -474,7 +475,7 @@ function HistoricoSLL() {
                               </button>
                               <button
                                 type="button"
-                                className="action-btn tm-export-control-btn historico-action-btn"
+                                className="tm-export-control-btn historico-action-btn"
                                 onClick={() => openModal('consultorAceites', item.id)}
                               >
                                 <Eye size={16} />
@@ -482,7 +483,7 @@ function HistoricoSLL() {
                               </button>
                               <button
                                 type="button"
-                                className="action-btn tm-export-control-btn historico-action-btn"
+                                className="tm-export-control-btn historico-action-btn"
                                 onClick={() => openModal('consultorRejeitados', item.id)}
                               >
                                 <Eye size={16} />
@@ -498,12 +499,41 @@ function HistoricoSLL() {
               )}
 
               {filteredData.length > 0 && (
-                <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+                <div className="orders-pagination" role="navigation">
+                  <button
+                    type="button"
+                    className="orders-page-btn ghost"
+                    onClick={previousPage}
+                    disabled={page === 1}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      className={`orders-page-btn ${pageNumber === page ? 'active' : ''}`}
+                      onClick={() => setPage(pageNumber)}
+                    >
+                      {pageNumber}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="orders-page-btn ghost"
+                    onClick={nextPage}
+                    disabled={page === totalPages}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               )}
             </>
           )}
 
-          {modalOpen && createPortal(
+          {modalOpen && (
             <div className="modal-overlay" onClick={closeModal}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
@@ -540,7 +570,7 @@ function HistoricoSLL() {
                           </div>
                           <h4>Badges Obtidos ({modalData.badgesObtidos?.length || 0})</h4>
                           {modalData.badgesObtidos?.length > 0 ? (
-                            <table className="table orders-table">
+                            <table className="orders-table">
                               <thead>
                                 <tr>
                                   <th>Badge</th>
@@ -567,7 +597,7 @@ function HistoricoSLL() {
                           )}
                           <h4 style={{ marginTop: '20px' }}>Badges em Progresso ({modalData.badgesEmProgresso?.length || 0})</h4>
                           {modalData.badgesEmProgresso?.length > 0 ? (
-                            <table className="table orders-table">
+                            <table className="orders-table">
                               <thead>
                                 <tr>
                                   <th>Badge</th>
@@ -606,7 +636,7 @@ function HistoricoSLL() {
                           </div>
                           <h4>Consultores que Obtiveram ({modalData.totalObtidos})</h4>
                           {modalData.consultoresObtidos?.length > 0 ? (
-                            <table className="table orders-table">
+                            <table className="orders-table">
                               <thead>
                                 <tr>
                                   <th>Consultor</th>
@@ -629,7 +659,7 @@ function HistoricoSLL() {
                           )}
                           <h4 style={{ marginTop: '20px' }}>Consultores em Progresso ({modalData.totalEmProgresso})</h4>
                           {modalData.consultoresEmProgresso?.length > 0 ? (
-                            <table className="table orders-table">
+                            <table className="orders-table">
                               <thead>
                                 <tr>
                                   <th>Consultor</th>
@@ -659,7 +689,7 @@ function HistoricoSLL() {
                       {(modalType.includes('Pendentes') || modalType.includes('Aceites') || modalType.includes('Rejeitados')) && (
                         <div className="modal-section">
                           {Array.isArray(modalData) && modalData.length > 0 ? (
-                            <table className="table orders-table">
+                            <table className="orders-table">
                               <thead>
                                 <tr>
                                   {modalType.includes('serviceLine') && (
@@ -754,8 +784,7 @@ function HistoricoSLL() {
                   )}
                 </div>
               </div>
-            </div>,
-            document.body
+            </div>
           )}
         </div>
       </div>

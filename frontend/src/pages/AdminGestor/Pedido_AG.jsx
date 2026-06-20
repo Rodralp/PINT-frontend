@@ -106,8 +106,8 @@ function PedidoAG() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="page ag-order-detail-page">
-          <header className="page-header ag-order-detail-header">
+        <div className="ag-order-detail-page">
+          <header className="ag-order-detail-header">
             <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -123,8 +123,8 @@ function PedidoAG() {
   if (!request) {
     return (
       <Layout>
-        <div className="page ag-order-detail-page">
-          <header className="page-header ag-order-detail-header">
+        <div className="ag-order-detail-page">
+          <header className="ag-order-detail-header">
             <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -199,8 +199,8 @@ function PedidoAG() {
 
   return (
     <Layout>
-      <div className="page ag-order-detail-page">
-        <header className="page-header ag-order-detail-header">
+      <div className="ag-order-detail-page">
+        <header className="ag-order-detail-header">
           <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
             <ArrowLeft size={22} />
           </button>

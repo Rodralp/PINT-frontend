@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Clock3, Download, FileDown, Filter, Search, SlidersHorizontal, Trophy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock3, Download, FileDown, Filter, Search, SlidersHorizontal, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
 import BadgeImage from '../../components/BadgeImage';
-import Pagination from '../../components/Pagination';
 import { fetchCatalogBadges } from '../../services/consultorService';
 import '../../css/Consultor/Exportacoes_C.css';
 import '../../css/Consultor/CatalogoBadges_C.css';
@@ -62,6 +61,42 @@ const getLoginName = () => {
   } catch {
     return '';
   }
+};
+
+const generateBadgesHTML = (badges) => {
+  const userName = getLoginName();
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Badges Export</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .badge { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .badge-header { font-weight: bold; color: #1d8cf8; }
+        .badge-details { margin-top: 10px; }
+        .badge-meta { color: #666; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <h1>Meus Badges</h1>
+      <p>Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
+      <p>Utilizador: ${userName}</p>
+      <hr>
+      ${badges.map(badge => `
+        <div class="badge">
+          <div class="badge-header">${badge.name || badge.area} - ${badge.typeId || badge.levelKey || 'Badge'}</div>
+          <div class="badge-details">
+            <div class="badge-meta">Pontos: ${badge.points}</div>
+            <div class="badge-meta">Data: ${badge.date}</div>
+          </div>
+        </div>
+      `).join('')}
+    </body>
+    </html>
+  `;
+  return html;
 };
 
 const generateBadgesCSV = (badges) => {
@@ -239,7 +274,7 @@ function Exportacoes() {
         } else {
           setBadgeItems([]);
         }
-      } catch {
+      } catch (error) {
         if (isMounted) {
           setBadgeItems([]);
         }
@@ -481,8 +516,8 @@ function Exportacoes() {
 
   return (
     <Layout>
-      <div className="page exports-page">
-        <header className="page-header exports-header">
+      <div className="exports-page">
+        <header className="exports-header">
           <h1>{t('exports_title')}</h1>
         </header>
 
@@ -507,10 +542,10 @@ function Exportacoes() {
           </button>
         </div>
 
-        <section className="shell exports-shell">
+        <section className="exports-shell">
 
-          <div className="toolbar catalog-controls">
-            <div className="search-wrap catalog-search-wrap">
+          <div className="catalog-controls">
+            <div className="catalog-search-wrap">
               <Search size={20} />
               <input
                 type="text"
@@ -522,67 +557,67 @@ function Exportacoes() {
             </div>
 
             <div className="catalog-dropdown" ref={filterDropdownRef}>
-                <button
-                    type="button"
-                    className={`action-btn catalog-action-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
-                    onClick={() => {
-                      setShowFilterDropdown((current) => !current);
-                      setShowSortDropdown(false);
-                    }}
-                  >
-                    <Filter size={20} />
-                    <span className="action-btn-label catalog-action-btn-label">{`${t('filter_search')}: ${activeFilterLabel}`}</span>
-                  </button>
+              <button
+                type="button"
+                className={`catalog-action-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
+                onClick={() => {
+                  setShowFilterDropdown((current) => !current);
+                  setShowSortDropdown(false);
+                }}
+              >
+                <Filter size={20} />
+                <span className="catalog-action-btn-label">{`${t('filter_search')}: ${activeFilterLabel}`}</span>
+              </button>
 
-                  {showFilterDropdown && (
-                    <div className="dropdown-menu catalog-dropdown-menu" role="menu" aria-label="Filtros de badges">
-                      {filters.map((filter) => (
-                        <button
-                          key={filter.id}
-                          type="button"
-                          className={`dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
-                          onClick={() => {
-                            setActiveFilter(filter.id);
-                            setShowFilterDropdown(false);
-                          }}
-                        >
-                          {filter.labelKey ? t(filter.labelKey) : filter.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+              {showFilterDropdown && (
+                <div className="catalog-dropdown-menu" role="menu" aria-label="Filtros de badges">
+                  {filters.map((filter) => (
+                    <button
+                      key={filter.id}
+                      type="button"
+                      className={`catalog-dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveFilter(filter.id);
+                        setShowFilterDropdown(false);
+                      }}
+                    >
+                      {filter.labelKey ? t(filter.labelKey) : filter.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="catalog-dropdown" ref={sortDropdownRef}>
               <button
-                    type="button"
-                    className={`action-btn catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
-                    onClick={() => {
-                      setShowSortDropdown((current) => !current);
-                      setShowFilterDropdown(false);
-                    }}
-                  >
-                    <SlidersHorizontal size={20} />
-                    <span className="action-btn-label catalog-action-btn-label">{`${t('sort')}: ${activeSortLabel}`}</span>
-                  </button>
+                type="button"
+                className={`catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                onClick={() => {
+                  setShowSortDropdown((current) => !current);
+                  setShowFilterDropdown(false);
+                }}
+              >
+                <SlidersHorizontal size={20} />
+                <span className="catalog-action-btn-label">{`${t('sort')}: ${activeSortLabel}`}</span>
+              </button>
 
-                  {showSortDropdown && (
-                    <div className="dropdown-menu catalog-dropdown-menu" role="menu" aria-label="Ordenacao de badges">
-                      {sortOptions.map((option) => (
-                        <button
-                          key={option.id}
-                          type="button"
-                          className={`dropdown-item ${sortBy === option.id ? 'active' : ''}`}
-                          onClick={() => {
-                            setSortBy(option.id);
-                            setShowSortDropdown(false);
-                          }}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+              {showSortDropdown && (
+                <div className="catalog-dropdown-menu" role="menu" aria-label="Ordenacao de badges">
+                  {sortOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={`catalog-dropdown-item ${sortBy === option.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setSortBy(option.id);
+                        setShowSortDropdown(false);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -591,15 +626,15 @@ function Exportacoes() {
               <div className="exports-section-head">
                 <h2>{t('exports_badges_section_title')}</h2>
                 <div className="exports-section-actions">
-                  <button type="button" className="btn-ghost exports-link-button" onClick={toggleSelectAll}>
+                  <button type="button" className="exports-link-button" onClick={toggleSelectAll}>
                     {allVisibleSelected ? t('exports_deselect_all') : t('exports_select_all')}
                   </button>
                   <span className="exports-selected-count">{t('exports_selected_count', { count: selectedCount })}</span>
-                  <button type="button" className="btn-outline exports-secondary-btn" onClick={exportToPDF} disabled={selectedBadgeIds.length === 0}>
+                  <button type="button" className="exports-secondary-btn" onClick={exportToPDF} disabled={selectedBadgeIds.length === 0}>
                     <FileDown size={16} />
                     <span>{t('exports_export_pdf')}</span>
                   </button>
-                  <button type="button" className="btn-primary exports-primary-btn" onClick={exportToExcel} disabled={selectedBadgeIds.length === 0}>
+                  <button type="button" className="exports-primary-btn" onClick={exportToExcel} disabled={selectedBadgeIds.length === 0}>
                     <Download size={16} />
                     <span>{t('exports_export_excel')}</span>
                   </button>
@@ -617,7 +652,7 @@ function Exportacoes() {
                   return (
                     <article
                       key={item.id}
-                      className={`card catalog-card ${isSelected ? 'selected' : ''}`}
+                      className={`catalog-card ${isSelected ? 'selected' : ''}`}
                       role="button"
                       tabIndex={0}
                       onClick={() => toggleBadgeSelection(item.id)}
@@ -721,7 +756,7 @@ function Exportacoes() {
                   })}
                 </div>
 
-                <button type="button" className="btn-primary exports-primary-btn exports-full-width-btn" onClick={exportCertificateToPDF} disabled={!selectedCertificate}>
+                <button type="button" className="exports-primary-btn exports-full-width-btn" onClick={exportCertificateToPDF} disabled={!selectedCertificate}>
                   <FileDown size={16} />
                   <span>{t('exports_export_pdf')}</span>
                 </button>
@@ -753,10 +788,29 @@ function Exportacoes() {
           )}
 
           {filteredBadges.length === 0 && !isLoading && (
-            <div className="empty-state catalog-empty-state">Nenhum badge encontrado com os filtros escolhidos.</div>
+            <div className="catalog-empty-state">Nenhum badge encontrado com os filtros escolhidos.</div>
           )}
 
-          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+          <div className="catalog-pagination" role="navigation" aria-label={t('pagination')}>
+            <button type="button" className="catalog-page-btn ghost" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1} aria-label={t('previous_page')}>
+              <ChevronLeft size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                className={`catalog-page-btn ${pageNumber === page ? 'active' : ''}`}
+                onClick={() => setPage(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+
+            <button type="button" className="catalog-page-btn ghost" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages} aria-label={t('next_page')}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </section>
       </div>
     </Layout>

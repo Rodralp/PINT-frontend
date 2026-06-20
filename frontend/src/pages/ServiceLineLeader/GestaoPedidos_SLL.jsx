@@ -6,11 +6,12 @@ import {
   ArrowUp,
   ArrowLeft,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   SearchCheck,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
-import Pagination from '../../components/Pagination';
 import '../../css/ServiceLineLeader/GestaoPedidos_SLL.css';
 import { fetchManagedRequests } from '../../services/requestManagementService';
 
@@ -195,6 +196,8 @@ function GestaoPedidosSLL() {
     setPage(1);
   };
 
+  const previousPage = () => setPage((current) => Math.max(1, current - 1));
+  const nextPage = () => setPage((current) => Math.min(totalPages, current + 1));
   const toggleSort = (key) => {
     setSortConfig((current) => (
       current.key === key
@@ -211,8 +214,8 @@ function GestaoPedidosSLL() {
 
   return (
     <Layout>
-      <div className="page sll-orders-page">
-        <header className="page-header sll-orders-header">
+      <div className="sll-orders-page">
+        <header className="sll-orders-header">
           <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
             <ArrowLeft size={22} />
           </button>
@@ -239,7 +242,7 @@ function GestaoPedidosSLL() {
           })}
         </section>
 
-        <section className="shell sll-orders-main-card">
+        <section className="sll-orders-main-card">
           {isLoading && <p>A carregar pedidos...</p>}
           {!isLoading && statusMessage && <p>{statusMessage}</p>}
 
@@ -265,8 +268,8 @@ function GestaoPedidosSLL() {
             </div>
           </div>
 
-          <div className="table-wrap sll-orders-table-wrap">
-            <table className="table sll-orders-table">
+          <div className="sll-orders-table-wrap">
+            <table className="sll-orders-table">
               <thead>
                 <tr>
                   <th className="sortable" onClick={() => toggleSort('consultant')}>
@@ -290,7 +293,7 @@ function GestaoPedidosSLL() {
               <tbody>
                 {pagedRequests.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="empty-state sll-orders-empty-row">
+                    <td colSpan={6} className="sll-orders-empty-row">
                       Sem pedidos para os filtros escolhidos.
                     </td>
                   </tr>
@@ -326,7 +329,26 @@ function GestaoPedidosSLL() {
             </table>
           </div>
 
-          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+          <div className="sll-orders-pagination" role="navigation" aria-label="Paginação de pedidos">
+            <button type="button" className="sll-page-btn ghost" onClick={previousPage} disabled={safePage === 1}>
+              <ChevronLeft size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                className={`sll-page-btn ${pageNumber === safePage ? 'active' : ''}`}
+                onClick={() => setPage(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+
+            <button type="button" className="sll-page-btn ghost" onClick={nextPage} disabled={safePage === totalPages}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </section>
       </div>
     </Layout>

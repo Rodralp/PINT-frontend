@@ -3,7 +3,7 @@
 :is(.sll-order-detail-page, .tm-order-detail-page, .ag-order-detail-page, .badge-details-page) {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
+  gap: 16px;
 }
 
 .badge-details-page {
@@ -13,12 +13,12 @@
 :is(.sll-order-detail-header, .tm-order-detail-header, .ag-order-detail-header, .badge-details-header) {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
+  gap: 12px;
 }
 
 :is(.sll-order-detail-header h1, .tm-order-detail-header h1, .ag-order-detail-header h1, .badge-details-header h1) {
   margin: 0;
-  font-size: var(--fs-5xl);
+  font-size: 30px;
   line-height: 1.1;
   font-weight: 700;
   color: #1f2937;
@@ -28,7 +28,7 @@
   width: 36px;
   height: 36px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   background: transparent;
   color: #344054;
   display: inline-flex;
@@ -44,30 +44,30 @@
 :is(.sll-order-hero-grid, .tm-order-hero-grid, .ag-order-hero-grid) {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
-  gap: var(--sp-5);
+  gap: 18px;
   align-items: start;
 }
 
 :is(.sll-order-hero-main, .tm-order-hero-main, .ag-order-hero-main) {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
+  gap: 14px;
 }
 
 :is(.sll-order-hero-card, .tm-order-hero-card, .ag-order-hero-card, .badge-hero-card),
 :is(.sll-order-review-card, .tm-order-submission-card, .tm-order-verdict-card, .tm-order-evaluated-card, .ag-order-submission-card, .ag-order-verdict-card, .ag-order-reviewed-card, .badge-requirements-card, .badge-review-card) {
   background: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: var(--radius-3xl);
+  border-radius: 16px;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 10px 30px rgba(15, 23, 42, 0.04);
 }
 
 :is(.sll-order-hero-card, .tm-order-hero-card, .ag-order-hero-card, .badge-hero-card) {
   display: grid;
   grid-template-columns: 190px minmax(0, 1fr);
-  gap: var(--sp-5);
+  gap: 18px;
   align-items: center;
-  padding: var(--sp-5);
+  padding: 18px;
 }
 
 :is(.sll-order-badge-frame, .tm-order-badge-frame, .ag-order-badge-frame, .badge-hero-media) {
@@ -93,22 +93,22 @@
 
 :is(.sll-order-hero-content h2, .tm-order-hero-content h2, .ag-order-hero-content h2, .badge-hero-content h2) {
   margin: 0;
-  font-size: var(--fs-3xl);
+  font-size: 24px;
   line-height: 1.1;
   font-weight: 700;
   color: #1f2937;
 }
 
 :is(.sll-order-hero-content p, .tm-order-hero-content p, .ag-order-hero-content p) {
-  margin: var(--sp-2) 0 var(--sp-3);
-  font-size: var(--fs-xl);
+  margin: 8px 0 10px;
+  font-size: 18px;
   line-height: 1.2;
   color: #374151;
 }
 
 .badge-hero-content p {
   margin: 0;
-  font-size: var(--fs-xl);
+  font-size: 18px;
   line-height: 1.15;
   color: #374151;
 }
@@ -116,10 +116,10 @@
 :is(.sll-order-hero-meta, .tm-order-hero-meta, .ag-order-hero-meta, .badge-hero-meta) {
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
+  gap: 14px;
   flex-wrap: wrap;
   color: #6b7280;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 :is(.sll-order-hero-meta span, .tm-order-hero-meta span, .ag-order-hero-meta span, .badge-hero-meta span) {
@@ -134,15 +134,15 @@
 }
 
 :is(.sll-order-status-banner, .tm-order-status-banner, .ag-order-status-banner, .badge-status-banner) {
-  margin-top: var(--sp-3);
+  margin-top: 12px;
   min-height: 34px;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
-  padding: 0 var(--sp-4);
+  gap: 8px;
+  padding: 0 14px;
   border: 2px solid transparent;
-  font-size: var(--fs-base);
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -173,63 +173,63 @@
 :is(.sll-order-breadcrumb, .tm-order-breadcrumb, .ag-order-breadcrumb, .badge-breadcrumb) {
   margin: 0;
   color: #9aa3b2;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 :is(.sll-order-requirements-card, .tm-order-requirements-card, .ag-order-requirements-card, .badge-requirements-card) {
-  padding: var(--sp-5);
+  padding: 18px;
 }
 
 :is(.sll-order-requirements-card h3, .tm-order-requirements-card h3, .ag-order-requirements-card h3, .badge-requirements-card h3) {
-  margin: 0 0 var(--sp-4);
+  margin: 0 0 14px;
   color: #1f2937;
-  font-size: var(--fs-xl);
+  font-size: 18px;
   font-weight: 700;
 }
 
-:is(.sll-order-requirements-list, .tm-order-requirements-list, .ag-order-requirements-list) {
+:is(.sll-order-requirements-list, .tm-order-requirements-list, .ag-order-requirements-list, .badge-requirements-list) {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: 12px;
 }
 
 :is(.sll-order-requirement-item, .tm-order-requirement-item, .ag-order-requirement-item, .badge-requirement-item) {
   border: 1px solid #e6ebf2;
-  border-radius: var(--radius-xl);
-  padding: var(--sp-4) var(--sp-4);
+  border-radius: 12px;
+  padding: 14px 16px;
   background: #ffffff;
 }
 
 :is(.sll-order-requirement-item.is-open, .tm-order-requirement-item.is-open, .ag-order-requirement-item.is-open, .badge-requirement-item.is-open) {
-  padding-bottom: var(--sp-3);
+  padding-bottom: 12px;
 }
 
 :is(.sll-order-requirement-head, .tm-order-requirement-head, .ag-order-requirement-head, .badge-requirement-head) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: 14px;
 }
 
 :is(.sll-order-requirement-head p, .tm-order-requirement-head p, .ag-order-requirement-head p, .badge-requirement-head p) {
   margin: 0;
   color: #2f3747;
-  font-size: var(--fs-md);
+  font-size: 15px;
   line-height: 1.3;
 }
 
 :is(.sll-order-requirement-head span, .tm-order-requirement-head span, .ag-order-requirement-head span, .badge-requirement-head span) {
   display: block;
-  margin-top: var(--sp-2);
+  margin-top: 6px;
   color: #9aa3b2;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 :is(.sll-order-requirement-view-btn, .tm-order-requirement-view-btn, .ag-order-requirement-view-btn, .badge-requirement-view-btn) {
   width: 34px;
   height: 34px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   background: transparent;
   color: #111827;
   display: inline-flex;
@@ -242,15 +242,15 @@
 }
 
 :is(.sll-order-requirement-detail, .tm-order-requirement-detail, .ag-order-requirement-detail, .badge-requirement-detail) {
-  margin-top: var(--sp-3);
-  padding-top: var(--sp-3);
+  margin-top: 10px;
+  padding-top: 12px;
   border-top: 1px solid #e8edf4;
   display: flex;
   align-items: flex-start;
-  gap: var(--sp-5);
+  gap: 18px;
 }
 
-:is(.sll-order-requirement-detail-media, .tm-order-requirement-detail-media, .ag-order-requirement-detail-media, .badge-requirement-detail-image) {
+:is(.sll-order-requirement-detail-media, .tm-order-requirement-detail-media, .ag-order-requirement-detail-media, .badge-requirement-detail-image, .badge-requirement-detail-media) {
   flex: 0 0 auto;
 }
 
@@ -278,7 +278,7 @@
 :is(.sll-order-requirement-detail p, .tm-order-requirement-detail p, .ag-order-requirement-detail p, .badge-requirement-detail p) {
   margin: 0;
   color: #637085;
-  font-size: var(--fs-base);
+  font-size: 14px;
   line-height: 1.45;
 }
 
@@ -287,7 +287,7 @@
   flex: 1 1 auto;
   min-width: 0;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: 12px;
 }
 
 :is(.sll-order-requirement-files-list, .tm-order-requirement-files-list, .ag-order-requirement-files-list) {
@@ -296,23 +296,23 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
+  gap: 8px;
 }
 
 :is(.sll-order-requirement-files-list li, .tm-order-requirement-files-list li, .ag-order-requirement-files-list li) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-3);
+  gap: 12px;
   color: #2f3747;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 :is(.sll-order-file-main, .tm-order-file-main, .ag-order-file-main) {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
+  gap: 12px;
 }
 
 :is(.sll-order-file-main span:last-child, .tm-order-file-main span:last-child, .ag-order-file-main span:last-child) {
@@ -324,7 +324,7 @@
 :is(.sll-order-file-icon, .tm-order-file-icon, .ag-order-file-icon) {
   width: 28px;
   height: 28px;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   background: #f8fafc;
   color: #111827;
   display: inline-flex;
@@ -336,14 +336,14 @@
 :is(.sll-order-file-download-btn, .tm-order-file-download-btn, .ag-order-file-download-btn) {
   height: 30px;
   border: 1px solid #dbe4f0;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   background: #ffffff;
   color: #1f2937;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0 var(--sp-3);
-  font-size: var(--fs-xs);
+  padding: 0 10px;
+  font-size: 12px;
   font-weight: 600;
   flex: 0 0 auto;
 }
@@ -359,24 +359,24 @@
 }
 
 :is(.sll-order-review-card, .tm-order-submission-card, .tm-order-verdict-card, .tm-order-evaluated-card, .ag-order-submission-card, .ag-order-verdict-card, .ag-order-reviewed-card, .badge-review-card) {
-  padding: var(--sp-5);
+  padding: 18px;
 }
 
 :is(.sll-order-review-card h3, .tm-order-submission-card h3, .tm-order-verdict-card h3, .tm-order-evaluated-card h3, .ag-order-submission-card h3, .ag-order-verdict-card h3, .ag-order-reviewed-card h3) {
-  margin: 0 0 var(--sp-3);
+  margin: 0 0 12px;
   color: #1f2937;
-  font-size: var(--fs-xl);
+  font-size: 18px;
   font-weight: 700;
 }
 
-.sll-order-subtitle {
-  margin-top: var(--sp-4) !important;
+:is(.sll-order-subtitle, .tm-order-subtitle) {
+  margin-top: 16px !important;
 }
 
 :is(.sll-order-person-card, .tm-order-person-card, .ag-order-person-card) {
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
+  gap: 14px;
 }
 
 :is(.sll-order-person-card.compact, .tm-order-person-card.compact, .ag-order-person-card.compact) {
@@ -384,13 +384,13 @@
 }
 
 :is(.sll-order-person-card.final, .ag-order-person-card.final) {
-  margin-top: var(--sp-4);
+  margin-top: 16px;
 }
 
 :is(.sll-order-person-avatar, .tm-order-person-avatar, .ag-order-person-avatar) {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-pill);
+  border-radius: 999px;
   object-fit: cover;
   border: 1px solid #e5e7eb;
   flex: 0 0 auto;
@@ -413,65 +413,65 @@
 :is(.sll-order-person-card strong, .tm-order-person-card strong, .ag-order-person-card strong) {
   display: block;
   color: #1f2937;
-  font-size: var(--fs-base);
+  font-size: 14px;
 }
 
 :is(.sll-order-person-card span, .tm-order-person-card span, .ag-order-person-card span) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: var(--sp-1);
+  margin-top: 4px;
   color: #8b94a4;
-  font-size: var(--fs-xs);
+  font-size: 12px;
 }
 
 :is(.sll-order-note, .tm-order-evaluated-card p, .ag-order-review-note, .badge-review-card p) {
-  margin: var(--sp-4) 0 0;
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--radius-xl);
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
   background: #f8fafc;
   color: #4b5563;
-  font-size: var(--fs-base);
+  font-size: 14px;
   line-height: 1.45;
 }
 
 .badge-review-card p {
-  margin-top: var(--sp-4);
-  padding: var(--sp-4) var(--sp-4);
+  margin-top: 14px;
+  padding: 14px 16px;
 }
 
 .badge-review-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-3);
+  gap: 12px;
 }
 
 .badge-review-head h3 {
   margin: 0;
   color: #1f2937;
-  font-size: var(--fs-xl);
+  font-size: 18px;
   font-weight: 700;
 }
 
 .badge-review-head span {
   color: #9aa3b2;
-  font-size: var(--fs-md);
+  font-size: 15px;
 }
 
 :is(.sll-order-verdict-option, .tm-order-verdict-option, .ag-order-verdict-option) {
   width: 100%;
   min-height: 44px;
-  margin-bottom: var(--sp-3);
-  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  border-radius: 8px;
   border: 1px solid #e6ebf2;
   background: #ffffff;
   color: #2f3747;
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-3);
-  font-size: var(--fs-lg);
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 16px;
   text-align: left;
 }
 
@@ -489,12 +489,12 @@
   width: 100%;
   min-height: 72px;
   border: 1px solid #e6ebf2;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
   background: #f8fafc;
   color: #374151;
-  font-size: var(--fs-base);
+  font-size: 14px;
   resize: vertical;
-  padding: var(--sp-3);
+  padding: 12px;
   outline: none;
 }
 
@@ -505,10 +505,10 @@
 
 :is(.sll-order-submit-btn, .tm-order-submit-btn, .ag-order-submit-btn, .badge-submit-btn) {
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
   background: #1b84f4;
   color: #ffffff;
-  font-size: var(--fs-lg);
+  font-size: 16px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -527,20 +527,20 @@
 }
 
 :is(.sll-order-feedback-note, .tm-order-feedback-note, .ag-order-feedback-note, .badge-feedback) {
-  margin: var(--sp-3) 0 0;
+  margin: 10px 0 0;
   color: #4b5563;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 :is(.sll-order-motives, .tm-order-motives, .ag-order-motives) {
-  margin-top: var(--sp-4);
+  margin-top: 14px;
   border-top: 1px solid #e8edf4;
-  padding-top: var(--sp-3);
+  padding-top: 12px;
 }
 
 :is(.sll-order-motives h4, .tm-order-motives h4, .ag-order-motives h4) {
-  margin: 0 0 var(--sp-3);
-  font-size: var(--fs-base);
+  margin: 0 0 10px;
+  font-size: 14px;
   font-weight: 700;
   color: #1f2937;
 }
@@ -556,36 +556,36 @@
 
 :is(.sll-order-motives-list li, .tm-order-motives-list li, .ag-order-motives-list li) {
   border: 1px solid #e6ebf2;
-  border-radius: var(--radius-lg);
-  padding: var(--sp-3) var(--sp-3);
+  border-radius: 10px;
+  padding: 10px 12px;
   background: #f8fafc;
 }
 
 :is(.sll-order-motives-list strong, .tm-order-motives-list strong, .ag-order-motives-list strong) {
   display: block;
   color: #1f2937;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 :is(.sll-order-motives-list span, .tm-order-motives-list span, .ag-order-motives-list span) {
   display: inline-block;
-  margin-top: var(--sp-1);
+  margin-top: 4px;
   color: #64748b;
-  font-size: var(--fs-xs);
+  font-size: 12px;
 }
 
 :is(.sll-order-motives-list p, .tm-order-motives-list p, .ag-order-motives-list p) {
-  margin: var(--sp-2) 0 0;
+  margin: 8px 0 0;
   color: #334155;
-  font-size: var(--fs-sm);
+  font-size: 13px;
   line-height: 1.4;
 }
 
 .badge-requirement-files {
   border: 1px solid #e6ebf2;
-  border-radius: var(--radius-xl);
+  border-radius: 12px;
   background: #f8fbff;
-  padding: var(--sp-3);
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -595,7 +595,7 @@
   display: block;
   margin: 0;
   color: #1f2937;
-  font-size: var(--fs-sm);
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -603,17 +603,17 @@
   width: 100%;
   max-width: 420px;
   border: 1px solid #d3dbe7;
-  border-radius: var(--radius-md);
-  padding: var(--sp-2) var(--sp-3);
+  border-radius: 8px;
+  padding: 6px 10px;
   background: #ffffff;
   color: #1f2937;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 .badge-file-list {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
+  gap: 8px;
 }
 
 .badge-file-item {
@@ -622,14 +622,14 @@
   justify-content: space-between;
   gap: 10px;
   border: 1px solid #e5ebf4;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
   background: #ffffff;
-  padding: var(--sp-2) var(--sp-3);
+  padding: 8px 10px;
 }
 
 .badge-file-name {
   color: #334155;
-  font-size: var(--fs-sm);
+  font-size: 13px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -637,12 +637,12 @@
 
 .badge-file-remove-btn {
   border: 1px solid #e2e8f0;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   background: #ffffff;
   color: #1f2937;
-  font-size: var(--fs-xs);
+  font-size: 12px;
   font-weight: 600;
-  padding: var(--sp-2) var(--sp-3);
+  padding: 6px 10px;
   flex: 0 0 auto;
 }
 
@@ -652,34 +652,34 @@
 
 .badge-file-none {
   border: 1px dashed #d8e2ee;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
   color: #64748b;
-  font-size: var(--fs-sm);
-  padding: var(--sp-2) var(--sp-3);
+  font-size: 13px;
+  padding: 9px 10px;
   text-align: center;
   background: #ffffff;
 }
 
 .badge-actions-row {
-  margin-top: var(--sp-1);
+  margin-top: 2px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: var(--sp-3);
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .badge-submit-btn {
   min-width: 280px;
   height: 48px;
-  padding: 0 var(--sp-7);
+  padding: 0 26px;
 }
 
 .badge-share-icon-btn {
   width: 48px;
   height: 48px;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
   background: #f3f4f6;
   color: #1b84f4;
   display: inline-flex;
@@ -690,17 +690,17 @@
 .badge-share-primary-btn {
   height: 48px;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
   background: #1b84f4;
   color: #ffffff;
   min-width: 220px;
-  font-size: var(--fs-lg);
+  font-size: 16px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 0 var(--sp-6);
+  padding: 0 24px;
 }
 
 @media (max-width: 1200px) {
@@ -709,15 +709,15 @@
   }
 
   :is(.sll-order-detail-header h1, .tm-order-detail-header h1, .ag-order-detail-header h1, .badge-details-header h1) {
-    font-size: var(--fs-4xl);
+    font-size: 28px;
   }
 
   :is(.sll-order-hero-content h2, .tm-order-hero-content h2, .ag-order-hero-content h2, .badge-hero-content h2) {
-    font-size: var(--fs-3xl);
+    font-size: 22px;
   }
 
   :is(.sll-order-hero-content p, .tm-order-hero-content p, .ag-order-hero-content p, .badge-hero-content p) {
-    font-size: var(--fs-xl);
+    font-size: 17px;
   }
 }
 
@@ -725,8 +725,8 @@
   :is(.sll-order-hero-card, .tm-order-hero-card, .ag-order-hero-card, .badge-hero-card) {
     grid-template-columns: 1fr;
     align-items: start;
-    gap: var(--sp-4);
-    padding: var(--sp-4);
+    gap: 14px;
+    padding: 14px;
   }
 
   :is(.sll-order-badge-frame, .tm-order-badge-frame, .ag-order-badge-frame, .badge-hero-media) {
@@ -741,16 +741,16 @@
   }
 
   :is(.sll-order-requirements-card, .tm-order-requirements-card, .ag-order-requirements-card, .badge-requirements-card) {
-    padding: var(--sp-4);
+    padding: 16px;
   }
 
   :is(.sll-order-requirement-item, .tm-order-requirement-item, .ag-order-requirement-item, .badge-requirement-item) {
-    padding: var(--sp-3) var(--sp-3);
+    padding: 10px 12px;
   }
 
   :is(.sll-order-requirement-detail, .tm-order-requirement-detail, .ag-order-requirement-detail, .badge-requirement-detail) {
-    gap: var(--sp-3);
-    padding-top: var(--sp-3);
+    gap: 12px;
+    padding-top: 10px;
   }
 
   :is(.sll-order-requirement-detail-image, .tm-order-requirement-detail-image, .ag-order-requirement-detail-image, .badge-requirement-detail-image) {
@@ -776,19 +776,19 @@
 
 @media (max-width: 575.98px) {
   :is(.sll-order-detail-page, .tm-order-detail-page, .ag-order-detail-page, .badge-details-page) {
-    gap: var(--sp-3);
+    gap: 12px;
   }
 
   :is(.sll-order-detail-header h1, .tm-order-detail-header h1, .ag-order-detail-header h1, .badge-details-header h1) {
-    font-size: var(--fs-3xl);
+    font-size: 24px;
   }
 
   :is(.sll-order-hero-content h2, .tm-order-hero-content h2, .ag-order-hero-content h2, .badge-hero-content h2) {
-    font-size: var(--fs-2xl);
+    font-size: 20px;
   }
 
   :is(.sll-order-hero-content p, .tm-order-hero-content p, .ag-order-hero-content p, .badge-hero-content p) {
-    font-size: var(--fs-md);
+    font-size: 15px;
   }
 
   :is(.sll-order-hero-meta, .tm-order-hero-meta, .ag-order-hero-meta, .badge-hero-meta) {
@@ -796,11 +796,11 @@
   }
 
   :is(.sll-order-requirements-card h3, .tm-order-requirements-card h3, .ag-order-requirements-card h3, .badge-requirements-card h3) {
-    font-size: var(--fs-xl);
+    font-size: 18px;
   }
 
   :is(.sll-order-requirement-head p, .tm-order-requirement-head p, .ag-order-requirement-head p, .badge-requirement-head p) {
-    font-size: var(--fs-base);
+    font-size: 14px;
   }
 
   :is(.sll-order-requirement-detail, .tm-order-requirement-detail, .ag-order-requirement-detail, .badge-requirement-detail) {
@@ -816,6 +816,6 @@
   .badge-submit-btn,
   .badge-share-primary-btn {
     height: 48px;
-    font-size: var(--fs-lg);
+    font-size: 16px;
   }
 }

@@ -18,14 +18,14 @@
 }
 .sidebar::-webkit-scrollbar-thumb {
   background-color: #f0f0f0;
-  border-radius: var(--radius-xs);
+  border-radius: 4px;
 }
 
 /* Profile Section */
 .sidebar-profile {
   display: flex;
   align-items: center;
-  padding: var(--sp-3) var(--sp-5);
+  padding: 14px 20px;
   gap: 16px;
 }
 
@@ -43,18 +43,18 @@
 }
 
 .sidebar-name {
-  font-size: var(--fs-md);
+  font-size: 15px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
 .sidebar-points {
-  font-size: var(--fs-xs);
+  font-size: 12px;
   font-weight: 600;
   color: #0088FF;
   background-color: #DBEAFE;
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: var(--radius-xl);
+  padding: 4px 12px;
+  border-radius: 12px;
   display: inline-block;
   text-align: center;
 }
@@ -63,13 +63,13 @@
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  padding: 0px var(--sp-3);
+  padding: 0px 12px;
 }
 
 .sidebar-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--sp-2);
+  margin-bottom: 8px;
 }
 
 .sidebar-section-header {
@@ -79,11 +79,11 @@
   width: 100%;
   background: none;
   border: none;
-  padding: var(--sp-3) var(--sp-4);
+  padding: 12px 16px;
   cursor: pointer;
   color: #1a1a1a;
   transition: background-color 0.2s;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
 }
 
 .sidebar-section-header:hover {
@@ -91,7 +91,7 @@
 }
 
 .sidebar-section-title {
-  font-size: var(--fs-lg);
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -111,8 +111,8 @@
 .sidebar-link {
   display: flex;
   align-items: center;
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-md);
+  padding: 6.5px 12px;
+  border-radius: 8px;
   color: #555555;
   text-decoration: none;
   transition: all 0.2s ease;

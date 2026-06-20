@@ -106,8 +106,8 @@ function PedidoSLL() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="page sll-order-detail-page">
-          <header className="page-header sll-order-detail-header">
+        <div className="sll-order-detail-page">
+          <header className="sll-order-detail-header">
             <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -123,8 +123,8 @@ function PedidoSLL() {
   if (!request) {
     return (
       <Layout>
-        <div className="page sll-order-detail-page">
-          <header className="page-header sll-order-detail-header">
+        <div className="sll-order-detail-page">
+          <header className="sll-order-detail-header">
             <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -200,8 +200,8 @@ function PedidoSLL() {
 
   return (
     <Layout>
-      <div className="page sll-order-detail-page">
-        <header className="page-header sll-order-detail-header">
+      <div className="sll-order-detail-page">
+        <header className="sll-order-detail-header">
           <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
             <ArrowLeft size={22} />
           </button>

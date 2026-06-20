@@ -14,20 +14,8 @@ import {
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
-import BadgeImage from './components/BadgeImage';
-import apiClient from './services/apiClient';
 import './css/PerfilPublico.css';
 import { fetchPublicProfile } from './services/consultorService';
-
-const normalizeLevelId = (level) => {
-  const normalized = String(level || '').trim().toLowerCase();
-  if (normalized.includes('júnior') || normalized.includes('junior')) return 'junior';
-  if (normalized.includes('intermédio') || normalized.includes('intermedio')) return 'intermediate';
-  if (normalized.includes('sénior') || normalized.includes('senior')) return 'senior';
-  if (normalized.includes('especialista')) return 'specialist';
-  if (normalized.includes('líder') || normalized.includes('lider')) return 'knowledge_lead';
-  return null;
-};
 
 const defaultConsultor = {
 	id: '',
@@ -48,7 +36,6 @@ function PerfilPublico() {
 	const { t } = useTranslation();
 
 		const [remoteConsultor, setRemoteConsultor] = useState(null);
-		const [vitrineItems, setVitrineItems] = useState([]);
 
 		const consultor = useMemo(() => {
 			if (remoteConsultor) {
@@ -85,22 +72,11 @@ function PerfilPublico() {
 						avatar: data.avatar || data.user?.avatar || '',
 					streakDays: data.streakDays || 0,
 						ranking: data.ranking || 0,
-					serviceLineStats: Array.isArray(data.serviceLineStats) ? (() => {
-						const merged = {};
-						(data.serviceLineStats || []).forEach((s) => {
-							const key = (s.serviceLine || s.name || s.serviceline || '').trim().toLowerCase() || 'application operations';
-							if (!merged[key]) {
-								merged[key] = {
-									serviceLine: s.serviceLine || s.name || s.serviceline || 'Application Operations',
-									badges: 0,
-									points: 0,
-								};
-							}
-							merged[key].badges += Number(s.badges) || 0;
-							merged[key].points += Number(s.points) || 0;
-						});
-						return Object.values(merged);
-					})() : [],
+					serviceLineStats: Array.isArray(data.serviceLineStats) ? data.serviceLineStats.map((s) => ({
+						serviceLine: s.serviceLine || s.name || s.serviceline,
+						badges: Number(s.badges) || 0,
+						points: Number(s.points) || 0,
+					})) : [],
 					activityItems: Array.isArray(data.activityItems) ? data.activityItems.map((item) => ({
 						id: item.id || `activity-${Math.random()}`,
 						description: item.description || 'Nova atividade',
@@ -118,34 +94,6 @@ function PerfilPublico() {
 					};
 
 					setRemoteConsultor(mapped);
-
-					try {
-						const accountId = data.user?.id || data.id;
-						if (accountId) {
-							const vitrineRes = await apiClient.get('/consultor/vitrine', { params: { accountId } });
-							if (isMounted && Array.isArray(vitrineRes.data) && vitrineRes.data.length > 0) {
-								const mapped2 = vitrineRes.data.map((v) => {
-									const isSpecial = v.tipo === 'Especial';
-									const resolvedLevelId = isSpecial ? 'special' : normalizeLevelId(v.nivel);
-									const typeId = resolvedLevelId
-										? (resolvedLevelId === 'special' ? 'special' : `badge_level_${resolvedLevelId}`)
-										: undefined;
-									return {
-										id: `vitrine-${v.nbadge}`,
-										badgeDbId: v.nbadge,
-										name: v.b_nome || 'Badge',
-										badgeImage: v.imagem || null,
-										points: v.pontos || 0,
-										isSpecial,
-										levelKey: resolvedLevelId || undefined,
-										typeId,
-										levelLabel: v.nivel || (isSpecial ? 'Especial' : undefined),
-									};
-								});
-								setVitrineItems(mapped2);
-							}
-						}
-					} catch { /* no vitrine */ }
 				} catch (e) {
 					// ignore and keep fallback
 				}
@@ -169,6 +117,33 @@ function PerfilPublico() {
 
 	const hasServiceLineStats = Array.isArray(consultor.serviceLineStats)
 		&& consultor.serviceLineStats.length > 0;
+
+	const skillsItems = useMemo(() => {
+		if (!Array.isArray(consultor.skillsItems)) {
+			return [];
+		}
+
+		return consultor.skillsItems
+			.map((item) => ({
+				title: item.title || item.name || '',
+				levelKey: item.levelKey || item.subtitleKey || '',
+				meta: item.meta || item.subtitle || '',
+			}))
+			.filter((item) => item.title);
+	}, [consultor.skillsItems]);
+
+	const certificationsItems = useMemo(() => {
+		if (!Array.isArray(consultor.certificationsItems)) {
+			return [];
+		}
+
+		return consultor.certificationsItems
+			.map((item) => ({
+				title: item.title || item.name || '',
+				levelKey: item.levelKey || item.subtitleKey || '',
+			}))
+			.filter((item) => item.title);
+	}, [consultor.certificationsItems]);
 
 	const activityItems = useMemo(() => {
 		if (Array.isArray(consultor.activityItems) && consultor.activityItems.length > 0) {
@@ -203,7 +178,7 @@ function PerfilPublico() {
 						<section className="pp-profile-hero">
 							<div className="pp-avatar-wrap">
 								<img
-									src={consultor.avatar || `/avatars/default-avatar.svg`}
+									src={consultor.avatar || `https://i.pravatar.cc/160?u=${consultor.email || consultor.name}`}
 									alt={consultor.name}
 									className="pp-avatar"
 								/>
@@ -248,22 +223,11 @@ function PerfilPublico() {
 								{hasServiceLineStats ? (
 									<div className="pp-service-line-stats">
 										{(() => {
-											const uniqueStats = Object.values(
-												(consultor.serviceLineStats || []).reduce((acc, s) => {
-													const k = (s.serviceLine || '').trim().toLowerCase() || 'application operations';
-													if (!acc[k]) acc[k] = { ...s };
-													else {
-														acc[k].badges += Number(s.badges) || 0;
-														acc[k].points += Number(s.points) || 0;
-													}
-													return acc;
-												}, {})
-											);
-											const maxBadges = Math.max(...uniqueStats.map((s) => s.badges || 0), 1);
-											return uniqueStats.map((stat, idx) => {
+											const maxBadges = Math.max(...consultor.serviceLineStats.map((s) => s.badges || 0), 1);
+											return consultor.serviceLineStats.map((stat) => {
 												const percentage = ((stat.badges || 0) / maxBadges) * 100;
 												return (
-													<article key={`sl-${idx}-${stat.serviceLine}`} className="pp-service-line-item">
+													<article key={`sl-${stat.serviceLine}`} className="pp-service-line-item">
 														<div className="pp-service-line-header">
 															<strong>{stat.serviceLine || 'Service Line'}</strong>
 															<span className="pp-service-line-meta">
@@ -282,33 +246,51 @@ function PerfilPublico() {
 									})()}
 									</div>
 									) : (
-										<p className="pp-service-line-empty">{t('profile_skills_empty')}</p>
+										skillsItems.length > 0 ? (
+											<div className="pp-list">
+												{skillsItems.map(({ title, levelKey, meta }) => (
+													<article key={`${title}-${levelKey}`} className="pp-list-item">
+														<div className="pp-list-badge">
+															<Award size={18} strokeWidth={2} />
+														</div>
+														<div className="pp-list-content">
+															<strong>{title}</strong>
+															<span>
+															  {t(levelKey)}{meta ? ` · ${meta}` : ''}
+															</span>
+														</div>
+													</article>
+												))}
+											</div>
+										) : (
+											<p className="pp-service-line-empty">{t('profile_skills_empty')}</p>
+										)
 									)}
 							</section>
 
-						{vitrineItems.length > 0 && (
 							<section className="pp-panel-card">
 								<div className="pp-panel-header">
-									<h3>Vitrine</h3>
+									<h3>{t('profile_certifications')}</h3>
 								</div>
-								<div className="pp-vitrine-grid">
-									{vitrineItems.map((badge) => (
-										<div key={badge.id} className="pp-vitrine-item" title={badge.name}>
-											<div className="pp-vitrine-badge-img">
-												<BadgeImage
-													src={badge.badgeImage}
-													alt={badge.name || 'Badge'}
-													levelKey={badge.levelKey}
-													typeId={badge.typeId}
-													levelLabel={badge.levelLabel}
-												/>
-											</div>
-											<span className="pp-vitrine-badge-name">{badge.name}</span>
-										</div>
-									))}
-								</div>
+
+								{certificationsItems.length > 0 ? (
+									<div className="pp-list">
+										{certificationsItems.map(({ title, levelKey }) => (
+											<article key={`${title}-${levelKey}`} className="pp-list-item">
+												<div className="pp-list-badge">
+													<Trophy size={18} strokeWidth={2} />
+												</div>
+												<div className="pp-list-content">
+													<strong>{title}</strong>
+													<span>{t(levelKey)}</span>
+												</div>
+											</article>
+										))}
+									</div>
+								) : (
+									<p className="pp-service-line-empty">{t('profile_certifications_empty')}</p>
+								)}
 							</section>
-						)}
 						</div>
 					</div>
 				</section>

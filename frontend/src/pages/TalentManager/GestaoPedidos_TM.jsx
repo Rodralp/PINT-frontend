@@ -2,16 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
+  ArrowLeft,
   ArrowDown,
   ArrowUp,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   Eye,
   SearchCheck,
   Users,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
-import Pagination from '../../components/Pagination';
 import '../../css/TalentManager/GestaoPedidos_TM.css';
 import { fetchManagedRequests } from '../../services/requestManagementService';
 
@@ -27,12 +29,6 @@ const tableStatusStyles = {
   aprovado: 'approved',
   pendente: 'pending',
   rejeitado: 'rejected',
-};
-
-const getTableLabel = (tableStatus) => {
-  if (tableStatus === 'aprovado') return 'Aprovado';
-  if (tableStatus === 'rejeitado') return 'Rejeitado';
-  return 'Pendente';
 };
 
 const statusConfig = {
@@ -101,7 +97,7 @@ function GestaoPedidosTM() {
   const summaryCards = useMemo(() => ([
     {
       id: 'submitted',
-      tone: 'gray',
+      tone: 'blue',
       label: 'Todos',
       value: summaryCounts.submitted,
       icon: statusConfig.submetido.icon,
@@ -140,6 +136,12 @@ function GestaoPedidosTM() {
       return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
     };
 
+    const getStatusLabel = (tableStatus) => {
+      if (tableStatus === 'aprovado') return 'Aprovado';
+      if (tableStatus === 'rejeitado') return 'Rejeitado';
+      return 'Pendente';
+    };
+
     const getSortValue = (request) => {
       switch (sortConfig.key) {
         case 'consultant':
@@ -149,7 +151,7 @@ function GestaoPedidosTM() {
         case 'level':
           return String(request.level || '').toLowerCase();
         case 'status':
-          return getTableLabel(request.tableStatus).toLowerCase();
+          return getStatusLabel(request.tableStatus).toLowerCase();
         case 'date':
         default:
           return parseRequestDate(request.date);
@@ -172,12 +174,20 @@ function GestaoPedidosTM() {
   }, [activeFilters, requests, sortConfig]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRequests.length / ITEMS_PER_PAGE));
-  const safePage = Math.min(page, totalPages);
 
   const pagedRequests = useMemo(() => {
     const start = (page - 1) * ITEMS_PER_PAGE;
     return filteredRequests.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredRequests, page]);
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/talent-manager/dashboard');
+  };
 
   const toggleFilter = (filterId) => {
     setActiveFilters((current) => {
@@ -191,6 +201,8 @@ function GestaoPedidosTM() {
     setPage(1);
   };
 
+  const previousPage = () => setPage((current) => Math.max(1, current - 1));
+  const nextPage = () => setPage((current) => Math.min(totalPages, current + 1));
   const toggleSort = (key) => {
     setSortConfig((current) => (
       current.key === key
@@ -207,23 +219,27 @@ function GestaoPedidosTM() {
 
   return (
     <Layout>
-      <div className="page">
-        <header className="page-header">
+      <div className="tm-orders-page">
+        <header className="tm-orders-header">
+          <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+            <ArrowLeft size={22} />
+          </button>
           <div>
             <h1>Gestão de Pedidos</h1>
+            <p>Visão consolidada dos pedidos de badge submetidos pelos consultores.</p>
           </div>
         </header>
 
-        <section className="ag-orders-summary-grid">
+        <section className="tm-orders-summary-grid">
           {summaryCards.map((card) => {
             const Icon = card.icon;
 
             return (
-              <article key={card.id} className={`ag-request-card ${card.tone}`}>
-                <span className="ag-request-card-icon">
+              <article key={card.id} className={`tm-request-card ${card.tone}`}>
+                <span className="tm-request-card-icon">
                   <Icon size={26} strokeWidth={2} />
                 </span>
-                <div className="ag-request-card-content">
+                <div className="tm-request-card-content">
                   <span>{card.label}</span>
                   <strong>{card.value}</strong>
                 </div>
@@ -232,100 +248,128 @@ function GestaoPedidosTM() {
           })}
         </section>
 
-        <section className="shell">
-          {isLoading && <p>A carregar pedidos...</p>}
-          {!isLoading && statusMessage && <p>{statusMessage}</p>}
+        <section className="tm-orders-board">
+          <div className="tm-orders-main-card">
+            {isLoading && <p>A carregar pedidos...</p>}
+            {!isLoading && statusMessage && <p>{statusMessage}</p>}
 
-          <div className="ag-orders-board-header">
-            <div>
-              <h2>Pedidos de Todos os Consultores</h2>
-              <div className="ag-orders-filter-inline">
-                <p>Filtrar por:</p>
-                <div className="ag-orders-filter-row">
-                  {tableFilters.map((filter) => (
-                    <button
-                      key={filter.id}
-                      type="button"
-                      className={`ag-filter-chip ${activeFilters.includes(filter.id) ? 'active' : 'inactive'} ${filter.id}`}
-                      onClick={() => toggleFilter(filter.id)}
-                      aria-pressed={activeFilters.includes(filter.id)}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
+            <div className="tm-orders-board-header">
+              <div>
+                <h2>Pedidos de Todos os Consultores</h2>
+                <div className="tm-orders-filter-inline">
+                  <p>Filtrar por:</p>
+                  <div className="tm-orders-filter-row">
+                    {tableFilters.map((filter) => (
+                      <button
+                        key={filter.id}
+                        type="button"
+                        className={`tm-filter-chip ${activeFilters.includes(filter.id) ? 'active' : 'inactive'} ${filter.id}`}
+                        onClick={() => toggleFilter(filter.id)}
+                        aria-pressed={activeFilters.includes(filter.id)}
+                      >
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="table-wrap">
-            <table className="table ag-orders-table">
-              <thead>
-                <tr>
-                  <th className="sortable" onClick={() => toggleSort('consultant')}>
-                    <span className="ag-orders-sort-head">Nome do Consultor {renderSortIcon('consultant')}</span>
-                  </th>
-                  <th className="sortable" onClick={() => toggleSort('badge')}>
-                    <span className="ag-orders-sort-head">Badge Pedida {renderSortIcon('badge')}</span>
-                  </th>
-                  <th className="sortable" onClick={() => toggleSort('level')}>
-                    <span className="ag-orders-sort-head">Nível {renderSortIcon('level')}</span>
-                  </th>
-                  <th className="sortable" onClick={() => toggleSort('date')}>
-                    <span className="ag-orders-sort-head">Data do Pedido {renderSortIcon('date')}</span>
-                  </th>
-                  <th className="sortable" onClick={() => toggleSort('status')}>
-                    <span className="ag-orders-sort-head">Estado do Pedido {renderSortIcon('status')}</span>
-                  </th>
-                  <th>Detalhes do Pedido</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pagedRequests.length === 0 && (
+            <div className="tm-orders-table-wrap">
+              <table className="tm-orders-table">
+                <thead>
                   <tr>
-                    <td colSpan={6} className="empty-state ag-orders-empty-row">
-                      Sem pedidos para os filtros escolhidos.
-                    </td>
+                    <th className="sortable" onClick={() => toggleSort('consultant')}>
+                      <span className="tm-orders-sort-head">Nome do Consultor {renderSortIcon('consultant')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleSort('badge')}>
+                      <span className="tm-orders-sort-head">Badge Pedida {renderSortIcon('badge')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleSort('level')}>
+                      <span className="tm-orders-sort-head">Nível {renderSortIcon('level')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleSort('date')}>
+                      <span className="tm-orders-sort-head">Data do Pedido {renderSortIcon('date')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleSort('status')}>
+                      <span className="tm-orders-sort-head">Estado do Pedido {renderSortIcon('status')}</span>
+                    </th>
+                    <th>Detalhes do Pedido</th>
                   </tr>
-                )}
-
-                {pagedRequests.map((request) => {
-                  const statusClass = tableStatusStyles[request.tableStatus] || 'pending';
-
-                  return (
-                    <tr key={request.id}>
-                      <td>
-                        <div className="ag-consultant-cell">
-                          <Users size={16} />
-                          <span>{request.consultant}</span>
-                        </div>
-                      </td>
-                      <td>{request.badge}</td>
-                      <td>{request.level}</td>
-                      <td>{request.date}</td>
-                      <td>
-                        <span className={`ag-status-pill ${statusClass}`}>
-                          {getTableLabel(request.tableStatus)}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="ag-view-btn"
-                          onClick={() => navigate(`/talent-manager/pedidos/${request.id}`)}
-                        >
-                          <Eye size={14} />
-                          Ver
-                        </button>
+                </thead>
+                <tbody>
+                  {pagedRequests.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="tm-orders-empty-row">
+                        Sem pedidos para os filtros escolhidos.
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  )}
+
+                  {pagedRequests.map((request) => {
+                    const statusClass = tableStatusStyles[request.tableStatus] || 'pending';
+                    const badgeLabel = request.tableStatus === 'aprovado'
+                      ? 'Aprovado'
+                      : request.tableStatus === 'rejeitado'
+                        ? 'Rejeitado'
+                        : 'Pendente';
+
+                    return (
+                      <tr key={request.id}>
+                        <td>
+                          <div className="tm-consultant-cell">
+                            <Users size={16} />
+                            <span>{request.consultant}</span>
+                          </div>
+                        </td>
+                        <td>{request.badge}</td>
+                        <td>{request.level}</td>
+                        <td>{request.date}</td>
+                        <td>
+                          <span className={`tm-status-pill ${statusClass}`}>
+                            {badgeLabel}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="tm-view-btn"
+                            onClick={() => navigate(`/talent-manager/pedidos/${request.id}`)}
+                          >
+                            <Eye size={14} />
+                            Ver
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="tm-orders-pagination" role="navigation" aria-label="Paginação de pedidos">
+              <button type="button" className="tm-page-btn ghost" onClick={previousPage} disabled={page === 1}>
+                <ChevronLeft size={16} />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  type="button"
+                  className={`tm-page-btn ${pageNumber === page ? 'active' : ''}`}
+                  onClick={() => setPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+
+              <button type="button" className="tm-page-btn ghost" onClick={nextPage} disabled={page === totalPages}>
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
 
-          <Pagination page={safePage} totalPages={totalPages} setPage={setPage} />
+          <div />
         </section>
       </div>
     </Layout>

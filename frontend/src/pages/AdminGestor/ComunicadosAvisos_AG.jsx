@@ -303,8 +303,8 @@ function ComunicadosAvisosAG() {
 
   return (
     <Layout>
-      <div className="page">
-        <header className="page-header">
+      <div className="ag-announcements-page">
+        <header className="ag-announcements-header">
           <h1>Comunicados e Avisos</h1>
         </header>
 

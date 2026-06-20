@@ -19,7 +19,7 @@ import { fetchUserNotificationSettings, updateUserNotificationSettings } from '.
 import '../css/Definicoes.css';
 
 const DEFAULT_ROLE = 'consultor';
-const DADOS_LOGIN_KEY = 'dadosLogin';
+const REMEMBERED_LOGIN_KEY = 'rememberedLoginData';
 
 const dashboardPathByRole = {
   consultor: '/consultor/dashboard',
@@ -105,7 +105,7 @@ const updateStoredPassword = ({ accountId, email, newPassword }) => {
   updateAuthStorageItem(sessionStorage, 'loginData');
   updateAuthStorageItem(localStorage, 'loginData');
 
-  const rememberedRaw = localStorage.getItem(DADOS_LOGIN_KEY);
+  const rememberedRaw = localStorage.getItem(REMEMBERED_LOGIN_KEY);
   if (!rememberedRaw) {
     return;
   }
@@ -117,9 +117,10 @@ const updateStoredPassword = ({ accountId, email, newPassword }) => {
       return;
     }
 
-    localStorage.setItem(DADOS_LOGIN_KEY, JSON.stringify({
-      email: parsedRemembered.email,
+    localStorage.setItem(REMEMBERED_LOGIN_KEY, JSON.stringify({
+      ...parsedRemembered,
       senha: newPassword,
+      guardarDados: true,
     }));
   } catch {
     // ignore
@@ -356,7 +357,6 @@ function Definicoes() {
   const handleLogout = () => {
     sessionStorage.removeItem('loginData');
     localStorage.removeItem('loginData');
-    localStorage.removeItem('iniciarAuto');
     navigate('/');
   };
 

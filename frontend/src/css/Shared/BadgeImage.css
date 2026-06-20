@@ -34,10 +34,10 @@
 }
 
 .badge-image-composite--round {
-  border-radius: var(--radius-full);
+  border-radius: 50%;
 }
 
 .badge-image--round {
-  border-radius: var(--radius-full);
+  border-radius: 50%;
   object-fit: cover;
 }

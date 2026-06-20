@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
+  ArrowLeft,
   Search,
   SlidersHorizontal,
   Trophy,
   Award,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
-import Pagination from '../../components/Pagination';
 import { fetchRankingConsultoresSLL } from '../../services/serviceLineLeaderService';
 import '../../css/Consultor/Ranking_C.css';
+import '../../css/ServiceLineLeader/Ranking_SLL.css';
 
 const sortOptions = [
   { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
@@ -18,10 +22,6 @@ const sortOptions = [
 ];
 
 const ITEMS_PER_PAGE = 12;
-
-const buildAvatarUrl = (consultant) =>
-  consultant.avatar
-  || `/avatars/default-avatar.svg`;
 
 const getStoredLoginData = () => {
   const storedLoginData = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
@@ -114,6 +114,7 @@ const resolveServiceLineStats = (consultant, currentServiceLine) => {
 };
 
 function RankingSLL() {
+  const navigate = useNavigate();
   const loginData = useMemo(() => getStoredLoginData(), []);
   const [consultants, setConsultants] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -205,17 +206,20 @@ function RankingSLL() {
   }, [filteredConsultants, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(sortedConsultants.length / ITEMS_PER_PAGE));
-  const safePage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages));
+  }, [totalPages]);
 
   const pagedConsultants = useMemo(() => {
-    const start = (safePage - 1) * ITEMS_PER_PAGE;
+    const start = (page - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
 
     return sortedConsultants.slice(start, end).map((item, index) => ({
       ...item,
       rank: start + index + 1,
     }));
-  }, [sortedConsultants, safePage]);
+  }, [sortedConsultants, page]);
 
   const activeSortLabel = sortOptions.find((item) => item.id === sortBy)?.label || sortOptions[0].label;
   const hasActiveSort = sortBy !== defaultSort;
@@ -234,6 +238,15 @@ function RankingSLL() {
     };
   }, []);
 
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/service-line-leader/dashboard');
+  };
+
   const onSearchChange = (event) => {
     setSearchTerm(event.target.value);
     setPage(1);
@@ -245,16 +258,31 @@ function RankingSLL() {
     setPage(1);
   };
 
+  const previousPage = () => {
+    setPage((current) => Math.max(1, current - 1));
+  };
+
+  const nextPage = () => {
+    setPage((current) => Math.min(totalPages, current + 1));
+  };
+
   return (
     <Layout>
-      <div className="page">
-        <header className="page-header">
-          <h1>Ranking da Service Line</h1>
+      <div className="ranking-page sll-ranking-page">
+        <header className="ranking-header">
+          <button type="button" className="ranking-back-btn" onClick={handleGoBack} aria-label="Voltar">
+            <ArrowLeft size={22} />
+          </button>
+
+          <div className="sll-ranking-heading">
+            <h1>Ranking da Service Line</h1>
+            <p className="sll-ranking-service-line">Service Line: {currentServiceLine}</p>
+          </div>
         </header>
 
-        <section className="shell">
-          <div className="toolbar catalog-controls">
-            <div className="search-wrap">
+        <section className="ranking-shell">
+          <div className="catalog-controls sll-ranking-controls">
+            <div className="catalog-search-wrap">
               <Search size={20} />
               <input
                 type="text"
@@ -268,7 +296,7 @@ function RankingSLL() {
             <div className="catalog-dropdown" ref={sortDropdownRef}>
               <button
                 type="button"
-                className={`action-btn catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                className={`catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
                 onClick={() => setShowSortDropdown((current) => !current)}
               >
                 <SlidersHorizontal size={20} />
@@ -276,12 +304,12 @@ function RankingSLL() {
               </button>
 
               {showSortDropdown && (
-                <div className="dropdown-menu" role="menu" aria-label="Ordenar ranking">
+                <div className="catalog-dropdown-menu" role="menu" aria-label="Ordenar ranking">
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
                       type="button"
-                      className={`dropdown-item ${sortBy === option.id ? 'active' : ''}`}
+                      className={`catalog-dropdown-item ${sortBy === option.id ? 'active' : ''}`}
                       onClick={() => onSortSelect(option.id)}
                     >
                       {option.label}
@@ -306,14 +334,7 @@ function RankingSLL() {
                     {isTopThree ? <Trophy size={20} strokeWidth={2} /> : <span>#{consultant.rank}</span>}
                   </div>
 
-                  <img
-                    className="ranking-avatar"
-                    src={buildAvatarUrl(consultant)}
-                    alt={consultant.name}
-                    onError={(event) => {
-                      event.currentTarget.src = `/avatars/default-avatar.svg`;
-                    }}
-                  />
+                  <img className="ranking-avatar" src={consultant.avatar} alt={consultant.name} />
 
                   <div className="ranking-content">
                     <strong>{consultant.name}</strong>
@@ -339,12 +360,31 @@ function RankingSLL() {
           </div>
 
           {sortedConsultants.length === 0 && (
-            <div className="empty-state ranking-empty-state">
+            <div className="ranking-empty-state">
               Nao ha consultores para os filtros escolhidos nesta service line.
             </div>
           )}
 
-          <Pagination page={safePage} totalPages={totalPages} setPage={setPage} />
+          <div className="ranking-pagination" role="navigation" aria-label="Paginacao de ranking">
+            <button type="button" className="ranking-page-btn ghost" onClick={previousPage} disabled={page === 1}>
+              <ChevronLeft size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                className={`ranking-page-btn ${pageNumber === page ? 'active' : ''}`}
+                onClick={() => setPage(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+
+            <button type="button" className="ranking-page-btn ghost" onClick={nextPage} disabled={page === totalPages}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </section>
       </div>
     </Layout>

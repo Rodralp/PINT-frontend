@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Filter,
   Megaphone,
   Paperclip,
@@ -11,7 +13,6 @@ import {
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
-import Pagination from '../../components/Pagination';
 import { fetchUserAnnouncements, getAnnouncementAttachmentDownloadUrl } from '../../services/communicationService';
 import '../../css/Consultor/MensagensAvisos.css';
 
@@ -81,7 +82,7 @@ const buildMessageBody = (value) => {
 };
 
 const buildMessageAvatar = (seed) => (
-  `/avatars/default-avatar.svg`
+  `https://i.pravatar.cc/120?u=${encodeURIComponent(String(seed || 'user').toLowerCase())}`
 );
 
 const mapAnnouncementToMessage = (item) => {
@@ -257,16 +258,19 @@ function MensagensAvisos() {
   const hasActiveSort = sortBy !== 'recentes';
   const selectedMessage = sortedMessages.find((message) => message.id === selectedMessageId) || sortedMessages[0] || messages[0];
 
+  const onPagePrev = () => setPage((current) => Math.max(1, current - 1));
+  const onPageNext = () => setPage((current) => Math.min(totalPages, current + 1));
+
   return (
     <Layout>
-      <div className="page announcements-page">
-        <header className="page-header announcements-header">
+      <div className="announcements-page">
+        <header className="announcements-header">
           <h1>{t('announcements_title')}</h1>
         </header>
 
-        <section className="shell announcements-shell">
-          <div className="toolbar announcements-toolbar">
-            <div className="search-wrap">
+        <section className="announcements-shell">
+          <div className="announcements-toolbar">
+            <label className="announcements-search-wrap" htmlFor="announcements-search-input">
               <Search size={20} />
               <input
                 id="announcements-search-input"
@@ -276,12 +280,12 @@ function MensagensAvisos() {
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
               />
-            </div>
+            </label>
 
             <div className="announcements-control-group" ref={filterDropdownRef}>
               <button
                 type="button"
-                className={`action-btn announcements-control-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
+                className={`announcements-control-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
                 onClick={() => {
                   setShowFilterDropdown((current) => !current);
                   setShowSortDropdown(false);
@@ -292,12 +296,12 @@ function MensagensAvisos() {
               </button>
 
               {showFilterDropdown && (
-                <div className="dropdown-menu" aria-label={t('announcements_filter_label')}>
+                <div className="announcements-dropdown-menu" aria-label={t('announcements_filter_label')}>
                   {filters.map((filter) => (
                     <button
                       key={filter.id}
                       type="button"
-                      className={`dropdown-item ${activeFilter === filter.id ? 'active' : ``}`}
+                      className={`announcements-dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
                       onClick={() => {
                         setActiveFilter(filter.id);
                         setShowFilterDropdown(false);
@@ -313,7 +317,7 @@ function MensagensAvisos() {
             <div className="announcements-control-group" ref={sortDropdownRef}>
               <button
                 type="button"
-                className={`action-btn announcements-control-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                className={`announcements-control-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
                 onClick={() => {
                   setShowSortDropdown((current) => !current);
                   setShowFilterDropdown(false);
@@ -324,12 +328,12 @@ function MensagensAvisos() {
               </button>
 
               {showSortDropdown && (
-                <div className="dropdown-menu" aria-label={t('announcements_sort_label')}>
+                <div className="announcements-dropdown-menu" aria-label={t('announcements_sort_label')}>
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
                       type="button"
-                      className={`dropdown-item ${sortBy === option.id ? 'active' : ''}`}
+                      className={`announcements-dropdown-item ${sortBy === option.id ? 'active' : ''}`}
                       onClick={() => {
                         setSortBy(option.id);
                         setShowSortDropdown(false);
@@ -371,7 +375,17 @@ function MensagensAvisos() {
                 })}
               </div>
 
-              <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+              <div className="announcements-pagination" role="navigation" aria-label={t('pagination')}>
+                <button type="button" className="announcements-page-btn ghost" onClick={onPagePrev} disabled={page === 1} aria-label={t('previous_page')}>
+                  <ChevronLeft size={16} />
+                </button>
+
+                <span className="announcements-page-count">{page} / {totalPages}</span>
+
+                <button type="button" className="announcements-page-btn ghost" onClick={onPageNext} disabled={page === totalPages} aria-label={t('next_page')}>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </aside>
 
             <section className="announcements-detail-panel">
@@ -425,7 +439,7 @@ function MensagensAvisos() {
                   </div>
                 </div>
               ) : (
-                <div className="empty-state announcements-empty-state">{t('announcements_empty_state')}</div>
+                <div className="announcements-empty-state">{t('announcements_empty_state')}</div>
               )}
             </section>
           </div>

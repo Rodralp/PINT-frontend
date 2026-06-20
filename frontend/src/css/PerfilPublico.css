@@ -15,7 +15,7 @@
 }
 
 .pp-main {
-  padding: 96px var(--sp-4) 36px;
+  padding: 96px 16px 36px;
   display: flex;
   justify-content: center;
 }
@@ -24,8 +24,8 @@
   width: 100%;
   max-width: 1080px;
   background: var(--pp-surface);
-  border-radius: var(--radius-4xl);
-  padding: var(--sp-7);
+  border-radius: 22px;
+  padding: 28px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 20px 55px rgba(5, 15, 35, 0.2);
 }
@@ -44,7 +44,7 @@
 
 .pp-header h1 {
   margin: 0;
-  font-size: var(--fs-4xl);
+  font-size: 28px;
   font-weight: 700;
   color: #202938;
   line-height: 1.12;
@@ -56,7 +56,7 @@
   border: none;
   background: transparent;
   color: #334155;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -68,10 +68,10 @@
 
 .pp-profile-hero {
   border: 1px solid var(--pp-border);
-  border-radius: var(--radius-3xl);
+  border-radius: 16px;
   background: #f9fbff;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-  padding: var(--sp-5);
+  padding: 20px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -80,8 +80,8 @@
 .pp-avatar-wrap {
   width: 108px;
   height: 108px;
-  border-radius: var(--radius-pill);
-  padding: var(--sp-1);
+  border-radius: 999px;
+  padding: 4px;
   background: linear-gradient(180deg, #eff6ff 0%, #f8fbff 100%);
   border: 1px solid #dbeafe;
 }
@@ -89,7 +89,7 @@
 .pp-avatar {
   width: 100%;
   height: 100%;
-  border-radius: var(--radius-pill);
+  border-radius: 999px;
   object-fit: cover;
 }
 
@@ -101,7 +101,7 @@
 
 .pp-profile-info h2 {
   margin: 0;
-  font-size: var(--fs-3xl);
+  font-size: 24px;
   line-height: 1.1;
   font-weight: 700;
   color: #212939;
@@ -110,7 +110,7 @@
 .pp-profile-info p {
   margin: 0;
   color: #3c4454;
-  font-size: var(--fs-lg);
+  font-size: 16px;
 }
 
 .pp-profile-meta {
@@ -125,7 +125,7 @@
   align-items: center;
   gap: 6px;
   color: #6b7280;
-  font-size: var(--fs-sm);
+  font-size: 13px;
 }
 
 .pp-stats-grid {
@@ -136,13 +136,13 @@
 
 .pp-stat-card {
   border: 1px solid var(--pp-border);
-  border-radius: var(--radius-2xl);
+  border-radius: 14px;
   background: #f9fbff;
-  padding: var(--sp-3);
+  padding: 14px;
 }
 
 .pp-stat-title {
-  font-size: var(--fs-xs);
+  font-size: 12px;
   color: #64748b;
 }
 
@@ -150,7 +150,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: var(--sp-2);
+  margin-top: 8px;
 }
 
 .pp-stat-body strong {
@@ -166,10 +166,10 @@
 
 .pp-panel-card {
   border: 1px solid var(--pp-border);
-  border-radius: var(--radius-3xl);
+  border-radius: 16px;
   background: #f9fbff;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-  padding: var(--sp-4) var(--sp-5);
+  padding: 16px 20px;
 }
 
 .pp-panel-header {
@@ -177,15 +177,64 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: var(--sp-3);
+  margin-bottom: 12px;
 }
 
 .pp-panel-header h3 {
   margin: 0;
   color: #212939;
-  font-size: var(--fs-3xl);
+  font-size: 22px;
   font-weight: 700;
   line-height: 1.1;
+}
+
+.pp-list,
+.pp-list-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pp-list-item,
+.pp-list-item-compact {
+  min-height: 52px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pp-list-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #edf4ff;
+  color: #0b3a6e;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.pp-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pp-list-content strong {
+  color: #2f3747;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.pp-list-content span {
+  color: #7a8393;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .pp-panels-grid {
@@ -215,18 +264,18 @@
   }
 
   .pp-shell {
-    padding: var(--sp-4);
-    border-radius: var(--radius-3xl);
+    padding: 16px;
+    border-radius: 16px;
   }
 }
 
 @media (max-width: 575.98px) {
   .pp-header h1 {
-    font-size: var(--fs-3xl);
+    font-size: 24px;
   }
 
   .pp-profile-info h2 {
-    font-size: var(--fs-2xl);
+    font-size: 20px;
   }
 
   .pp-stats-grid {
@@ -256,14 +305,14 @@
 
 .pp-service-line-header strong {
   color: #2f3747;
-  font-size: var(--fs-md);
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.2;
 }
 
 .pp-service-line-meta {
   color: #7a8393;
-  font-size: var(--fs-xs);
+  font-size: 12px;
   line-height: 1.35;
   white-space: nowrap;
 }
@@ -271,7 +320,7 @@
 .pp-progress-bar-bg {
   width: 100%;
   height: 8px;
-  border-radius: var(--radius-xs);
+  border-radius: 4px;
   background: #e5eaf1;
   overflow: hidden;
   position: relative;
@@ -280,64 +329,15 @@
 .pp-progress-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #0088ff, #0066cc);
-  border-radius: var(--radius-xs);
+  border-radius: 4px;
   transition: width 0.3s ease;
   box-shadow: 0 0 8px rgba(0, 136, 255, 0.4);
 }
 
 .pp-service-line-empty {
   color: #7a8393;
-  font-size: var(--fs-base);
+  font-size: 14px;
   text-align: center;
-  padding: var(--sp-4);
+  padding: 16px;
   margin: 0;
-}
-
-/* Vitrine */
-.pp-vitrine-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.pp-vitrine-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 6px;
-  border: 1px solid #e5eaf1;
-  border-radius: var(--radius-xl);
-  background: #fff;
-  transition: box-shadow 0.15s;
-}
-
-.pp-vitrine-item:hover {
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-}
-
-.pp-vitrine-badge-img {
-  width: 56px;
-  height: 56px;
-  overflow: hidden;
-}
-
-.pp-vitrine-badge-img img,
-.pp-vitrine-badge-img .badge-image-composite {
-  width: 100%;
-  height: 100%;
-}
-
-.pp-vitrine-badge-name {
-  font-size: 11px;
-  font-weight: 600;
-  color: #374151;
-  text-align: center;
-  line-height: 1.3;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
 }
