@@ -317,8 +317,8 @@ function GestaoGeralAG() {
 
   return (
     <Layout>
-      <div className="ag-general-page">
-        <header className="ag-general-header">
+      <div className="page">
+        <header className="page-header">
           <h1>Gestão Geral</h1>
         </header>
 
@@ -342,10 +342,10 @@ function GestaoGeralAG() {
           ))}
         </div>
 
-        <section className="ag-general-shell">
+        <section className="shell">
 
-          <div className="ag-general-toolbar">
-            <label className="ag-general-search" htmlFor="ag-general-search-input">
+          <div className="toolbar ag-general-toolbar">
+            <label className="search-wrap ag-general-search" htmlFor="ag-general-search-input">
               <Search size={20} />
               <input
                 id="ag-general-search-input"
@@ -389,8 +389,8 @@ function GestaoGeralAG() {
           )}
 
           {activeTab === 'notificacoes' && (
-            <div className="ag-general-table-wrap">
-              <table className="ag-general-table">
+            <div className="table-wrap ag-general-table-wrap">
+              <table className="table ag-general-table">
                 <thead>
                   <tr>
                     <th rowSpan={2}>Evento</th>
@@ -409,7 +409,7 @@ function GestaoGeralAG() {
                 <tbody>
                   {isLoading && (
                     <tr>
-                      <td colSpan={7} className="ag-general-empty-row">
+                      <td colSpan={7} className="empty-state ag-general-empty-row">
                         A carregar...
                       </td>
                     </tr>
@@ -417,7 +417,7 @@ function GestaoGeralAG() {
 
                   {!isLoading && filteredNotificationRows.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="ag-general-empty-row">
+                      <td colSpan={7} className="empty-state ag-general-empty-row">
                         Sem eventos para os filtros escolhidos.
                       </td>
                     </tr>

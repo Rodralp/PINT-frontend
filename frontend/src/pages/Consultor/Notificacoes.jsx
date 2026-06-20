@@ -1,8 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Filter, Search, SlidersHorizontal } from 'lucide-react';
+import { Filter, Search, SlidersHorizontal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
+import Pagination from '../../components/Pagination';
 import { fetchUserNotifications, markNotificationRead } from '../../services/communicationService';
 import '../../css/Consultor/Notificacoes.css';
 
@@ -254,19 +255,16 @@ function Notificacoes() {
     )));
   };
 
-  const onPagePrev = () => setPage((current) => Math.max(1, current - 1));
-  const onPageNext = () => setPage((current) => Math.min(totalPages, current + 1));
-
   return (
     <Layout>
-      <div className="notifications-page">
-        <header className="notifications-header">
+      <div className="page notifications-page">
+        <header className="page-header notifications-header">
           <h1>{t('notifications_title')}</h1>
         </header>
 
-        <section className="notifications-shell">
-          <div className="notifications-toolbar">
-            <label className="notifications-search-wrap" htmlFor="notifications-search-input">
+        <section className="shell notifications-shell">
+          <div className="toolbar notifications-toolbar">
+            <div className="search-wrap">
               <Search size={20} />
               <input
                 id="notifications-search-input"
@@ -276,12 +274,12 @@ function Notificacoes() {
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
               />
-            </label>
+            </div>
 
             <div className="notifications-control-group" ref={filterDropdownRef}>
               <button
                 type="button"
-                className={`notifications-control-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
+                className={`action-btn notifications-control-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
                 onClick={() => {
                   setShowFilterDropdown((current) => !current);
                   setShowSortDropdown(false);
@@ -292,12 +290,12 @@ function Notificacoes() {
               </button>
 
               {showFilterDropdown && (
-                <div className="notifications-dropdown-menu" aria-label={t('notifications_filter_label')}>
+                <div className="dropdown-menu" aria-label={t('notifications_filter_label')}>
                   {filters.map((filter) => (
                     <button
                       key={filter.id}
                       type="button"
-                      className={`notifications-dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
+                      className={`dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
                       onClick={() => {
                         setActiveFilter(filter.id);
                         setShowFilterDropdown(false);
@@ -313,7 +311,7 @@ function Notificacoes() {
             <div className="notifications-control-group" ref={sortDropdownRef}>
               <button
                 type="button"
-                className={`notifications-control-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                className={`action-btn notifications-control-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
                 onClick={() => {
                   setShowSortDropdown((current) => !current);
                   setShowFilterDropdown(false);
@@ -324,12 +322,12 @@ function Notificacoes() {
               </button>
 
               {showSortDropdown && (
-                <div className="notifications-dropdown-menu" aria-label={t('notifications_sort_label')}>
+                <div className="dropdown-menu" aria-label={t('notifications_sort_label')}>
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
                       type="button"
-                      className={`notifications-dropdown-item ${sortBy === option.id ? 'active' : ''}`}
+                      className={`dropdown-item ${sortBy === option.id ? 'active' : ''}`}
                       onClick={() => {
                         setSortBy(option.id);
                         setShowSortDropdown(false);
@@ -349,8 +347,8 @@ function Notificacoes() {
               <span>{sortedNotifications.length} {t('notifications_items_label')}</span>
             </div>
 
-            <div className="notifications-table-wrap">
-              <table className="notifications-table">
+            <div className="table-wrap bordered">
+              <table className="table notifications-table">
                 <thead>
                   <tr>
                     <th className="notifications-col-seen">{t('notifications_column_seen')}</th>
@@ -403,7 +401,7 @@ function Notificacoes() {
                           <td>{formatNotificationDate(notification.date, i18n.language === 'en' ? 'en-GB' : 'pt-PT')}</td>
                           <td>
                             {canOpen ? (
-                              <button type="button" className="notifications-view-btn" onClick={() => handleOpenNotification(notification)}>
+                              <button type="button" className="btn-outline" onClick={() => handleOpenNotification(notification)}>
                                 {isExpandable && isExpanded ? t('notifications_view_less') : t('notifications_view_button')}
                               </button>
                             ) : (
@@ -427,26 +425,7 @@ function Notificacoes() {
               </table>
             </div>
 
-            <div className="notifications-pagination" role="navigation" aria-label={t('pagination')}>
-              <button type="button" className="notifications-page-btn ghost" onClick={onPagePrev} disabled={page === 1} aria-label={t('previous_page')}>
-                <ChevronLeft size={16} />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-                <button
-                  key={pageNumber}
-                  type="button"
-                  className={`notifications-page-btn ${pageNumber === page ? 'active' : ''}`}
-                  onClick={() => setPage(pageNumber)}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-
-              <button type="button" className="notifications-page-btn ghost" onClick={onPageNext} disabled={page === totalPages} aria-label={t('next_page')}>
-                <ChevronRight size={16} />
-              </button>
-            </div>
+            <Pagination page={page} totalPages={totalPages} setPage={setPage} />
           </div>
         </section>
       </div>

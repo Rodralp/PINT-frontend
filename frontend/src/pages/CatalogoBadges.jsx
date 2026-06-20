@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Clock3, Filter, Search, SlidersHorizontal, Trophy, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Clock3, Filter, Search, SlidersHorizontal, Trophy, Plus } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../components/Layout';
 import BadgeImage from '../components/BadgeImage';
+import Pagination from '../components/Pagination';
 import { fetchCatalogBadges } from '../services/consultorService';
 import '../css/Consultor/CatalogoBadges_C.css';
 
@@ -262,22 +263,14 @@ function CatalogoBadges() {
     setShowSortDropdown(false);
   };
 
-  const previousPage = () => {
-    setPage((current) => Math.max(1, current - 1));
-  };
-
-  const nextPage = () => {
-    setPage((current) => Math.min(totalPages, current + 1));
-  };
-
   return (
     <Layout>
-      <div className="catalog-page">
-        <header className="catalog-header">
+      <div className="page">
+        <header className="page-header">
           <h1>{t('catalog_title')}</h1>
           {isAdminRoute && (
             <div className="catalog-header-actions">
-              <button type="button" className="catalog-create-btn" onClick={handleCreateBadge}>
+              <button type="button" className="btn-primary catalog-create-btn" onClick={handleCreateBadge}>
                 <Plus size={18} />
                 Criar badge
               </button>
@@ -285,15 +278,15 @@ function CatalogoBadges() {
           )}
         </header>
 
-        <section className="catalog-shell">
+        <section className="shell">
           {statusMessage && (
             <div className="alert alert-warning py-2" role="status">
               {statusMessage}
             </div>
           )}
 
-          <div className="catalog-controls">
-            <div className="catalog-search-wrap">
+          <div className="toolbar catalog-controls">
+            <div className="search-wrap">
               <Search size={20} />
               <input
                 type="text"
@@ -307,7 +300,7 @@ function CatalogoBadges() {
             <div className="catalog-dropdown" ref={filterDropdownRef}>
               <button
                 type="button"
-                className={`catalog-action-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
+                className={`action-btn catalog-action-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
                 onClick={() => setShowFilterDropdown((current) => !current)}
               >
                 <Filter size={20} />
@@ -315,12 +308,12 @@ function CatalogoBadges() {
               </button>
 
               {showFilterDropdown && (
-                <div className="catalog-dropdown-menu" role="menu" aria-label="Filtros de badges">
+                <div className="dropdown-menu" role="menu" aria-label="Filtros de badges">
                   {filters.map((filter) => (
                     <button
                       key={filter.id}
                       type="button"
-                      className={`catalog-dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
+                      className={`dropdown-item ${activeFilter === filter.id ? 'active' : ''}`}
                       onClick={() => onFilterSelect(filter.id)}
                     >
                       {filter.label}
@@ -333,7 +326,7 @@ function CatalogoBadges() {
             <div className="catalog-dropdown" ref={sortDropdownRef}>
               <button
                 type="button"
-                className={`catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                className={`action-btn catalog-action-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
                 onClick={() => setShowSortDropdown((current) => !current)}
               >
                 <SlidersHorizontal size={20} />
@@ -341,12 +334,12 @@ function CatalogoBadges() {
               </button>
 
               {showSortDropdown && (
-                <div className="catalog-dropdown-menu" role="menu" aria-label="Ordenacao de badges">
+                <div className="dropdown-menu" role="menu" aria-label="Ordenacao de badges">
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
                       type="button"
-                      className={`catalog-dropdown-item ${sortBy === option.id ? 'active' : ''}`}
+                      className={`dropdown-item ${sortBy === option.id ? 'active' : ''}`}
                       onClick={() => onSortSelect(option.id)}
                     >
                       {option.label}
@@ -435,41 +428,10 @@ function CatalogoBadges() {
           </div>
 
           {filteredBadges.length === 0 && (
-            <div className="catalog-empty-state">Nenhum badge encontrado com os filtros escolhidos.</div>
+            <div className="empty-state catalog-empty-state">Nenhum badge encontrado com os filtros escolhidos.</div>
           )}
 
-          <div className="catalog-pagination" role="navigation" aria-label={t('pagination')}>
-            <button
-              type="button"
-              className="catalog-page-btn ghost"
-              aria-label={t('previous_page')}
-              onClick={previousPage}
-              disabled={page === 1}
-            >
-              <ChevronLeft size={16} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`catalog-page-btn ${pageNumber === page ? 'active' : ''}`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              className="catalog-page-btn ghost"
-              aria-label={t('next_page')}
-              onClick={nextPage}
-              disabled={page === totalPages}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
         </section>
       </div>
     </Layout>

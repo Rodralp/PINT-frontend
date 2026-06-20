@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Bell, MessageSquare, MoreVertical, Settings, Languages, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import apiClient from '../services/apiClient';
 import '../css/Topbar.css';
 
 const DEFAULT_ROLE = 'consultor';
@@ -40,6 +41,7 @@ const resolveSettingsPath = (rolesValue) => {
 function Topbar({ onToggleSidebar }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [topbarAvatar, setTopbarAvatar] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -65,6 +67,27 @@ function Topbar({ onToggleSidebar }) {
 
   const currentLanguage = languages.find(({ code }) => i18n.language?.startsWith(code)) || languages[0];
 
+  useEffect(() => {
+    if (!loginData?.id || loginData?.avatar) return;
+    let cancelled = false;
+    apiClient.get(`/consultor/user-image?accountId=${loginData.id}`).then((res) => {
+      if (!cancelled && res.data?.image) {
+        setTopbarAvatar(res.data.image);
+        try {
+          const raw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            parsed.avatar = res.data.image;
+            const isSession = !!sessionStorage.getItem('loginData');
+            if (isSession) sessionStorage.setItem('loginData', JSON.stringify(parsed));
+            else localStorage.setItem('loginData', JSON.stringify(parsed));
+          }
+        } catch { /* ignore */ }
+      }
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [loginData?.id, loginData?.avatar]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -80,9 +103,9 @@ function Topbar({ onToggleSidebar }) {
   }, [dropdownRef]);
 
   const handleLogout = () => {
-    // Termina a sessão autenticada em todos os armazenamentos.
     sessionStorage.removeItem('loginData');
     localStorage.removeItem('loginData');
+    localStorage.removeItem('iniciarAuto');
 
     navigate('/');
   };
@@ -137,23 +160,14 @@ function Topbar({ onToggleSidebar }) {
           <MessageSquare size={20} strokeWidth={2} />
         </button>
         <div className="topbar-user-info" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
-          <span className="topbar-user-name">{userName}</span>
-          {
-            (() => {
-              const seed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
-              const avatarUrl = loginData?.avatar || `https://i.pravatar.cc/120?u=${encodeURIComponent(seed)}`;
-              return (
-                <img
-                  src={avatarUrl}
-                  alt="User Avatar"
-                  className="topbar-avatar"
-                  onError={(event) => {
-                    event.currentTarget.src = `https://i.pravatar.cc/120?u=${encodeURIComponent(seed)}`;
-                  }}
-                />
-              );
-            })()
-          }
+          <img
+            src={topbarAvatar || loginData?.avatar || `/avatars/default-avatar.svg`}
+            alt="User Avatar"
+            className="topbar-avatar"
+            onError={(event) => {
+              event.currentTarget.src = `/avatars/default-avatar.svg`;
+            }}
+          />
         </div>
         
         <div className="topbar-dropdown-container" ref={dropdownRef}>

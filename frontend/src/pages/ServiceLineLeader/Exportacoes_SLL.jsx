@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowDownToLine,
   ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
   Clock3,
   FileDown,
   Filter,
@@ -15,10 +13,13 @@ import {
   Trophy,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import Pagination from '../../components/Pagination';
 import BadgeImage from '../../components/BadgeImage';
 import { fetchManagedRequests } from '../../services/requestManagementService';
-import { fetchMyServiceLine, fetchHistoricoBadgesSLL, fetchHistoricoConsultoresSLL } from '../../services/serviceLineLeaderService';
+import { fetchMyServiceLine, fetchHistoricoConsultoresSLL } from '../../services/serviceLineLeaderService';
+import { fetchCatalogBadges } from '../../services/consultorService';
 import '../../css/ServiceLineLeader/Exportacoes_SLL.css';
+import '../../css/Consultor/CatalogoBadges_C.css';
 
 const tabs = [
   { id: 'pedidos', label: 'Pedidos de Badges' },
@@ -28,8 +29,8 @@ const tabs = [
 
 const requestStatusFilters = [
   { id: 'enviado', label: 'Enviados' },
-  { id: 'pendente', label: 'Pendente' },
-  { id: 'rejeitado', label: 'Rejeitado' },
+  { id: 'pendente', label: 'Pendentes' },
+  { id: 'rejeitado', label: 'Rejeitados' },
 ];
 
 const levelFilterOptions = [
@@ -63,6 +64,8 @@ const badgeSortOptions = [
 const consultantSortOptions = [
   { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
   { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
+  { id: 'badges_desc', label: 'Badges (Maior para Menor)' },
+  { id: 'badges_asc', label: 'Badges (Menor para Maior)' },
   { id: 'nome_az', label: 'Nome (A-Z)' },
   { id: 'entrada_recente', label: 'Data de entrada (Recente)' },
 ];
@@ -77,12 +80,18 @@ const knownServiceLines = [];
 
 const serviceLineByEmail = {};
 
-const badgeLevels = [];
+const badgeLevels = [
+  { id: 'junior', label: 'Júnior', points: 100, badgeImage: '/badges/Júnior.png' },
+  { id: 'intermedio', label: 'Intermédio', points: 150, badgeImage: '/badges/Intermédio.png' },
+  { id: 'senior', label: 'Sénior', points: 200, badgeImage: '/badges/Sénior.png' },
+  { id: 'especialista', label: 'Especialista', points: 250, badgeImage: '/badges/Especialista.png' },
+  { id: 'lider', label: 'Líder de Conhecimento', points: 300, badgeImage: '/badges/Líder de Conhecimento.png' },
+];
 
 const requestStatusMeta = {
   enviado: { label: 'Enviados', className: 'sent' },
-  pendente: { label: 'Pendente', className: 'pending' },
-  rejeitado: { label: 'Rejeitado', className: 'rejected' },
+  pendente: { label: 'Pendentes', className: 'pending' },
+  rejeitado: { label: 'Rejeitados', className: 'rejected' },
 };
 
 const parsePtDate = (value) => {
@@ -125,6 +134,16 @@ const normalizeLevelId = (level) => {
   }
 
   return 'junior';
+};
+
+const getExpirationStatus = (validade) => {
+  if (!validade) return null;
+  const today = new Date();
+  const expDate = new Date(validade);
+  const daysUntil = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+  if (daysUntil <= 0) return { status: 'expired', label: 'Expirada', days: daysUntil };
+  if (daysUntil <= 30) return { status: 'expiring', label: `Expira em ${daysUntil} dias`, days: daysUntil };
+  return null;
 };
 
 const normalizeLevelTitle = (value) => {
@@ -199,7 +218,7 @@ const toConsultantStatusLabel = (status) => {
   }
 
   if (normalized === 'pendente') {
-    return 'Pendente';
+    return 'Pendentes';
   }
 
   return 'Inativo';
@@ -542,7 +561,7 @@ function ExportacoesSLL() {
         const [serviceLineData, requestsData, badgesData, consultantsData] = await Promise.all([
           fetchMyServiceLine(storedLoginData.id),
           fetchManagedRequests('service-line-leader'),
-          fetchHistoricoBadgesSLL(storedLoginData.id),
+          fetchCatalogBadges(false),
           fetchHistoricoConsultoresSLL(storedLoginData.id),
         ]);
 
@@ -563,18 +582,26 @@ function ExportacoesSLL() {
           status: normalizeRequestExportStatus(request),
         }));
 
-        const formattedBadges = (Array.isArray(badgesData) ? badgesData : []).map((badge) => {
-          const levelTitle = normalizeLevelTitle(badge?.level || badge?.nivel);
-          const meta = buildBadgeDisplayMeta(levelTitle);
+        const formattedBadges = (Array.isArray(badgesData) ? badgesData : []).map((badge, index) => {
+          const isSpecial = Boolean(badge?.isSpecial) || badge?.typeId === 'special' || !badge?.levelKey;
+          const levelKey = isSpecial ? null : (badge?.levelKey || badge?.typeId || null);
+          const levelLabel = isSpecial ? 'Especial' : (badge?.levelLabel || badge?.level || translateLevel(levelKey) || 'Badge');
+          const typeId = badge?.typeId || levelKey || (isSpecial ? 'special' : null);
 
           return {
-            id: Number(badge?.id),
-            area: String(badge?.area || badge?.name || 'N/A'),
-            levelId: meta.levelId,
-            level: levelTitle,
-            points: meta.points,
-            badgeImage: badge?.badgeImage || meta.badgeImage,
-            date: formatDateForUi(badge?.obtainedDate || badge?.dataObtencao),
+            id: Number(badge?.id) || index,
+            name: badge?.name || badge?.area || 'Badge',
+            area: badge?.area || badge?.name || 'Badge',
+            levelId: levelKey,
+            levelKey: levelKey,
+            typeId: typeId,
+            isSpecial,
+            levelLabel: levelLabel,
+            level: levelLabel,
+            points: Number(badge?.points) || 0,
+            badgeImage: badge?.badgeImage || null,
+            validade: badge?.validade || null,
+            date: formatDateForUi(badge?.date),
           };
         });
 
@@ -748,6 +775,16 @@ function ExportacoesSLL() {
       return nextRows;
     }
 
+    if (sortBy === 'badges_desc') {
+      nextRows.sort((a, b) => (b.badges || 0) - (a.badges || 0) || b.points - a.points || (a.name || '').localeCompare(b.name || ''));
+      return nextRows;
+    }
+
+    if (sortBy === 'badges_asc') {
+      nextRows.sort((a, b) => (a.badges || 0) - (b.badges || 0) || a.points - b.points || (a.name || '').localeCompare(b.name || ''));
+      return nextRows;
+    }
+
     if (sortBy === 'nome_az') {
       nextRows.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       return nextRows;
@@ -782,17 +819,32 @@ function ExportacoesSLL() {
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
 
+  const consultantRankMap = useMemo(() => {
+    const sorted = [...filteredConsultants].sort((a, b) => b.points - a.points || b.badges - a.badges || (a.name || '').localeCompare(b.name || ''));
+    const map = {};
+    let lastRank = 0;
+    let lastPoints = null;
+    let lastBadges = null;
+    sorted.forEach((c, i) => {
+      if (c.points !== lastPoints || c.badges !== lastBadges) {
+        lastRank = i + 1;
+        lastPoints = c.points;
+        lastBadges = c.badges;
+      }
+      map[c.id] = lastRank;
+    });
+    return map;
+  }, [filteredConsultants]);
+
   const pagedRequests = useMemo(() => sortedRequests.slice(start, end), [sortedRequests, start, end]);
   const pagedBadges = useMemo(() => sortedBadges.slice(start, end), [sortedBadges, start, end]);
 
-  const pagedConsultants = useMemo(
-    () =>
-      sortedConsultants.slice(start, end).map((item, index) => ({
-        ...item,
-        rank: start + index + 1,
-      })),
-    [sortedConsultants, start, end],
-  );
+  const pagedConsultants = useMemo(() => {
+    return sortedConsultants.slice(start, end).map((c) => ({
+      ...c,
+      rank: consultantRankMap[c.id] || 1,
+    }));
+  }, [sortedConsultants, start, end, consultantRankMap]);
 
   const selectedRequestCount = filteredRequests.filter((item) => selectedRequestIds.includes(item.id)).length;
   const selectedBadgeCount = filteredBadges.filter((item) => selectedBadgeIds.includes(item.id)).length;
@@ -918,14 +970,6 @@ function ExportacoesSLL() {
       filteredConsultants.forEach((item) => next.add(item.id));
       return Array.from(next);
     });
-  };
-
-  const previousPage = () => {
-    setPage((current) => Math.max(1, current - 1));
-  };
-
-  const nextPage = () => {
-    setPage((current) => Math.min(totalPages, current + 1));
   };
 
   // Export handlers
@@ -1055,8 +1099,8 @@ function ExportacoesSLL() {
   if (loading) {
     return (
       <Layout>
-        <div className="tm-export-page">
-          <header className="tm-export-header">
+        <div className="page tm-export-page">
+          <header className="page-header tm-export-header">
             <button type="button" className="tm-export-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -1073,8 +1117,8 @@ function ExportacoesSLL() {
   if (error) {
     return (
       <Layout>
-        <div className="tm-export-page">
-          <header className="tm-export-header">
+        <div className="page tm-export-page">
+          <header className="page-header tm-export-header">
             <button type="button" className="tm-export-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
@@ -1090,8 +1134,8 @@ function ExportacoesSLL() {
 
   return (
     <Layout>
-      <div className="tm-export-page">
-        <header className="tm-export-header">
+      <div className="page tm-export-page">
+        <header className="page-header tm-export-header">
           <button type="button" className="tm-export-back-btn" onClick={handleGoBack} aria-label="Voltar">
             <ArrowLeft size={22} />
           </button>
@@ -1113,10 +1157,10 @@ function ExportacoesSLL() {
           ))}
         </div>
 
-        <section className="tm-export-shell">
+        <section className="shell tm-export-shell">
 
-          <div className="tm-export-toolbar">
-            <label className="tm-export-search" htmlFor="tm-export-search-input">
+          <div className="toolbar tm-export-toolbar">
+            <label className="search-wrap tm-export-search" htmlFor="tm-export-search-input">
               <Search size={20} />
               <input
                 id="tm-export-search-input"
@@ -1133,23 +1177,23 @@ function ExportacoesSLL() {
             <div className="tm-export-control-group" ref={filterDropdownRef}>
               <button
                 type="button"
-                className={`tm-export-control-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
+                className={`action-btn tm-export-control-btn ${showFilterDropdown || hasActiveFilter ? 'active' : ''}`}
                 onClick={() => {
                   setShowFilterDropdown((current) => !current);
                   setShowSortDropdown(false);
                 }}
               >
                 <Filter size={18} />
-                <span>Filtrar pesquisa</span>
+                <span className="tm-export-control-btn-label">Filtrar pesquisa</span>
               </button>
 
               {showFilterDropdown && (
-                <div className="tm-export-dropdown-menu" role="menu" aria-label="Filtrar pesquisa">
+                <div className="dropdown-menu tm-export-dropdown-menu" role="menu" aria-label="Filtrar pesquisa">
                   {filterOptions.map((item) => (
                     <button
                       key={item.id}
                       type="button"
-                      className={`tm-export-dropdown-item ${activeFilter === item.id ? 'active' : ''}`}
+                      className={`dropdown-item tm-export-dropdown-item ${activeFilter === item.id ? 'active' : ''}`}
                       onClick={() => {
                         setActiveFilter(item.id);
                         setShowFilterDropdown(false);
@@ -1166,23 +1210,23 @@ function ExportacoesSLL() {
             <div className="tm-export-control-group" ref={sortDropdownRef}>
               <button
                 type="button"
-                className={`tm-export-control-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
+                className={`action-btn tm-export-control-btn ${showSortDropdown || hasActiveSort ? 'active' : ''}`}
                 onClick={() => {
                   setShowSortDropdown((current) => !current);
                   setShowFilterDropdown(false);
                 }}
               >
                 <SlidersHorizontal size={18} />
-                <span>Ordenar</span>
+                <span className="tm-export-control-btn-label">Ordenar</span>
               </button>
 
               {showSortDropdown && (
-                <div className="tm-export-dropdown-menu" role="menu" aria-label="Ordenar">
+                <div className="dropdown-menu tm-export-dropdown-menu" role="menu" aria-label="Ordenar">
                   {sortOptions.map((item) => (
                     <button
                       key={item.id}
                       type="button"
-                      className={`tm-export-dropdown-item ${sortBy === item.id ? 'active' : ''}`}
+                      className={`dropdown-item tm-export-dropdown-item ${sortBy === item.id ? 'active' : ''}`}
                       onClick={() => {
                         setSortBy(item.id);
                         setShowSortDropdown(false);
@@ -1236,8 +1280,8 @@ function ExportacoesSLL() {
                 ))}
               </div>
 
-              <div className="tm-export-table-wrap">
-                <table className="tm-export-table">
+              <div className="table-wrap tm-export-table-wrap">
+                <table className="table tm-export-table">
                   <thead>
                     <tr>
                       <th />
@@ -1252,7 +1296,7 @@ function ExportacoesSLL() {
                   <tbody>
                     {pagedRequests.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
+                        <td colSpan={7} className="empty-state tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
                       </tr>
                     )}
 
@@ -1304,44 +1348,79 @@ function ExportacoesSLL() {
                     {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
                   </button>
                   <span className="tm-export-selected-count">{selectedCount} selecionados</span>
-                  <button type="button" className="tm-export-btn secondary" aria-label="Exportar badges em PDF" onClick={exportBadgesToPDF}>
+                  <button type="button" className="tm-export-btn secondary" aria-label="Exportar badges em PDF" onClick={exportBadgesToPDF} disabled={selectedBadgeIds.length === 0}>
                     <FileDown size={16} />
                     <span>Exportar PDF</span>
                   </button>
-                  <button type="button" className="tm-export-btn primary" aria-label="Exportar badges em Excel" onClick={exportBadgesToExcel}>
+                  <button type="button" className="tm-export-btn primary" aria-label="Exportar badges em Excel" onClick={exportBadgesToExcel} disabled={selectedBadgeIds.length === 0}>
                     <ArrowDownToLine size={16} />
                     <span>Exportar Excel</span>
                   </button>
                 </div>
               </div>
 
-              <div className="tm-export-badges-grid">
+              <div className="catalog-grid">
                 {pagedBadges.map((item) => {
                   const isSelected = selectedBadgeIds.includes(item.id);
+                  const badgeTitle = item.name || item.area || 'Badge';
+                  const levelLabel = item.isSpecial ? 'Especial' : item.levelLabel || item.level;
+                  const expirationInfo = getExpirationStatus(item.validade);
 
                   return (
-                    <button
+                    <article
                       key={item.id}
-                      type="button"
-                      className={`tm-export-badge-card ${isSelected ? 'selected' : ''}`}
+                      className={`catalog-card ${isSelected ? 'selected' : ''}`}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => toggleBadgeSelection(item.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          toggleBadgeSelection(item.id);
+                        }
+                      }}
                     >
-                      <div className="tm-export-badge-frame">
-                        <BadgeImage src={item.badgeImage} alt={item.level} className="tm-export-badge-image" levelKey={item.levelId || item.level} typeId={item.typeId} levelLabel={item.level} />
+                      {expirationInfo && expirationInfo.status === 'expiring' && (
+                        <div style={{
+                          position: 'absolute', top: '8px', right: '8px',
+                          background: 'rgba(251, 191, 36, 0.9)', color: '#92400e',
+                          padding: '2px 8px', borderRadius: '12px', fontSize: '11px',
+                          fontWeight: '600', display: 'flex', alignItems: 'center',
+                          gap: '4px', zIndex: 1,
+                        }}>
+                          <Clock3 size={12} />
+                          {expirationInfo.label}
+                        </div>
+                      )}
+
+                      <div className="catalog-badge-frame">
+                        <BadgeImage src={item.badgeImage} alt={levelLabel} className="catalog-badge-image" levelKey={item.levelKey || item.levelId} typeId={item.typeId} levelLabel={levelLabel} />
                       </div>
-                      <strong>{item.area}</strong>
-                      <span>{item.level}</span>
-                      <div className="tm-export-badge-meta">
-                        <div>
+                      <div className="catalog-card-title">{badgeTitle}</div>
+                      <div className="catalog-card-level">{levelLabel}</div>
+                      <div className="catalog-card-meta">
+                        <div className="catalog-meta-row">
                           <Trophy size={14} />
-                          {item.points} pontos
+                          <span>{item.points} pontos</span>
                         </div>
-                        <div>
+                        <div className="catalog-meta-row" style={{
+                          color: expirationInfo?.status === 'expiring' ? '#b45309'
+                               : expirationInfo?.status === 'expired' ? '#dc2626'
+                               : '#6b7280',
+                        }}>
                           <Clock3 size={14} />
-                          {item.date}
+                          <span>
+                            {item.validade
+                              ? (expirationInfo?.status === 'expired'
+                                ? 'Expirada'
+                                : `Expira: ${new Date(item.validade).toLocaleDateString('pt-PT')}`
+                              )
+                              : item.date
+                            }
+                          </span>
                         </div>
                       </div>
-                    </button>
+                    </article>
                   );
                 })}
               </div>
@@ -1369,8 +1448,8 @@ function ExportacoesSLL() {
                 </div>
               </div>
 
-              <div className="tm-export-table-wrap">
-                <table className="tm-export-table consultores">
+              <div className="table-wrap tm-export-table-wrap">
+                <table className="table tm-export-table consultores">
                   <thead>
                     <tr>
                       <th />
@@ -1386,7 +1465,7 @@ function ExportacoesSLL() {
                   <tbody>
                     {pagedConsultants.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
+                        <td colSpan={8} className="empty-state tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
                       </tr>
                     )}
 
@@ -1413,7 +1492,6 @@ function ExportacoesSLL() {
                           <td>{item.email}</td>
                           <td>
                             <span className="tm-export-points">
-                              <TrendingUp size={13} />
                               {new Intl.NumberFormat('pt-PT').format(item.points)}
                             </span>
                           </td>
@@ -1435,26 +1513,7 @@ function ExportacoesSLL() {
             </>
           )}
 
-          <div className="tm-export-pagination" role="navigation" aria-label="Paginação de exportações">
-            <button type="button" className="tm-export-page-btn ghost" onClick={previousPage} disabled={page === 1}>
-              <ChevronLeft size={16} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`tm-export-page-btn ${pageNumber === page ? 'active' : ''}`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button type="button" className="tm-export-page-btn ghost" onClick={nextPage} disabled={page === totalPages}>
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
         </section>
       </div>
     </Layout>

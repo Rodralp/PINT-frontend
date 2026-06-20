@@ -20,7 +20,7 @@ const getAvatarSeed = (member) =>
     .replace('@', '.');
 
 const getMemberAvatarUrl = (member) =>
-  `https://i.pravatar.cc/120?u=${encodeURIComponent(getAvatarSeed(member))}`;
+  `/avatars/default-avatar.svg`;
 
 const onMemberAvatarError = (event, member) => {
   event.currentTarget.onerror = null;
@@ -266,8 +266,8 @@ function EquipasSLAAG() {
 
   return (
     <Layout>
-      <div className="ag-teams-page">
-        <header className="ag-teams-header">
+      <div className="page">
+        <header className="page-header">
           <h1>Equipas e SLA</h1>
         </header>
 

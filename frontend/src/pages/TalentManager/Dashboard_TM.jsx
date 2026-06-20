@@ -177,8 +177,8 @@ function DashboardTM() {
 
   return (
     <Layout>
-      <div className="dashboard-tm">
-        <header className="dashboard-tm-header">
+      <div className="page dashboard-tm">
+        <header className="page-header dashboard-tm-header">
           <h1>Dashboard Talent Manager</h1>
         </header>
 
@@ -252,7 +252,6 @@ function DashboardTM() {
                     </span>
                     <strong>{onlineUsers}</strong>
                   </div>
-                  <div className="metric-note">Na Plataforma</div>
                 </section>
 
                 <section className="metric-card metric-card-stat">
@@ -263,7 +262,6 @@ function DashboardTM() {
                     </span>
                     <strong>{pendingRequests}</strong>
                   </div>
-                  <div className="metric-note">Na Plataforma</div>
                 </section>
               </div>
             </div>
@@ -327,15 +325,21 @@ function DashboardTM() {
                 </div>
                 <div className="consultores-grid">
                   {topConsultores.map((consultor) => {
-                    const IconComponent = iconByKey[consultor.iconKey] || Users;
                     return (
                       <div key={consultor.id} className="consultor-card">
                         <div className="consultor-header">
                           <div className="consultor-avatar">
-                            <IconComponent size={24} className="icon-color" />
+                            {consultor.avatar ? (
+                              <img src={consultor.avatar} alt={consultor.name} className="consultor-avatar-img" />
+                            ) : (
+                              <Users size={24} className="icon-color" />
+                            )}
                           </div>
                           <div className="consultor-info">
-                            <div className="consultor-name">{consultor.name}</div>
+                            <div className="consultor-name">
+                              <span className="consultor-rank">#{consultor.rank}</span>
+                              {consultor.name}
+                            </div>
                             <div className="consultor-email">{consultor.email}</div>
                           </div>
                         </div>
@@ -404,16 +408,21 @@ function DashboardTM() {
           title="Top Consultores"
           items={topConsultores}
           renderItem={(consultor) => {
-            const IconComponent = iconByKey[consultor.iconKey] || Users;
-
             return (
               <div className="consultor-card" style={{ marginBottom: 0 }}>
                 <div className="consultor-header">
                   <div className="consultor-avatar">
-                    <IconComponent size={24} className="icon-color" />
+                    {consultor.avatar ? (
+                      <img src={consultor.avatar} alt={consultor.name} className="consultor-avatar-img" />
+                    ) : (
+                      <Users size={24} className="icon-color" />
+                    )}
                   </div>
                   <div className="consultor-info">
-                    <div className="consultor-name">{consultor.name}</div>
+                    <div className="consultor-name">
+                      <span className="consultor-rank">#{consultor.rank}</span>
+                      {consultor.name}
+                    </div>
                     <div className="consultor-email">{consultor.email}</div>
                   </div>
                 </div>

@@ -6,10 +6,9 @@ import {
   Clock3,
   SearchCheck,
   Search,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import Pagination from '../../components/Pagination';
 import { fetchMyRequests } from '../../services/consultorService';
 import '../../css/Consultor/MeusPedidos.css';
 
@@ -113,14 +112,6 @@ function MeusPedidos() {
     setPage(1);
   };
 
-  const previousPage = () => {
-    setPage((current) => Math.max(1, current - 1));
-  };
-
-  const nextPage = () => {
-    setPage((current) => Math.min(totalPages, current + 1));
-  };
-
   const handleOpenRequestDetails = (request) => {
     navigate(`/consultor/meus-pedidos/${request.id}`, {
       state: { request },
@@ -129,13 +120,13 @@ function MeusPedidos() {
 
   return (
     <Layout>
-      <div className="orders-page">
-        <header className="orders-header">
+      <div className="page orders-page">
+        <header className="page-header orders-header">
           <h1>Meus Pedidos</h1>
         </header>
 
-        <div className="orders-status-grid">
-          <article className="status-card submitted">
+        <div className="status-grid orders-status-grid">
+          <article className="status-card default submitted">
             <div className="status-card-icon">
               <Clock3 size={26} strokeWidth={2} />
             </div>
@@ -145,7 +136,7 @@ function MeusPedidos() {
             </div>
           </article>
 
-          <article className={statusConfig.validacao.cardClass}>
+          <article className={"status-card warning " + statusConfig.validacao.cardClass.split(' ').pop()}>
             <div className="status-card-icon">
               <statusConfig.validacao.Icon size={26} strokeWidth={2} />
             </div>
@@ -155,7 +146,7 @@ function MeusPedidos() {
             </div>
           </article>
 
-          <article className={statusConfig.rejeitado.cardClass}>
+          <article className={"status-card danger " + statusConfig.rejeitado.cardClass.split(' ').pop()}>
             <div className="status-card-icon">
               <statusConfig.rejeitado.Icon size={26} strokeWidth={2} />
             </div>
@@ -165,7 +156,7 @@ function MeusPedidos() {
             </div>
           </article>
 
-          <article className={statusConfig.aprovado.cardClass}>
+          <article className={"status-card success " + statusConfig.aprovado.cardClass.split(' ').pop()}>
             <div className="status-card-icon">
               <statusConfig.aprovado.Icon size={26} strokeWidth={2} />
             </div>
@@ -176,7 +167,7 @@ function MeusPedidos() {
           </article>
         </div>
 
-        <section className="orders-shell">
+        <section className="shell orders-shell">
           <div className="orders-shell-header">
             <h2>Histórico de Candidaturas de Badges</h2>
             <div className="orders-filter-row">
@@ -185,7 +176,7 @@ function MeusPedidos() {
                 <button
                   key={filter.id}
                   type="button"
-                  className={`orders-filter-chip ${activeFilters.includes(filter.id) ? 'is-active' : 'is-inactive'} ${filter.id}`}
+                  className={`filter-chip orders-filter-chip ${activeFilters.includes(filter.id) ? 'is-active' : 'is-inactive'} ${filter.id}`}
                   onClick={() => onFilterSelect(filter.id)}
                   aria-pressed={activeFilters.includes(filter.id)}
                 >
@@ -195,8 +186,8 @@ function MeusPedidos() {
             </div>
           </div>
 
-          <div className="orders-table-wrap">
-            <table className="orders-table">
+          <div className="table-wrap">
+            <table className="table orders-table">
               <thead>
                 <tr>
                   <th>Badge Pedida</th>
@@ -222,14 +213,14 @@ function MeusPedidos() {
                       <td>{request.level}</td>
                       <td>{request.date}</td>
                       <td>
-                        <span className={requestStatus.badgeClass}>
+                        <span className={"status-badge " + (requestStatus.badgeClass.split(' ').pop())}>
                           {requestStatus.label}
                         </span>
                       </td>
                       <td>
                         <button
                           type="button"
-                          className="orders-view-btn"
+                          className="btn-outline orders-view-btn"
                           onClick={() => handleOpenRequestDetails(request)}
                         >
                           Ver
@@ -242,31 +233,7 @@ function MeusPedidos() {
             </table>
           </div>
 
-          <div className="orders-pagination" role="navigation" aria-label="Paginação de pedidos">
-            <button type="button" className="orders-page-btn ghost" onClick={previousPage} disabled={page === 1}>
-              <ChevronLeft size={16} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`orders-page-btn ${pageNumber === page ? 'active' : ''}`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              className="orders-page-btn ghost"
-              onClick={nextPage}
-              disabled={page === totalPages}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
         </section>
       </div>
     </Layout>

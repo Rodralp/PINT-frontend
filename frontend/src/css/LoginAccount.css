@@ -33,9 +33,9 @@
 
 .entrar-form-container {
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  padding: 40px 30px;
+  padding: var(--sp-10) var(--sp-8);
   max-width: 480px;
   width: 100%;
   flex-shrink: 0;
@@ -43,18 +43,18 @@
 
 .entrar-header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: var(--sp-6);
 }
 
 .entrar-header h1 {
-  font-size: 28px;
+  font-size: var(--fs-4xl);
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 10px 0;
+  margin: 0 0 var(--sp-3) 0;
 }
 
 .entrar-header p {
-  font-size: 14px;
+  font-size: var(--fs-base);
   color: #666;
   margin: 0;
 }
@@ -62,19 +62,19 @@
 .entrar-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
 }
 
 .entrar-form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--sp-1);
 }
 
 .entrar-checkbox-group {
   flex-direction: row;
-  gap: 8px;
+  gap: var(--sp-2);
   align-items: center;
 }
 
@@ -86,17 +86,17 @@
 }
 
 .entrar-checkbox-group label {
-  font-size: 14px;
+  font-size: var(--fs-base);
   color: #666;
   cursor: pointer;
 }
 
 /* Inputs */
 .entrar-input {
-  padding: 12px 16px;
+  padding: var(--sp-3) var(--sp-4);
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-base);
   font-family: inherit;
   transition: border-color 0.3s, box-shadow 0.3s;
   background: #f9f9f9;
@@ -131,7 +131,7 @@
 
 .entrar-eye-icon {
   position: absolute;
-  right: 12px;
+  right: var(--sp-3);
   cursor: pointer;
   color: #999;
   transition: color 0.2s;
@@ -143,23 +143,23 @@
 }
 
 .entrar-erro {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: #dc3545;
-  margin-top: 3px;
+  margin-top: var(--sp-1);
 }
 
 /* Buttons */
 .entrar-btn-continuar {
-  padding: 14px 16px;
+  padding: var(--sp-4) var(--sp-4);
   background: linear-gradient(135deg, #0088FF 0%, #0066CC 100%);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-lg);
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  margin-top: 10px;
+  margin-top: var(--sp-3);
 }
 
 .entrar-btn-continuar:hover {
@@ -174,13 +174,13 @@
 /* Entrar-specific links */
 .entrar-forgot-link {
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--sp-3);
 }
 
 .entrar-forgot-link a {
   color: #0088FF;
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--fs-base);
   font-weight: 500;
   transition: color 0.2s;
 }
@@ -192,8 +192,8 @@
 
 .entrar-signup-link {
   text-align: center;
-  margin-bottom: 15px;
-  font-size: 14px;
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-base);
 }
 
 .entrar-signup-link span {
@@ -204,7 +204,7 @@
   color: #0088FF;
   text-decoration: none;
   font-weight: 600;
-  margin-left: 3px;
+  margin-left: var(--sp-1);
   transition: color 0.2s;
 }
 
@@ -216,8 +216,8 @@
 /* Criar page login link now uses unified prefix */
 .entrar-login-link {
   text-align: center;
-  margin-bottom: 15px;
-  font-size: 14px;
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-base);
 }
 
 .entrar-login-link span {
@@ -228,7 +228,7 @@
   color: #0088FF;
   text-decoration: none;
   font-weight: 600;
-  margin-left: 3px;
+  margin-left: var(--sp-1);
   transition: color 0.2s;
 }
 
@@ -240,22 +240,22 @@
 /* Footer links */
 .entrar-footer-links {
   text-align: center;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: #999;
   border-top: 1px solid #eee;
-  padding-top: 12px;
+  padding-top: var(--sp-3);
   margin-top: 0;
 }
 
 .entrar-footer-links p {
-  margin: 0 0 8px 0;
+  margin: 0 0 var(--sp-2) 0;
 }
 
 .entrar-links {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 3px;
+  gap: var(--sp-1);
 }
 
 .entrar-links a {
@@ -291,7 +291,7 @@
 
 .entrar-success-modal {
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   padding: 60px 40px;
   max-width: 480px;
@@ -307,7 +307,7 @@
 
 .entrar-success-icon {
   color: #28a745;
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
   animation: scaleIn 0.5s ease-out;
 }
 
@@ -317,26 +317,26 @@
 }
 
 .entrar-success-modal h2 {
-  font-size: 28px;
+  font-size: var(--fs-4xl);
   color: #1a1a1a;
-  margin: 20px 0 15px 0;
+  margin: var(--sp-5) 0 var(--sp-4) 0;
   font-weight: 700;
 }
 
 .entrar-success-modal p {
-  font-size: 16px;
+  font-size: var(--fs-lg);
   color: #666;
-  margin: 0 0 30px 0;
+  margin: 0 0 var(--sp-8) 0;
   line-height: 1.5;
 }
 
 .entrar-success-btn {
-  padding: 14px 32px;
+  padding: var(--sp-4) var(--sp-8);
   background: linear-gradient(135deg, #0066CC 0%, #0088FF 100%);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-lg);
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -354,20 +354,20 @@
 /* Responsivo */
 @media (max-width: 480px) {
   .entrar-container {
-    padding: 76px 14px 16px;
+    padding: 76px 14px var(--sp-4);
     min-height: 100dvh;
   }
 
   .entrar-form-container {
-    padding: 40px 24px;
+    padding: var(--sp-10) var(--sp-6);
   }
 
   .entrar-header h1 {
-    font-size: 24px;
+    font-size: var(--fs-3xl);
   }
 
   .entrar-header p {
-    font-size: 14px;
+    font-size: var(--fs-base);
   }
 }
 
@@ -388,13 +388,13 @@
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 20px;
+  padding: var(--sp-5);
   pointer-events: auto;
 }
 
 .terms-modal-container {
   background-color: #ffffff;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 700px;
@@ -416,23 +416,23 @@
   gap: 14px;
   background: #ffffff;
   border-bottom: 1px solid #ececec;
-  padding: 14px 16px;
+  padding: 14px var(--sp-4);
 }
 
 .terms-modal-title {
   margin: 0;
-  font-size: 24px;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   color: #000000;
   line-height: 1.2;
-  padding-right: 8px;
+  padding-right: var(--sp-2);
 }
 
 .terms-modal-close {
   position: static;
   background: none;
   border: none;
-  font-size: 28px;
+  font-size: var(--fs-4xl);
   color: #666666;
   cursor: pointer;
   padding: 0;
@@ -441,7 +441,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   transition: all 0.2s ease;
   z-index: 10001;
 }
@@ -455,52 +455,52 @@
   color: #333333;
   overflow-y: auto;
   flex: 1;
-  padding: 24px 40px 40px;
+  padding: var(--sp-6) var(--sp-10) var(--sp-10);
 }
 
 .terms-section {
-  margin-bottom: 24px;
+  margin-bottom: var(--sp-6);
 }
 
 .terms-section h2 {
-  font-size: 16px;
+  font-size: var(--fs-lg);
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: var(--sp-3);
   color: #000000;
 }
 
 .terms-section p {
-  font-size: 14px;
+  font-size: var(--fs-base);
   line-height: 1.6;
   color: #555555;
-  margin-bottom: 10px;
+  margin-bottom: var(--sp-3);
 }
 
 .terms-section ul {
-  font-size: 14px;
+  font-size: var(--fs-base);
   line-height: 1.6;
   color: #555555;
-  margin-left: 20px;
-  margin-bottom: 10px;
+  margin-left: var(--sp-5);
+  margin-bottom: var(--sp-3);
 }
 
 .terms-section li {
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
 
 /* Scrollbar styling for better UX */
 .terms-modal-content::-webkit-scrollbar {
-  width: 8px;
+  width: var(--sp-2);
 }
 
 .terms-modal-content::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 .terms-modal-content::-webkit-scrollbar-thumb {
   background: #0088FF;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 .terms-modal-content::-webkit-scrollbar-thumb:hover {
@@ -510,7 +510,7 @@
 /* Mobile responsiveness */
 @media (max-width: 767.98px) {
   .terms-modal-overlay {
-    padding: 10px;
+    padding: var(--sp-3);
   }
 
   .terms-modal-container {
@@ -522,23 +522,23 @@
   }
 
   .terms-modal-header {
-    padding: 12px 14px;
+    padding: var(--sp-3) var(--sp-4);
   }
 
   .terms-modal-title {
-    font-size: 20px;
+    font-size: var(--fs-2xl);
   }
 
   .terms-modal-content {
-    padding: 18px 20px 24px;
+    padding: var(--sp-5) var(--sp-5) var(--sp-6);
   }
 
   .terms-section h2 {
-    font-size: 15px;
+    font-size: var(--fs-md);
   }
 
   .terms-section p,
   .terms-section ul {
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
 }

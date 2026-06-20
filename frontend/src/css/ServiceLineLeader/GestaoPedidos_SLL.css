@@ -272,38 +272,6 @@
   background: #f8fafc;
 }
 
-.sll-orders-pagination {
-  margin-top: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.sll-page-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid #d5deea;
-  background: #eef2f7;
-  color: #6f7888;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sll-page-btn.active {
-  background: #1b84f4;
-  border-color: #1b84f4;
-  color: #ffffff;
-}
-
-.sll-page-btn.ghost {
-  background: #f5f7fb;
-}
-
 .sll-order-hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;

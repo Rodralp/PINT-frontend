@@ -9,8 +9,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  z-index: 50; /* Above sidebar and content */
+  padding: 0 var(--sp-6);
+  z-index: 100; /* Above sidebar and content */
 }
 
 .topbar-logo {
@@ -37,8 +37,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  border-radius: 50%;
+  padding: var(--sp-2);
+  border-radius: var(--radius-full);
   transition: background-color 0.2s;
 }
 
@@ -50,13 +50,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: 8px;
-}
-
-.topbar-user-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
 }
 
 .topbar-avatar {
@@ -66,9 +59,6 @@
   object-fit: cover;
 }
 
-.topbar-more-btn {
-  margin-left: -8px; /* Pulled slightly closer to the user info */
-}
 
 /* Dropdown styles */
 .topbar-dropdown-container {
@@ -81,13 +71,13 @@
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
+  margin-top: var(--sp-2);
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
+  padding: var(--sp-2) 0;
   min-width: 200px;
-  z-index: 100;
+  z-index: 110;
   border: 1px solid #eaeaea;
   display: flex;
   flex-direction: column;
@@ -97,14 +87,14 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
+  padding: var(--sp-3) var(--sp-5);
   background: none;
   border: none;
   width: 100%;
   text-align: left;
   cursor: pointer;
   color: #1a1a1a;
-  font-size: 16px;
+  font-size: var(--fs-lg);
   transition: background-color 0.2s;
 }
 
@@ -118,7 +108,7 @@
 
 .topbar-language-current {
   margin-left: auto;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: #64748b;
   font-weight: 600;
 }
@@ -127,7 +117,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 0 10px 6px;
+  padding: 0 var(--sp-3) var(--sp-2);
 }
 
 .topbar-language-option {
@@ -138,9 +128,9 @@
   border: 1px solid #e2e8f0;
   background: #ffffff;
   color: #1f2937;
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-size: 13px;
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
   font-weight: 600;
   cursor: pointer;
 }
@@ -155,7 +145,7 @@
   width: 18px;
   height: 14px;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
 }
 
 /* Responsivo para telemóveis */
@@ -167,25 +157,19 @@
 
 @media (max-width: 575.98px) {
   .topbar {
-    padding: 0 12px;
+    padding: 0 var(--sp-3);
   }
   
   .topbar-right {
     gap: 4px;
   }
   
-  .topbar-user-name {
-    display: none; /* Esconde o nome no telemóvel para poupar espaço */
-  }
-  
   .topbar-user-info {
     margin-left: 0;
-    gap: 8px;
+    gap: var(--sp-2);
   }
 
   .topbar-icon-btn {
-    padding: 6px;
+    padding: var(--sp-2);
   }
 }
-
-

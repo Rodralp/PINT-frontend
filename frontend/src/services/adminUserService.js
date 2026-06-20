@@ -13,6 +13,7 @@ const sanitizeUsers = (items) => (
       points: Number(item?.points || 0),
       badges: Number(item?.badges || 0),
       serviceLines: Array.isArray(item?.serviceLines) ? item.serviceLines : [],
+      avatar: item?.avatar || null,
     }))
     : []
 );
