@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchMyServiceLine } from '../../services/serviceLineLeaderService';
 import '../../css/Consultor/LearningPaths_C.css';
 
@@ -89,6 +90,14 @@ function MinhaServiceLineSLL() {
     };
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar Service Line..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page learning-paths-page is-classic">
@@ -100,11 +109,9 @@ function MinhaServiceLineSLL() {
           </div>
         </header>
 
-        {isLoading && <p className="lp-progress-label">A carregar Service Line...</p>}
+        {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
-        {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
-
-        {!isLoading && !errorMessage && serviceLines.length > 0 && serviceLines.map((serviceLine) => (
+        {!errorMessage && serviceLines.length > 0 && serviceLines.map((serviceLine) => (
           <section key={serviceLine.id} className="lp-shell lp-shell-surface">
             <article className="lp-path-card">
               <header className="lp-path-banner">

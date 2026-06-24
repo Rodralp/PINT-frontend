@@ -18,6 +18,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import BadgeImage from '../../components/BadgeImage';
 import '../../css/Shared/GestaoPedidosDetalhe.css';
 import {
@@ -106,16 +107,7 @@ function PedidoAG() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="page ag-order-detail-page">
-          <header className="page-header ag-order-detail-header">
-            <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
-              <ArrowLeft size={22} />
-            </button>
-            <div>
-              <h1>A carregar pedido...</h1>
-            </div>
-          </header>
-        </div>
+        <LoadingSpinner fullPage message="A carregar pedido..." />
       </Layout>
     );
   }

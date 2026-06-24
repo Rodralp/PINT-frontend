@@ -43,7 +43,7 @@ function HistoricoTM() {
   const [activeTab, setActiveTab] = useState('service-lines');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [serviceLines, setServiceLines] = useState([]);
@@ -175,6 +175,14 @@ function HistoricoTM() {
     return <span className={className}>{mappedStatus || '-'}</span>;
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar histórico..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page historico-page">
@@ -208,7 +216,6 @@ function HistoricoTM() {
             </div>
           </div>
 
-          {isLoading && <LoadingSpinner message="A carregar..." />}
           {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
           {!isLoading && !errorMessage && (

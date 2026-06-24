@@ -517,6 +517,14 @@ function UtilizadoresAG() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar utilizadores..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
@@ -617,15 +625,7 @@ function UtilizadoresAG() {
               </thead>
 
               <tbody>
-                {isLoading && (
-                  <tr>
-                    <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
-                      <LoadingSpinner message="A carregar..." />
-                    </td>
-                  </tr>
-                )}
-
-                {!isLoading && pagedUsers.length === 0 && (
+                {pagedUsers.length === 0 && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
                       Sem resultados.

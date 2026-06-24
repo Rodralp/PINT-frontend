@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import '../../css/AdminGestor/EquipasSLA_AG.css';
 import { teamService } from '../../services/teamService';
 
@@ -264,18 +265,20 @@ function EquipasSLAAG() {
     }
   };
 
+  if (loading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar equipas..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
         <header className="page-header">
           <h1>Equipas e SLA</h1>
         </header>
-
-        {loading && (
-          <div className="ag-loading">
-            <p>A carregar dados...</p>
-          </div>
-        )}
 
         {error && (
           <div className="ag-error">
@@ -284,7 +287,7 @@ function EquipasSLAAG() {
           </div>
         )}
 
-        {!loading && !error && (
+        {!error && (
           <>
             <section className="ag-sla-alerts-card">
               <h2>

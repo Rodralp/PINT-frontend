@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ChevronDown, ChevronRight, Eye, EyeOff, FileText, Folder, FolderOpen, Pencil, Plus, X } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   fetchAdminLearningPaths,
   createAdminLearningPath,
@@ -1121,6 +1122,14 @@ function LearningPathsAG() {
     ? `${editor.mode === 'create' ? 'Novo' : 'Editar'} ${entityLabels[editor.type]}`
     : '';
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar Learning Paths..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page learning-paths-page is-classic is-admin">
@@ -1150,13 +1159,12 @@ function LearningPathsAG() {
         </header>
 
 
-        {isLoading && <p className="lp-progress-label">A carregar Learning Paths...</p>}
-        {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
-        {!isLoading && !errorMessage && statusActionError && (
+        {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
+        {!errorMessage && statusActionError && (
           <p className="lp-progress-label lp-admin-status-error">{statusActionError}</p>
         )}
 
-        {!isLoading && !errorMessage && (
+        {!errorMessage && (
           <section
             className="lp-admin-explorer"
             style={{ '--lp-admin-sidebar-width': `${sidebarWidth}px` }}

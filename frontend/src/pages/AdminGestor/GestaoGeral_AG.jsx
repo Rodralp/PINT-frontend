@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   fetchAdminGeneralManagement,
   updateAdminGeneralSettings,
@@ -315,6 +316,14 @@ function GestaoGeralAG() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar gestão geral..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
@@ -376,13 +385,7 @@ function GestaoGeralAG() {
             </button>
           </div>
 
-          {isLoading && (
-            <p className="ag-general-status" role="status">
-              A carregar dados...
-            </p>
-          )}
-
-          {!isLoading && (statusMessage || errorMessage) && (
+          {(statusMessage || errorMessage) && (
             <p className={`ag-general-status ${errorMessage ? 'error' : 'success'}`} role="status">
               {errorMessage || statusMessage}
             </p>
@@ -407,15 +410,7 @@ function GestaoGeralAG() {
                 </thead>
 
                 <tbody>
-                  {isLoading && (
-                    <tr>
-                      <td colSpan={7} className="empty-state ag-general-empty-row">
-                        A carregar...
-                      </td>
-                    </tr>
-                  )}
-
-                  {!isLoading && filteredNotificationRows.length === 0 && (
+                  {filteredNotificationRows.length === 0 && (
                     <tr>
                       <td colSpan={7} className="empty-state ag-general-empty-row">
                         Sem eventos para os filtros escolhidos.
@@ -423,7 +418,7 @@ function GestaoGeralAG() {
                     </tr>
                   )}
 
-                  {!isLoading && filteredNotificationRows.map((row) => (
+                  {filteredNotificationRows.map((row) => (
                     <tr key={row.id}>
                       <td className="ag-general-event-cell">{row.event}</td>
                       <td>
@@ -488,15 +483,11 @@ function GestaoGeralAG() {
                 <span className="ag-rgpd-col-topic" role="columnheader">Tópico</span>
               </div>
 
-                  {isLoading && (
-                    <p className="ag-rgpd-empty">A carregar...</p>
-                  )}
-
-                  {!isLoading && filteredRgpdTopics.length === 0 && (
+                  {filteredRgpdTopics.length === 0 && (
                 <p className="ag-rgpd-empty">Sem tópicos para os filtros escolhidos.</p>
               )}
 
-                  {!isLoading && filteredRgpdTopics.map((item) => (
+                  {filteredRgpdTopics.map((item) => (
                 <article key={item.id} className="ag-rgpd-topic-card" role="rowgroup">
                   <div className="ag-rgpd-topic-head" role="row">
                     <span className="ag-rgpd-col-num" role="cell">{item.id}</span>
@@ -516,15 +507,11 @@ function GestaoGeralAG() {
 
           {activeTab === 'geral' && (
             <div className="ag-settings-wrap">
-              {isLoading && (
-                <p className="ag-rgpd-empty">A carregar...</p>
-              )}
-
-              {!isLoading && filteredGeneralSettings.length === 0 && (
+              {filteredGeneralSettings.length === 0 && (
                 <p className="ag-rgpd-empty">Sem definições para os filtros escolhidos.</p>
               )}
 
-              {!isLoading && filteredGeneralSettings.map((item) => (
+              {filteredGeneralSettings.map((item) => (
                 <article key={item.id} className="ag-setting-row">
                   <span className="ag-setting-key-label">{item.key}</span>
                   <select
