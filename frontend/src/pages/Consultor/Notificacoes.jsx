@@ -103,6 +103,7 @@ function Notificacoes() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [notifications, setNotifications] = useState([]);
+  const [statusMessage, setStatusMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
   const [sortBy, setSortBy] = useState('recentes');
@@ -125,9 +126,11 @@ function Notificacoes() {
 
         const mapped = Array.isArray(data) ? data.map(mapNotificationItem) : [];
         setNotifications(mapped);
+        setStatusMessage('');
       } catch {
         if (isMounted) {
           setNotifications([]);
+          setStatusMessage('Não foi possível carregar as notificações. Tente novamente em alguns segundos.');
         }
       }
     };
@@ -263,6 +266,11 @@ function Notificacoes() {
         </header>
 
         <section className="shell notifications-shell">
+          {statusMessage && (
+            <div className="alert alert-warning py-2" role="status">
+              {statusMessage}
+            </div>
+          )}
           <div className="toolbar notifications-toolbar">
             <div className="search-wrap">
               <Search size={20} />

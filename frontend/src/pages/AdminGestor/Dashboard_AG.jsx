@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trophy, Award, Users, FileCheck2, FileText, CheckCircle2, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout';
 import SeeMore_PopUp from '../../components/SeeMore_PopUp';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchAdminGestorDashboard } from '../../services/dashboardService';
 import '../../css/TalentManager/Dashboard_TM.css';
 import '../../css/AdminGestor/Dashboard_AG.css';
@@ -56,6 +58,7 @@ const buildChartScale = (data) => {
 };
 
 function DashboardAG() {
+  const navigate = useNavigate();
   const badgesChartRef = useRef(null);
   const novosConsultoresChartRef = useRef(null);
   const [badgesTimelineValues, setBadgesTimelineValues] = useState(defaultBadgesTimelineValues);
@@ -65,7 +68,7 @@ function DashboardAG() {
   const [topConsultores, setTopConsultores] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
   const [dashboardStatusMessage, setDashboardStatusMessage] = useState('');
-  const [isTopConsultoresModalOpen, setIsTopConsultoresModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isActivitiesModalOpen, setIsActivitiesModalOpen] = useState(false);
   const badgesTimelineData = useMemo(
     () => buildDailyTimelineData(badgesTimelineValues, 'day-month'),
@@ -107,10 +110,11 @@ function DashboardAG() {
         setRecentActivities(Array.isArray(data.recentActivities) ? data.recentActivities : []);
 
         setDashboardStatusMessage('');
-      } catch (error) {
-        console.error('❌ Error loading dashboard data:', error);
+        setIsLoading(false);
+      } catch {
         if (isMounted) {
-          setDashboardStatusMessage('');
+          setDashboardStatusMessage('Não foi possível carregar o dashboard. Tente novamente em alguns segundos.');
+          setIsLoading(false);
         }
       }
     };
@@ -176,6 +180,14 @@ function DashboardAG() {
 
     return { xPercentage, yPercentage };
   });
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar dashboard..." />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -319,7 +331,7 @@ function DashboardAG() {
                     href="#consultores"
                     onClick={(e) => {
                       e.preventDefault();
-                      setIsTopConsultoresModalOpen(true);
+                      navigate('/admin-gestor/utilizadores');
                     }}
                   >
                     Ver todos
@@ -331,21 +343,25 @@ function DashboardAG() {
                       <div key={consultor.id} className="consultor-card">
                         <div className="consultor-header">
                           <div className="consultor-avatar">
-                            {consultor.avatar ? (
-                              <img src={consultor.avatar} alt={consultor.name} className="consultor-avatar-img" />
-                            ) : (
-                              <Users size={24} className="icon-color" />
-                            )}
+                            <img
+                              src={consultor.avatar || `/avatars/default-avatar.svg`}
+                              alt={consultor.name}
+                              className="consultor-avatar-img"
+                              onError={(e) => { e.currentTarget.src = `/avatars/default-avatar.svg`; }}
+                            />
                           </div>
                           <div className="consultor-info">
                             <div className="consultor-name">
-                              <span className="consultor-rank">#{consultor.rank}</span>
                               {consultor.name}
                             </div>
                             <div className="consultor-email">{consultor.email}</div>
                           </div>
                         </div>
                         <div className="consultor-stats">
+                          <div className="stat">
+                            <span className="stat-label">Rank</span>
+                            <span className="stat-value">#{consultor.rank}</span>
+                          </div>
                           <div className="stat">
                             <span className="stat-label">Pontos</span>
                             <span className="stat-value">{consultor.points}</span>
@@ -403,46 +419,6 @@ function DashboardAG() {
             </div>
           </div>
         </div>
-
-        <SeeMore_PopUp
-          isOpen={isTopConsultoresModalOpen}
-          onClose={() => setIsTopConsultoresModalOpen(false)}
-          title="Top Consultores"
-          items={topConsultores}
-          renderItem={(consultor) => {
-            return (
-              <div className="consultor-card" style={{ marginBottom: 0 }}>
-                <div className="consultor-header">
-                  <div className="consultor-avatar">
-                    {consultor.avatar ? (
-                      <img src={consultor.avatar} alt={consultor.name} className="consultor-avatar-img" />
-                    ) : (
-                      <Users size={24} className="icon-color" />
-                    )}
-                  </div>
-                  <div className="consultor-info">
-                    <div className="consultor-name">
-                      <span className="consultor-rank">#{consultor.rank}</span>
-                      {consultor.name}
-                    </div>
-                    <div className="consultor-email">{consultor.email}</div>
-                  </div>
-                </div>
-                <div className="consultor-stats">
-                  <div className="stat">
-                    <span className="stat-label">Pontos</span>
-                    <span className="stat-value">{consultor.points}</span>
-                  </div>
-                  <div className="stat">
-                    <span className="stat-label">Badges</span>
-                    <span className="stat-value">{consultor.badges}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          }}
-          emptyMessage="Sem dados de consultores para apresentar."
-        />
 
         <SeeMore_PopUp
           isOpen={isActivitiesModalOpen}

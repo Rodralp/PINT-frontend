@@ -3,7 +3,7 @@
 }
 
 .catalog-controls { /*ainda usado*/
-  grid-template-columns: minmax(0, 1fr) minmax(0, 220px) minmax(0, 220px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 180px) minmax(0, 140px);
   margin-bottom: 10px;
 }
 
@@ -143,7 +143,7 @@
 
 @media (max-width: 900px) {
   .catalog-controls {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 140px) minmax(0, 120px);
   }
 
   .catalog-action-btn,
@@ -164,11 +164,7 @@
 
 @media (min-width: 901px) and (max-width: 1199.98px) {
   .catalog-controls {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .catalog-dropdown:last-child {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 160px) minmax(0, 130px);
   }
 }
 

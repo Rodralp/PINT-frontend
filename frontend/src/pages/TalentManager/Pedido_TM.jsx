@@ -19,6 +19,7 @@ import {
 import Layout from '../../components/Layout';
 import BadgeImage from '../../components/BadgeImage';
 import '../../css/Shared/GestaoPedidosDetalhe.css';
+import '../../css/TalentManager/GestaoPedidos_TM.css';
 import {
   fetchManagedRequestById,
   getManagedEvidenceDownloadUrl,

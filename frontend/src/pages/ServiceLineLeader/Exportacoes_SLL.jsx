@@ -13,6 +13,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import Pagination from '../../components/Pagination';
 import BadgeImage from '../../components/BadgeImage';
 import { fetchManagedRequests } from '../../services/requestManagementService';
@@ -1099,17 +1100,7 @@ function ExportacoesSLL() {
   if (loading) {
     return (
       <Layout>
-        <div className="page tm-export-page">
-          <header className="page-header tm-export-header">
-            <button type="button" className="tm-export-back-btn" onClick={handleGoBack} aria-label="Voltar">
-              <ArrowLeft size={22} />
-            </button>
-            <h1>Exportações Service Line</h1>
-          </header>
-          <div className="tm-export-loading">
-            <p>A carregar dados...</p>
-          </div>
-        </div>
+        <LoadingSpinner fullPage message="A carregar dados..." />
       </Layout>
     );
   }

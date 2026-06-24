@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import Layout from '../components/Layout';
 import SeeMore_PopUp from '../components/SeeMore_PopUp';
+import LoadingSpinner from '../components/LoadingSpinner';
 import {
   Award,
   Flame,
@@ -95,6 +96,7 @@ function Profile() {
   const [profileLocation, setProfileLocation] = useState('Portugal');
   const [profileJoined, setProfileJoined] = useState('2023');
   const [statusMessage, setStatusMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const storedLoginData = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
   const loginData = storedLoginData ? JSON.parse(storedLoginData) : null;
   const userName = loginData?.nome || t('app_user_default');
@@ -155,7 +157,7 @@ function Profile() {
         setStatusMessage('');
       } catch {
         if (isMounted) {
-          setStatusMessage('');
+          setStatusMessage('Não foi possível carregar o perfil. Tente novamente em alguns segundos.');
         }
       }
 
@@ -216,6 +218,10 @@ function Profile() {
       } catch {
         // fallback for users without vitrine
       }
+
+      if (isMounted) {
+        setIsLoading(false);
+      }
     };
 
     loadProfile();
@@ -224,6 +230,14 @@ function Profile() {
       isMounted = false;
     };
   }, []);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar perfil..." />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

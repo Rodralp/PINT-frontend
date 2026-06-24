@@ -1,5 +1,6 @@
 import './css/App.css'
-import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import './translations/i18n'
 
 // Remove Bitwarden notification bar if present.
@@ -50,9 +51,46 @@ import Preferencias from './pages/Consultor/Preferencias'
 import ConsultorPreferencesGuard from './components/ConsultorPreferencesGuard'
 import Definicoes from './pages/Definicoes'
 
+const DASHBOARD_PATH_BY_ROLE = {
+  consultor: '/consultor/dashboard',
+  'talent-manager': '/talent-manager/dashboard',
+  'service-line-leader': '/service-line-leader/dashboard',
+  'admin-gestor': '/admin-gestor/dashboard',
+};
+
+function AutoLoginRedirect() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const TRULY_PUBLIC = ['/', '/galeria-publica'];
+    const isTrulyPublic = TRULY_PUBLIC.some(
+      (p) => location.pathname === p || location.pathname.startsWith('/galeria-publica')
+    );
+    if (isTrulyPublic) return;
+
+    const AUTH_PAGES = ['/entrar', '/criar'];
+    const isAuthPage = AUTH_PAGES.some((p) => location.pathname === p);
+    if (!isAuthPage) return;
+
+    try {
+      const raw = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data?.token) {
+          const path = DASHBOARD_PATH_BY_ROLE[data.role] || '/consultor/dashboard';
+          window.location.replace(path);
+        }
+      }
+    } catch { /* ignore */ }
+  }, [location.pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <AutoLoginRedirect />
       <Routes>
         <Route path='/' element={<LandingPage />} />
         <Route path='/galeria-publica' element={<GaleriaPublica />} />

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchLearningPaths } from '../../services/consultorService';
 import '../../css/Consultor/LearningPaths_C.css';
 
@@ -399,6 +400,14 @@ function LearningPaths() {
     );
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar Learning Paths..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="learning-paths-page is-classic">
@@ -416,10 +425,9 @@ function LearningPaths() {
           </div>
         </header>
 
-        {isLoading && <p className="lp-progress-label">A carregar Learning Paths...</p>}
-        {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
+        {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
-        {!isLoading && !errorMessage && !selectedServiceLine && renderLearningPathView()}
+        {!errorMessage && !selectedServiceLine && renderLearningPathView()}
         {!errorMessage && selectedServiceLine && renderServiceLineView()}
       </div>
     </Layout>

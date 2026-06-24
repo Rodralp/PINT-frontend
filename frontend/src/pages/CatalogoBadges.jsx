@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Clock3, Filter, Search, SlidersHorizontal, Trophy, Plus } from 'lucide-react';
+import { Clock3, Filter, Search, SlidersHorizontal, Trophy, Plus, CheckCircle2, SearchCheck, TimerReset, AlertTriangle } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../components/Layout';
 import BadgeImage from '../components/BadgeImage';
 import Pagination from '../components/Pagination';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { fetchCatalogBadges } from '../services/consultorService';
 import '../css/Consultor/CatalogoBadges_C.css';
 
@@ -49,6 +50,61 @@ const normalizeBadgeItem = (item) => {
   };
 };
 
+const badgeStates = [
+  {
+    id: 'aprovado',
+    label: 'Aprovado',
+    tint: 'rgba(34, 197, 94, 0.18)',
+    border: 'rgba(21, 128, 61, 0.48)',
+    buttonBg: '#dcfce7',
+    buttonBorder: '#16a34a',
+    buttonColor: '#15803d',
+    Icon: CheckCircle2,
+  },
+  {
+    id: 'pendente-tm',
+    label: 'Em Validação',
+    tint: 'rgba(250, 204, 21, 0.14)',
+    border: 'rgba(234, 179, 8, 0.36)',
+    buttonBg: '#fef3c7',
+    buttonBorder: '#eab308',
+    buttonColor: '#b45309',
+    Icon: SearchCheck,
+  },
+  {
+    id: 'pendente-sll',
+    label: 'Em Validação',
+    tint: 'rgba(250, 204, 21, 0.14)',
+    border: 'rgba(234, 179, 8, 0.36)',
+    buttonBg: '#fef3c7',
+    buttonBorder: '#eab308',
+    buttonColor: '#b45309',
+    Icon: SearchCheck,
+  },
+  {
+    id: 'candidatura_em_progresso',
+    label: 'Candidatura em Progresso',
+    tint: 'rgba(59, 130, 246, 0.12)',
+    border: 'rgba(37, 99, 235, 0.34)',
+    buttonBg: '#dbeafe',
+    buttonBorder: '#2563eb',
+    buttonColor: '#1d4ed8',
+    Icon: TimerReset,
+  },
+  {
+    id: 'rejeitado',
+    label: 'Rejeitado',
+    tint: 'rgba(248, 113, 113, 0.12)',
+    border: 'rgba(239, 68, 68, 0.34)',
+    buttonBg: '#fee2e2',
+    buttonBorder: '#ef4444',
+    buttonColor: '#dc2626',
+    Icon: AlertTriangle,
+  },
+];
+
+const badgeStateMap = Object.fromEntries(badgeStates.map((s) => [s.id, s]));
+
 function CatalogoBadges() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,6 +113,7 @@ function CatalogoBadges() {
   const catalogPath = isAdminRoute ? '/admin-gestor/catalogo-badges' : '/consultor/catalogo-badges';
   const [badgeItems, setBadgeItems] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
   const [sortBy, setSortBy] = useState('points_desc');
@@ -93,10 +150,12 @@ function CatalogoBadges() {
           setBadgeItems([]);
           setStatusMessage('');
         }
+        setIsLoading(false);
       } catch {
         if (isMounted) {
           setBadgeItems([]);
-          setStatusMessage('');
+          setStatusMessage('Não foi possível carregar os badges. Tente novamente em alguns segundos.');
+          setIsLoading(false);
         }
       }
     };
@@ -263,11 +322,19 @@ function CatalogoBadges() {
     setShowSortDropdown(false);
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar catálogo..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>{t('catalog_title')}</h1>
+          <h1>{isAdminRoute ? t('management_title') : t('catalog_title')}</h1>
           {isAdminRoute && (
             <div className="catalog-header-actions">
               <button type="button" className="btn-primary catalog-create-btn" onClick={handleCreateBadge}>
@@ -356,6 +423,8 @@ function CatalogoBadges() {
               const levelLabel = item.isSpecial ? 'Especial' : t(item.levelKey || '');
               const badgeDate = item.date || '--';
               const expirationInfo = getExpirationStatus(item.validade);
+              const currentState = badgeStateMap[item.stateId] || null;
+              const { Icon } = currentState || {};
 
               return (
                 <article
@@ -365,6 +434,10 @@ function CatalogoBadges() {
                   tabIndex={0}
                   onClick={() => handleOpenBadgeDetails(item)}
                   onKeyDown={(event) => handleCardKeyDown(event, item)}
+                  style={currentState ? {
+                    background: currentState.tint,
+                    borderColor: currentState.border,
+                  } : undefined}
                 >
                   {expirationInfo && expirationInfo.status === 'expiring' && (
                     <div style={{
@@ -407,6 +480,24 @@ function CatalogoBadges() {
                       <Trophy size={14} />
                       <span>{item.points} {t('points')}</span>
                     </div>
+                    {item.status === 'obtido' && (
+                      <div className="catalog-meta-row">
+                        <CheckCircle2 size={14} />
+                        <span>Obtida</span>
+                      </div>
+                    )}
+                    {item.status === 'rejeitado' && (
+                      <div className="catalog-meta-row">
+                        <AlertTriangle size={14} />
+                        <span>Rejeitado</span>
+                      </div>
+                    )}
+                    {item.status !== 'obtido' && item.status !== 'rejeitado' && item.status !== 'visualizar' && (
+                      <div className="catalog-meta-row">
+                        <TimerReset size={14} />
+                        <span>Em progresso</span>
+                      </div>
+                    )}
                     <div className="catalog-meta-row" style={{
                       color: expirationInfo?.status === 'expiring' ? '#b45309' : expirationInfo?.status === 'expired' ? '#dc2626' : '#6b7280',
                     }}>
@@ -422,6 +513,32 @@ function CatalogoBadges() {
                       </span>
                     </div>
                   </div>
+
+                  {currentState && Icon && (
+                    <button
+                      type="button"
+                      aria-label={currentState.label}
+                      title={currentState.label}
+                      onClick={(event) => { event.stopPropagation(); handleOpenBadgeDetails(item); }}
+                      style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '10px',
+                        width: '34px',
+                        height: '34px',
+                        borderRadius: '8px',
+                        border: `2px solid ${currentState.buttonBorder}`,
+                        background: currentState.buttonBg,
+                        color: currentState.buttonColor,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Icon size={18} strokeWidth={2} />
+                    </button>
+                  )}
                 </article>
               );
             })}

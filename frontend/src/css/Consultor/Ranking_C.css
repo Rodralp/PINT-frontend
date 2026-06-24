@@ -4,6 +4,10 @@
   font-size: 13px;
 }
 
+.catalog-controls {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 180px) minmax(0, 140px);
+}
+
 /* ── Card Grid ────────────────────────── */
 .ranking-grid {
   margin-top: 14px;
@@ -132,7 +136,7 @@
 
 @media (max-width: 920px) {
   .catalog-controls {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 140px) minmax(0, 120px);
   }
 
   .ranking-grid {

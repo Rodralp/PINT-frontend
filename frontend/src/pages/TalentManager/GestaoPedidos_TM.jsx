@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import '../../css/TalentManager/GestaoPedidos_TM.css';
 import { fetchManagedRequests } from '../../services/requestManagementService';
 
@@ -205,6 +206,14 @@ function GestaoPedidosTM() {
       : <ArrowDown size={12} aria-hidden="true" />;
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar pedidos..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
@@ -233,8 +242,7 @@ function GestaoPedidosTM() {
         </section>
 
         <section className="shell">
-          {isLoading && <p>A carregar pedidos...</p>}
-          {!isLoading && statusMessage && <p>{statusMessage}</p>}
+          {statusMessage && <p>{statusMessage}</p>}
 
           <div className="ag-orders-board-header">
             <div>

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
 import BadgeImage from '../../components/BadgeImage';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchMyBadges } from '../../services/consultorService';
 import '../../css/Consultor/CatalogoBadges_C.css';
 
@@ -91,6 +92,7 @@ function MeusBadges() {
   const [sortBy, setSortBy] = useState(defaultSort);
   const [badgeItems, setBadgeItems] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [columnsCount, setColumnsCount] = useState(getColumnsCount);
   
   const filterDropdownRef = useRef(null);
@@ -120,11 +122,13 @@ function MeusBadges() {
         if (isMounted) {
           setBadgeItems(Array.isArray(data) ? data : []);
           setStatusMessage('');
+          setIsLoading(false);
         }
       } catch {
         if (isMounted) {
           setBadgeItems([]);
           setStatusMessage('Não foi possível carregar os badges. Tente novamente em alguns segundos.');
+          setIsLoading(false);
         }
       }
     };
@@ -282,6 +286,14 @@ function MeusBadges() {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar badges..." />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

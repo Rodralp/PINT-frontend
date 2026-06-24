@@ -108,8 +108,12 @@ const ensureLoggedAccountId = async () => {
 };
 
 export async function fetchCatalogBadges(includeExpired = false) {
-  const params = includeExpired ? '?includeExpired=true' : '';
-  const response = await apiClient.get(`/consultor/catalog-badges${params}`);
+  const accountId = await ensureLoggedAccountId();
+  const params = new URLSearchParams();
+  if (includeExpired) params.set('includeExpired', 'true');
+  if (accountId) params.set('accountId', accountId);
+  const qs = params.toString();
+  const response = await apiClient.get(`/consultor/catalog-badges${qs ? `?${qs}` : ''}`);
   return response.data;
 }
 

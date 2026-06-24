@@ -15,6 +15,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import BadgeImage from './components/BadgeImage';
+import LoadingSpinner from './components/LoadingSpinner';
 import apiClient from './services/apiClient';
 import './css/PerfilPublico.css';
 import { fetchPublicProfile } from './services/consultorService';
@@ -49,6 +50,7 @@ function PerfilPublico() {
 
 		const [remoteConsultor, setRemoteConsultor] = useState(null);
 		const [vitrineItems, setVitrineItems] = useState([]);
+		const [isLoading, setIsLoading] = useState(true);
 
 		const consultor = useMemo(() => {
 			if (remoteConsultor) {
@@ -146,8 +148,10 @@ function PerfilPublico() {
 							}
 						}
 					} catch { /* no vitrine */ }
+
+					if (isMounted) setIsLoading(false);
 				} catch (e) {
-					// ignore and keep fallback
+					if (isMounted) setIsLoading(false);
 				}
 			};
 
@@ -185,6 +189,15 @@ function PerfilPublico() {
 	const handleGoBack = () => {
 		navigate('/galeria-publica');
 	};
+
+	if (isLoading) {
+		return (
+			<div className="pp-root">
+				<Navbar />
+				<LoadingSpinner fullPage message="A carregar perfil..." />
+			</div>
+		);
+	}
 
 	return (
 		<div className="pp-root">

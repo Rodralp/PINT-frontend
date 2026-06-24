@@ -5,6 +5,7 @@
   "topbar_settings": "Configuración",
   "topbar_language": "Idioma",
   "topbar_logout": "Salir",
+  "topbar_back_to_dashboard": "Volver al Dashboard",
 
   "sidebar_section_consultor": "Consultor",
   "sidebar_section_tm": "Talent Manager",
@@ -13,6 +14,7 @@
 
   "sidebar_dashboard": "Dashboard",
   "sidebar_catalog_badges": "Catálogo de Badges",
+  "sidebar_management_badges": "Gestión de Badges",
   "sidebar_my_badges": "Mis Badges",
   "sidebar_learning_paths": "Learning Paths",
   "sidebar_my_requests": "Mis Solicitudes",
@@ -107,6 +109,7 @@
   "settings_go_home": "Ir a la página inicial",
 
   "catalog_title": "Catálogo de Badges",
+  "management_title": "Gestión de Badges",
   "my_badges_title": "Mis Badges",
   "exports_title": "Exportaciones",
   "exports_tab_badges": "Badges",

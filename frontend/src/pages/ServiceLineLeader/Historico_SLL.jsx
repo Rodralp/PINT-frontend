@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Search, Eye, X } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   fetchHistoricoAreasSLL,
   fetchHistoricoBadgesSLL,
@@ -254,7 +255,7 @@ function HistoricoSLL() {
             </div>
           )}
 
-          {isLoading && <p className="lp-progress-label">A carregar...</p>}
+          {isLoading && <LoadingSpinner message="A carregar..." />}
           {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
           {!isLoading && !errorMessage && (

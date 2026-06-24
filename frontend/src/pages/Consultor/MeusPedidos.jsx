@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchMyRequests } from '../../services/consultorService';
 import '../../css/Consultor/MeusPedidos.css';
 
@@ -16,24 +17,25 @@ const statusConfig = {
   aprovado: {
     label: 'Aprovado',
     cardClass: 'status-card approved',
-    badgeClass: 'request-status approved',
+    badgeClass: 'success',
     Icon: CheckCircle2,
   },
   pendente: {
     label: 'Pendente',
     cardClass: 'status-card pending',
-    badgeClass: 'request-status pending',
+    badgeClass: 'warning',
     Icon: Search,
   },
   rejeitado: {
     label: 'Rejeitado',
     cardClass: 'status-card rejected',
-    badgeClass: 'request-status rejected',
+    badgeClass: 'danger',
     Icon: AlertTriangle,
   },
   validacao: {
     label: 'Em Validação',
     cardClass: 'status-card in-review',
+    badgeClass: 'warning',
     Icon: SearchCheck,
   },
 };
@@ -48,9 +50,21 @@ const ITEMS_PER_PAGE = 10;
 
 function MeusPedidos() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [allRequests, setAllRequests] = useState([]);
-  const [activeFilters, setActiveFilters] = useState(filters.map((filter) => filter.id));
+  const [statusMessage, setStatusMessage] = useState('');
+  const filtersFromUrl = useMemo(() => {
+    const param = searchParams.get('filters');
+    if (param) {
+      const ids = param.split(',').map((s) => s.trim()).filter(Boolean);
+      const validIds = ids.filter((id) => filters.some((f) => f.id === id));
+      return validIds.length > 0 ? validIds : filters.map((f) => f.id);
+    }
+    return filters.map((filter) => filter.id);
+  }, []);
+  const [activeFilters, setActiveFilters] = useState(filtersFromUrl);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -60,10 +74,14 @@ function MeusPedidos() {
         const data = await fetchMyRequests();
         if (isMounted && Array.isArray(data)) {
           setAllRequests(data);
+          setStatusMessage('');
+          setIsLoading(false);
         }
       } catch {
         if (isMounted) {
           setAllRequests([]);
+          setStatusMessage('Não foi possível carregar os pedidos. Tente novamente em alguns segundos.');
+          setIsLoading(false);
         }
       }
     };
@@ -118,12 +136,26 @@ function MeusPedidos() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar pedidos..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page orders-page">
         <header className="page-header orders-header">
           <h1>Meus Pedidos</h1>
         </header>
+
+        {statusMessage && (
+          <div className="alert alert-warning py-2" role="status">
+            {statusMessage}
+          </div>
+        )}
 
         <div className="status-grid orders-status-grid">
           <article className="status-card default submitted">

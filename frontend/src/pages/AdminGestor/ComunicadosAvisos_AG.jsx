@@ -55,6 +55,7 @@ function ComunicadosAvisosAG() {
   const [uploadErrors, setUploadErrors] = useState([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [sendStatus, setSendStatus] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
 
   const fileInputRef = useRef(null);
 
@@ -96,10 +97,12 @@ function ComunicadosAvisosAG() {
 
         setRecipientsDirectory(normalizedRecipients);
         setServiceLines(normalizedServiceLines);
+        setStatusMessage('');
       } catch {
         if (isMounted) {
           setRecipientsDirectory([]);
           setServiceLines([]);
+          setStatusMessage('Não foi possível carregar os dados. Tente novamente em alguns segundos.');
         }
       }
     };
@@ -307,6 +310,12 @@ function ComunicadosAvisosAG() {
         <header className="page-header">
           <h1>Comunicados e Avisos</h1>
         </header>
+
+        {statusMessage && (
+          <div className="alert alert-warning py-2" role="status">
+            {statusMessage}
+          </div>
+        )}
 
         <section className="ag-announcements-compose-card">
           <label htmlFor="ag-announcement-title">Título</label>

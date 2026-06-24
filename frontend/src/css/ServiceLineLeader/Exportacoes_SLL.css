@@ -71,7 +71,7 @@
 
 .tm-export-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 182px) minmax(0, 182px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 180px) minmax(0, 140px);
   gap: 12px;
   margin-bottom: 12px;
 }

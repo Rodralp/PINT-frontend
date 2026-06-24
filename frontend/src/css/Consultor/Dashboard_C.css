@@ -250,6 +250,16 @@
   background: #fff;
 }
 
+.dashboard-clickable {
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.dashboard-clickable:hover {
+  background-color: #f8f9fb;
+  border-color: #d0d7e2;
+}
+
 .dashboard-list-badge {
   width: 34px;
   height: 34px;
@@ -258,6 +268,13 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  background: transparent;
+}
+
+.dashboard-list-badge-img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
 .dashboard-list-content {

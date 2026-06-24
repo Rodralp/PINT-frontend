@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Layout from '../components/Layout'
 import BadgeImage from '../components/BadgeImage'
+import LoadingSpinner from '../components/LoadingSpinner'
 import apiClient from '../services/apiClient'
-import { fetchMyBadges, deleteUserImage } from '../services/consultorService'
+import { fetchMyBadges } from '../services/consultorService'
 import '../css/AdminGestor/BadgeAdmin.css'
 import '../css/Consultor/CatalogoBadges_C.css'
 import { portugueseLocations } from '../utils/locations'
@@ -57,6 +58,8 @@ export default function ProfileEdit() {
 
   const [statusMessage, setStatusMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -99,7 +102,14 @@ export default function ProfileEdit() {
             setAvatar(imgRes.data.image)
           }
         } catch { /* no image */ }
-      } catch { /* silent */ }
+        setLoadError('');
+      } catch {
+        setLoadError('Não foi possível carregar os dados. Tente novamente em alguns segundos.');
+      }
+
+      if (isMounted) {
+        setIsLoading(false)
+      }
     }
 
     loadData()
@@ -121,16 +131,6 @@ export default function ProfileEdit() {
       setAvatarFile(file)
     }
     reader.readAsDataURL(file)
-  }
-
-  const handleRemoveImage = async () => {
-    try {
-      await deleteUserImage()
-      setAvatar('/avatars/default-avatar.svg')
-      setAvatarFile(null)
-    } catch {
-      setStatusMessage('Erro ao remover foto.')
-    }
   }
 
   const addBadgeToVitrine = (badge) => {
@@ -222,6 +222,14 @@ export default function ProfileEdit() {
     navigate('/profile')
   }
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar dados do perfil..." />
+      </Layout>
+    )
+  }
+
   return (
     <Layout>
       <div className="badge-admin-page">
@@ -246,24 +254,23 @@ export default function ProfileEdit() {
           </div>
         </header>
 
+        {loadError && (
+          <div className="badge-admin-alert" role="status">{loadError}</div>
+        )}
+
         {statusMessage && (
           <div className="badge-admin-alert" role="status">{statusMessage}</div>
         )}
 
         <section className="badge-admin-card">
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-            <div style={{ flexShrink: 0, width: 120, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div
-                style={{ width: 120, height: 120, borderRadius: 12, overflow: 'hidden', border: '2px dashed #d1d5db', cursor: 'pointer', flexShrink: 0 }}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <img
-                  className="badge-admin-image-preview"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  src={avatar}
-                  alt="avatar"
-                />
-              </div>
+            <div style={{ flexShrink: 0, cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
+              <img
+                className="badge-admin-image-preview"
+                style={{ width: 120, height: 120, borderRadius: 12, objectFit: 'cover', border: '2px dashed #d1d5db' }}
+                src={avatar}
+                alt="avatar"
+              />
               <input
                 ref={fileInputRef}
                 type="file"
@@ -272,15 +279,6 @@ export default function ProfileEdit() {
                 style={{ display: 'none' }}
               />
               <p style={{ fontSize: 12, color: '#6b7280', textAlign: 'center', marginTop: 4 }}>Clique para mudar foto</p>
-              {avatarFile && (
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  style={{ marginTop: 4, fontSize: 12, color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                  Remover foto
-                </button>
-              )}
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', gap: 16 }}>

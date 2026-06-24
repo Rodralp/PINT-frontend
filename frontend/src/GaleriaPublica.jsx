@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import { Clock3, Search, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Clock3, Search, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import BadgeImage from './components/BadgeImage';
+import LoadingSpinner from './components/LoadingSpinner';
 import { fetchCatalogBadges, fetchRankingConsultores } from './services/consultorService';
 import './css/GaleriaPublica.css';
 import './css/Consultor/CatalogoBadges_C.css';
@@ -75,14 +76,6 @@ const normalizeConsultores = (items) => {
   }));
 };
 
-function getColumnsCount() {
-  const width = window.innerWidth;
-  if (width > 1400) return 5;
-  if (width > 1200) return 4;
-  if (width > 900) return 3;
-  return 2;
-}
-
 function GaleriaPublica() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -92,23 +85,9 @@ function GaleriaPublica() {
   });
   const [badges, setBadges] = useState([]);
   const [consultores, setConsultores] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [columnsCount, setColumnsCount] = useState(getColumnsCount);
-  const [consultorPage, setConsultorPage] = useState(1);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setColumnsCount(getColumnsCount());
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    setConsultorPage(1);
-  }, [searchTerm]);
 
   useEffect(() => {
     let isMounted = true;
@@ -126,6 +105,7 @@ function GaleriaPublica() {
 
         setBadges(normalizeBadges(badgesData));
         setConsultores(normalizeConsultores(consultoresData));
+        setIsLoading(false);
       } catch {
         if (!isMounted) {
           return;
@@ -133,6 +113,7 @@ function GaleriaPublica() {
 
         setBadges([]);
         setConsultores([]);
+        setIsLoading(false);
       }
     };
 
@@ -177,12 +158,6 @@ function GaleriaPublica() {
     ));
   }, [sortedConsultores, normalizedSearch]);
 
-  const consultorItemsPerPage = columnsCount * 2;
-  const consultorTotalPages = Math.max(1, Math.ceil(filteredConsultores.length / consultorItemsPerPage));
-  const pagedConsultores = useMemo(() => {
-    const start = (consultorPage - 1) * consultorItemsPerPage;
-    return filteredConsultores.slice(start, start + consultorItemsPerPage);
-  }, [filteredConsultores, consultorPage, consultorItemsPerPage]);
 
   const displayedBadges = filteredBadges;
 
@@ -215,6 +190,15 @@ function GaleriaPublica() {
       handleOpenConsultorProfile(consultor);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="gp-root">
+        <Navbar />
+        <LoadingSpinner fullPage message="A carregar galeria..." />
+      </div>
+    );
+  }
 
   return (
     <div className="gp-root">
@@ -280,48 +264,53 @@ function GaleriaPublica() {
                 </article>
               ))}
             </section>*/
-            <div className="catalog-grid">
-              {displayedBadges.map((item) => (
-                <article
-                  key={item.id}
-                  className="catalog-card"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => handleOpenBadgeDetails(item)}
-                  onKeyDown={(event) => handleCardKeyDown(event, item)}
-                >
-                  <div className="catalog-badge-frame">
-                    <BadgeImage
-                      className="catalog-badge-image"
-                      src={item.badgeImage}
-                      alt={item.levelKey ? t(item.levelKey) : item.levelLabel}
-                      frameSrc={item.badgeFrameImage}
-                      levelKey={item.levelKey}
-                      typeId={item.typeId}
-                      levelLabel={item.levelLabel}
-                    />
-                  </div>
-
-                  <div className="catalog-card-title">{item.name || item.area || 'Badge'}</div>
-                  <div className="catalog-card-level">{item.levelKey ? t(item.levelKey) : item.levelLabel}</div>
-
-                  <div className="catalog-card-meta">
-                    <div className="catalog-meta-row">
-                      <Trophy size={14} />
-                      <span>{item.points} {t('points')}</span>
+            <>
+              <div className="catalog-grid">
+                {displayedBadges.map((item) => (
+                  <article
+                    key={item.id}
+                    className="catalog-card"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleOpenBadgeDetails(item)}
+                    onKeyDown={(event) => handleCardKeyDown(event, item)}
+                  >
+                    <div className="catalog-badge-frame">
+                      <BadgeImage
+                        className="catalog-badge-image"
+                        src={item.badgeImage}
+                        alt={item.levelKey ? t(item.levelKey) : item.levelLabel}
+                        frameSrc={item.badgeFrameImage}
+                        levelKey={item.levelKey}
+                        typeId={item.typeId}
+                        levelLabel={item.levelLabel}
+                      />
                     </div>
-                    <div className="catalog-meta-row">
-                      <Clock3 size={14} />
-                      <span>{item.date}</span>
+
+                    <div className="catalog-card-title">{item.name || item.area || 'Badge'}</div>
+                    <div className="catalog-card-level">{item.levelKey ? t(item.levelKey) : item.levelLabel}</div>
+
+                    <div className="catalog-card-meta">
+                      <div className="catalog-meta-row">
+                        <Trophy size={14} />
+                        <span>{item.points} {t('points')}</span>
+                      </div>
+                      <div className="catalog-meta-row">
+                        <Clock3 size={14} />
+                        <span>{item.date}</span>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+                  </article>
+                ))}
+              </div>
+              {displayedBadges.length === 0 && (
+                <div className="catalog-empty-state">Nenhum badge encontrado.</div>
+              )}
+            </>
           ) : (
             <>
               <section className="catalog-grid gp-consultor-grid" aria-label={t('public_gallery_consultores')}>
-                {pagedConsultores.map((consultor) => (
+                {filteredConsultores.map((consultor) => (
                   <article
                     key={consultor.id}
                     className="catalog-card gp-consultor-card"
@@ -352,21 +341,6 @@ function GaleriaPublica() {
               </section>
               {filteredConsultores.length === 0 && (
                 <div className="catalog-empty-state">Nenhum consultor encontrado.</div>
-              )}
-              {consultorTotalPages > 1 && (
-              <div className="catalog-pagination" role="navigation" aria-label={t('pagination')}>
-                <button type="button" className="catalog-page-btn ghost" onClick={() => setConsultorPage((p) => Math.max(1, p - 1))} disabled={consultorPage === 1}>
-                  <ChevronLeft size={16} />
-                </button>
-                {Array.from({ length: consultorTotalPages }, (_, i) => i + 1).map((pn) => (
-                  <button key={pn} type="button" className={`catalog-page-btn ${pn === consultorPage ? 'active' : ''}`} onClick={() => setConsultorPage(pn)}>
-                    {pn}
-                  </button>
-                ))}
-                <button type="button" className="catalog-page-btn ghost" onClick={() => setConsultorPage((p) => Math.min(consultorTotalPages, p + 1))} disabled={consultorPage === consultorTotalPages}>
-                  <ChevronRight size={16} />
-                </button>
-              </div>
               )}
             </>
           )}

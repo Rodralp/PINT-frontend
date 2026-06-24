@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Check, Search, ShieldCheck, UserPlus2, X } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import '../../css/AdminGestor/Utilizadores_AG.css';
 import {
   createAdminUser,
@@ -619,7 +620,7 @@ function UtilizadoresAG() {
                 {isLoading && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
-                      A carregar...
+                      <LoadingSpinner message="A carregar..." />
                     </td>
                   </tr>
                 )}

@@ -9,13 +9,14 @@ import {
   Eye,
   EyeOff,
   FileText,
-  Loader2,
   Users,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import BadgeImage from '../../components/BadgeImage';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchPedidoDetail } from '../../services/consultorService';
 import '../../css/Shared/GestaoPedidosDetalhe.css';
+import '../../css/TalentManager/GestaoPedidos_TM.css';
 
 const statusMeta = {
   pendente: {
@@ -81,19 +82,7 @@ function PedidoDetalheC() {
   if (loading) {
     return (
       <Layout>
-        <div className="tm-order-detail-page">
-          <header className="tm-order-detail-header">
-            <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
-              <ArrowLeft size={22} />
-            </button>
-            <div>
-              <h1>Candidatura</h1>
-            </div>
-          </header>
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
-            <Loader2 size={32} className="animate-spin" />
-          </div>
-        </div>
+        <LoadingSpinner fullPage message="A carregar pedido..." />
       </Layout>
     );
   }

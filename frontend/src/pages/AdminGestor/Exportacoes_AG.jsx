@@ -12,6 +12,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import Pagination from '../../components/Pagination';
 import BadgeImage from '../../components/BadgeImage';
 import { fetchManagedRequests } from '../../services/requestManagementService';
@@ -1008,14 +1009,7 @@ function ExportacoesAG() {
   if (loading) {
     return (
       <Layout>
-        <div className="page">
-          <header className="page-header">
-            <h1>Exportações Administrador / Gestor</h1>
-          </header>
-          <div className="tm-export-loading">
-            <p>A carregar dados...</p>
-          </div>
-        </div>
+        <LoadingSpinner fullPage message="A carregar dados..." />
       </Layout>
     );
   }

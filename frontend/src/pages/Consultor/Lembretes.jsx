@@ -7,6 +7,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   createReminder as createReminderRequest,
   deleteReminder as deleteReminderRequest,
@@ -61,6 +62,7 @@ const normalizeReminder = (reminder, fallbackId) => {
 function Lembretes() {
   const [reminders, setReminders] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(defaultFormState);
@@ -81,11 +83,13 @@ function Lembretes() {
           const normalizedReminders = data.map((item, index) => normalizeReminder(item, Date.now() + index));
           setReminders(normalizedReminders);
           setStatusMessage('');
+          setIsLoading(false);
         }
       } catch {
         if (isMounted) {
           setReminders([]);
           setStatusMessage('Nao foi possivel carregar os lembretes da base de dados.');
+          setIsLoading(false);
         }
       }
     };
@@ -214,6 +218,14 @@ function Lembretes() {
       setStatusMessage('Nao foi possivel apagar o lembrete.');
     }
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar lembretes..." />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import '../../css/ServiceLineLeader/GestaoPedidos_SLL.css';
 import { fetchManagedRequests } from '../../services/requestManagementService';
 
@@ -209,6 +210,14 @@ function GestaoPedidosSLL() {
       : <ArrowDown size={12} aria-hidden="true" />;
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message="A carregar pedidos..." />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page sll-orders-page">
@@ -240,8 +249,7 @@ function GestaoPedidosSLL() {
         </section>
 
         <section className="shell sll-orders-main-card">
-          {isLoading && <p>A carregar pedidos...</p>}
-          {!isLoading && statusMessage && <p>{statusMessage}</p>}
+          {statusMessage && <p>{statusMessage}</p>}
 
           <div className="sll-orders-board-header">
             <div>

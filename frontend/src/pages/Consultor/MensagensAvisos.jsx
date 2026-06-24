@@ -112,6 +112,7 @@ function MensagensAvisos() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [messages, setMessages] = useState([]);
+  const [statusMessage, setStatusMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
   const [sortBy, setSortBy] = useState('recentes');
@@ -135,9 +136,11 @@ function MensagensAvisos() {
 
         const mapped = Array.isArray(data) ? data.map(mapAnnouncementToMessage) : [];
         setMessages(mapped);
+        setStatusMessage('');
       } catch {
         if (isMounted) {
           setMessages([]);
+          setStatusMessage('Não foi possível carregar as mensagens. Tente novamente em alguns segundos.');
         }
       }
     };
@@ -265,6 +268,11 @@ function MensagensAvisos() {
         </header>
 
         <section className="shell announcements-shell">
+          {statusMessage && (
+            <div className="alert alert-warning py-2" role="status">
+              {statusMessage}
+            </div>
+          )}
           <div className="toolbar announcements-toolbar">
             <div className="search-wrap">
               <Search size={20} />
