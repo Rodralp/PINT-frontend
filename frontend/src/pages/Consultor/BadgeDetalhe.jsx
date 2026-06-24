@@ -357,7 +357,7 @@ function BadgeDetalhe() {
   const showReviewMessage = badgeStatus === 'evidencias_insuficientes';
   const showShareActions = badgeStatus === 'obtido';
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://pint-backend-vwqc.onrender.com/api';
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const getPublicUrl = () => {
     const badgeId = badge.badgeDbId || badge.id;

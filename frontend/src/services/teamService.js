@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://pint-backend-vwqc.onrender.com/api') + '/teams';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + '/teams';
 
 export const teamService = {
   // Get all teams
