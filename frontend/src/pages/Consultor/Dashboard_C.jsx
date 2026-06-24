@@ -390,7 +390,7 @@ function DashboardC() {
             </div>
 
             <div className="dashboard-list dashboard-suggestions-list">
-              {suggestionItems.map(({ title, subtitleKey, accent, badgeDbId, badgeImage, levelKey, typeId }, index) => (
+              {suggestionItems.map(({ title, subtitleKey, accent, badgeDbId, badgeImage, levelKey, typeId, isSpecial }, index) => (
                 <article
                   key={`${title}-${index}`}
                   className="dashboard-list-item dashboard-suggestion-item dashboard-clickable"
@@ -404,6 +404,8 @@ function DashboardC() {
                             name: title,
                             levelKey: levelKey || '',
                             badgeImage: badgeImage || '',
+                            typeId: typeId || '',
+                            isSpecial,
                           },
                           backTo: '/consultor/dashboard',
                           activeSidebarRoute: '/consultor/dashboard',
@@ -437,7 +439,7 @@ function DashboardC() {
           onClose={() => setIsSuggestionsModalOpen(false)}
           title={t('dashboard_suggestions')}
           items={allSuggestionItems}
-          renderItem={({ title, subtitleKey, accent, badgeDbId, badgeImage, levelKey, typeId }) => (
+          renderItem={({ title, subtitleKey, accent, badgeDbId, badgeImage, levelKey, typeId, isSpecial }) => (
             <article
               className="dashboard-list-item dashboard-suggestion-item"
               style={{ cursor: badgeDbId ? 'pointer' : 'default' }}
@@ -451,6 +453,8 @@ function DashboardC() {
                         name: title,
                         levelKey: levelKey || '',
                         badgeImage: badgeImage || '',
+                        typeId: typeId || '',
+                        isSpecial,
                       },
                       backTo: '/consultor/dashboard',
                       activeSidebarRoute: '/consultor/dashboard',
