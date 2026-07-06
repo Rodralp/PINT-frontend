@@ -1,9 +1,11 @@
 .exports-shell {
   padding: 16px 16px 14px;
+  border: none;
 }
 
-.exports-page:has(.exports-tabs .exports-tab:first-of-type.active) .exports-shell {
-  border-top-left-radius: 0;
+.exports-page:has(.exports-tabs .exports-tab:first-of-type.active) .exports-shell,
+.exports-shell.no-top-left-radius {
+  border-top-left-radius: 0 !important;
 }
 
 .exports-tabs {

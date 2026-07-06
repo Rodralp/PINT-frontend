@@ -357,7 +357,7 @@ function BadgeDetalhe() {
   const showReviewMessage = badgeStatus === 'evidencias_insuficientes';
   const showShareActions = badgeStatus === 'obtido';
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
 
   const getPublicUrl = () => {
     const badgeId = badge.badgeDbId || badge.id;

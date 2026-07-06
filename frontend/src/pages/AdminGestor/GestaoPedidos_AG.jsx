@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -19,9 +20,9 @@ import { fetchManagedRequests } from '../../services/requestManagementService';
 const ITEMS_PER_PAGE = 10;
 
 const tableFilters = [
-  { id: 'aprovado', label: 'Aprovado' },
-  { id: 'pendente', label: 'Pendente' },
-  { id: 'rejeitado', label: 'Rejeitado' },
+  { id: 'aprovado', labelKey: 'pedidos_status_validated' },
+  { id: 'pendente', labelKey: 'pedidos_status_pending' },
+  { id: 'rejeitado', labelKey: 'badge_status_rejected' },
 ];
 
 const tableStatusStyles = {
@@ -32,40 +33,41 @@ const tableStatusStyles = {
 
 const getTableLabel = (tableStatus) => {
   if (tableStatus === 'aprovado') {
-    return 'Aprovado';
+    return 'pedidos_status_validated';
   }
 
   if (tableStatus === 'rejeitado') {
-    return 'Rejeitado';
+    return 'badge_status_rejected';
   }
 
-  return 'Pendente';
+  return 'pedidos_status_pending';
 };
 
 const statusConfig = {
   submetido: {
     tone: 'gray',
-    label: 'Todos',
+    labelKey: 'pedidos_status_all',
     icon: Clock3,
   },
   validacao: {
     tone: 'amber',
-    label: 'Em Validação',
+    labelKey: 'badge_status_in_review',
     icon: SearchCheck,
   },
   rejeitado: {
     tone: 'red',
-    label: 'Rejeitados',
+    labelKey: 'pedidos_status_rejected',
     icon: AlertTriangle,
   },
   aprovado: {
     tone: 'green',
-    label: 'Aprovados',
+    labelKey: 'pedidos_status_approved',
     icon: CheckCircle2,
   },
 };
 
 function GestaoPedidosAG() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,7 +94,7 @@ function GestaoPedidosAG() {
         }
 
         setRequests([]);
-        setStatusMessage(error?.message || 'Nao foi possivel carregar os pedidos.');
+        setStatusMessage(error?.message || t('error_generic'));
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -121,33 +123,33 @@ function GestaoPedidosAG() {
       {
         id: 'submitted',
         tone: 'gray',
-        label: 'Todos',
+        label: t(statusConfig.submetido.labelKey),
         value: summaryCounts.submitted,
         icon: statusConfig.submetido.icon,
       },
       {
         id: 'inReview',
         tone: statusConfig.validacao.tone,
-        label: statusConfig.validacao.label,
+        label: t(statusConfig.validacao.labelKey),
         value: summaryCounts.inReview,
         icon: statusConfig.validacao.icon,
       },
       {
         id: 'rejected',
         tone: statusConfig.rejeitado.tone,
-        label: statusConfig.rejeitado.label,
+        label: t(statusConfig.rejeitado.labelKey),
         value: summaryCounts.rejected,
         icon: statusConfig.rejeitado.icon,
       },
       {
         id: 'approved',
         tone: statusConfig.aprovado.tone,
-        label: statusConfig.aprovado.label,
+        label: t(statusConfig.aprovado.labelKey),
         value: summaryCounts.approved,
         icon: statusConfig.aprovado.icon,
       },
     ],
-    [summaryCounts],
+    [summaryCounts, t],
   );
 
   const filteredRequests = useMemo(() => {
@@ -229,7 +231,7 @@ function GestaoPedidosAG() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar pedidos..." />
+        <LoadingSpinner fullPage message={t('pedidos_loading')} />
       </Layout>
     );
   }
@@ -239,7 +241,7 @@ function GestaoPedidosAG() {
       <div className="page">
         <header className="page-header">
           <div>
-            <h1>Gestão de Pedidos</h1>
+            <h1>{t('pedidos_title')}</h1>
           </div>
         </header>
 
@@ -266,9 +268,9 @@ function GestaoPedidosAG() {
 
           <div className="ag-orders-board-header">
             <div>
-              <h2>Pedidos de Todos os Consultores</h2>
+              <h2>{t('pedidos_subtitle')}</h2>
                 <div className="ag-orders-filter-inline">
-                  <p>Filtrar por:</p>
+                  <p>{t('pedidos_filter_by')}</p>
                   <div className="ag-orders-filter-row">
                     {tableFilters.map((filter) => (
                       <button
@@ -278,7 +280,7 @@ function GestaoPedidosAG() {
                         onClick={() => toggleFilter(filter.id)}
                         aria-pressed={activeFilters.includes(filter.id)}
                       >
-                        {filter.label}
+                        {t(filter.labelKey)}
                       </button>
                     ))}
                   </div>
@@ -291,21 +293,21 @@ function GestaoPedidosAG() {
               <thead>
                 <tr>
                   <th className="sortable" onClick={() => toggleSort('consultant')}>
-                    <span className="ag-orders-sort-head">Nome do Consultor {renderSortIcon('consultant')}</span>
+                    <span className="ag-orders-sort-head">{t('pedidos_th_consultant')} {renderSortIcon('consultant')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('badge')}>
-                    <span className="ag-orders-sort-head">Badge Pedida {renderSortIcon('badge')}</span>
+                    <span className="ag-orders-sort-head">{t('pedidos_th_badge')} {renderSortIcon('badge')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('level')}>
-                    <span className="ag-orders-sort-head">Nível {renderSortIcon('level')}</span>
+                    <span className="ag-orders-sort-head">{t('pedidos_th_level')} {renderSortIcon('level')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('date')}>
-                    <span className="ag-orders-sort-head">Data do Pedido {renderSortIcon('date')}</span>
+                    <span className="ag-orders-sort-head">{t('pedidos_th_date')} {renderSortIcon('date')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('status')}>
-                    <span className="ag-orders-sort-head">Estado do Pedido {renderSortIcon('status')}</span>
+                    <span className="ag-orders-sort-head">{t('pedidos_th_status')} {renderSortIcon('status')}</span>
                   </th>
-                  <th>Detalhes do Pedido</th>
+                  <th>{t('pedidos_th_details')}</th>
                 </tr>
               </thead>
 
@@ -313,7 +315,7 @@ function GestaoPedidosAG() {
                 {pagedRequests.length === 0 && (
                   <tr>
                     <td colSpan={6} className="empty-state ag-orders-empty-row">
-                      Sem pedidos para os filtros escolhidos.
+                      {t('pedidos_no_results')}
                     </td>
                   </tr>
                 )}
@@ -334,7 +336,7 @@ function GestaoPedidosAG() {
                       <td>{request.date}</td>
                       <td>
                         <span className={`ag-status-pill ${statusClass}`}>
-                          {getTableLabel(request.tableStatus)}
+                          {t(getTableLabel(request.tableStatus))}
                         </span>
                       </td>
                       <td>
@@ -344,7 +346,7 @@ function GestaoPedidosAG() {
                           onClick={() => navigate(`/admin-gestor/pedidos/${request.id}`)}
                         >
                           <Eye size={14} />
-                          Ver
+                          {t('pedidos_btn_view')}
                         </button>
                       </td>
                     </tr>

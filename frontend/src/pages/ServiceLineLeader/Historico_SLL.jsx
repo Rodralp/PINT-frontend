@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { Search, Eye, X } from 'lucide-react';
 import Layout from '../../components/Layout';
@@ -15,12 +16,6 @@ import {
 import '../../css/TalentManager/Exportacoes_TM.css';
 import '../../css/TalentManager/historico-actions.css';
 import '../../css/Shared/HistoricoPages.css';
-
-const tabs = [
-  { id: 'minha-sl', label: 'Minha Service Line' },
-  { id: 'badges', label: 'Badges' },
-  { id: 'consultores', label: 'Consultores' },
-];
 
 const ITEMS_PER_PAGE = 10;
 
@@ -51,11 +46,19 @@ const normalizeLevelTitle = (value) => {
 };
 
 function HistoricoSLL() {
+  const { t } = useTranslation();
+
+  const tabs = useMemo(() => [
+    { id: 'minha-sl', label: t('historico_tab_my_sl') },
+    { id: 'badges', label: t('historico_tab_badges') },
+    { id: 'consultores', label: t('historico_tab_consultants') },
+  ], [t]);
+
   const loginData = useMemo(() => getStoredLoginData(), []);
   const [activeTab, setActiveTab] = useState('minha-sl');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [serviceLineData, setServiceLineData] = useState(null);
@@ -74,7 +77,7 @@ function HistoricoSLL() {
     const loadData = async () => {
       const accountId = Number(loginData?.id);
       if (!Number.isInteger(accountId) || accountId <= 0) {
-        setErrorMessage('Não foi possível identificar o utilizador autenticado.');
+        setErrorMessage(t('error_generic'));
         return;
       }
 
@@ -102,7 +105,7 @@ function HistoricoSLL() {
       } catch (error) {
         console.error('Error loading data:', error);
         if (isMounted) {
-          setErrorMessage(error?.message || 'Erro ao carregar dados.');
+          setErrorMessage(error?.message || t('error_generic'));
         }
       } finally {
         if (isMounted) {
@@ -216,23 +219,15 @@ function HistoricoSLL() {
     return <span className={className}>{mappedStatus || '-'}</span>;
   };
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message="A carregar histórico..." />
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <div className="page tm-export-page historico-page">
         <header className="page-header tm-export-header">
-          <h1>Histórico da Service Line</h1>
+          <h1>{t('historico_title_sll')}</h1>
         </header>
 
         <p className="tm-export-scope-note">
-          Acompanhe o desempenho e a evolução dos consultores da sua Service Line.
+          {t('historico_scope_sll')}
         </p>
 
         <div className="shell tm-export-shell">
@@ -255,7 +250,7 @@ function HistoricoSLL() {
                 <Search size={18} />
                 <input
                   type="text"
-                  placeholder="Pesquisar..."
+                  placeholder={t('search_placeholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -263,6 +258,7 @@ function HistoricoSLL() {
             </div>
           )}
 
+          {isLoading && <LoadingSpinner message={t('loading')} />}
           {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
           {!isLoading && !errorMessage && (
@@ -273,16 +269,16 @@ function HistoricoSLL() {
                     <table className="table orders-table">
                       <thead>
                         <tr>
-                          <th>Service Line</th>
-                          <th>Total Badges</th>
-                          <th>Consultores</th>
-                          <th>Ações</th>
+                          <th>{t('header_service_line')}</th>
+                           <th>{t('header_total_badges')}</th>
+                           <th>{t('header_consultants')}</th>
+                           <th>{t('header_actions')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {!serviceLineData && (
                           <tr>
-                            <td colSpan={4} className="empty-state orders-empty-row">Service Line não encontrada.</td>
+                            <td colSpan={4} className="empty-state orders-empty-row">{t('no_service_line')}</td>
                           </tr>
                         )}
                         {serviceLineData && (
@@ -298,7 +294,7 @@ function HistoricoSLL() {
                                   onClick={() => openModal('serviceLinePendentes', serviceLineData.id)}
                                 >
                                   <Eye size={16} />
-                                  Ver Pendentes
+                                  {t('ver_pendentes')}
                                 </button>
                                 <button
                                   type="button"
@@ -306,7 +302,7 @@ function HistoricoSLL() {
                                   onClick={() => openModal('serviceLineAceites', serviceLineData.id)}
                                 >
                                   <Eye size={16} />
-                                  Ver Aceites
+                                  {t('ver_aceites')}
                                 </button>
                                 <button
                                   type="button"
@@ -314,7 +310,7 @@ function HistoricoSLL() {
                                   onClick={() => openModal('serviceLineRejeitados', serviceLineData.id)}
                                 >
                                   <Eye size={16} />
-                                  Ver Rejeitados
+                                  {t('ver_rejeitados')}
                                 </button>
                               </div>
                             </td>
@@ -324,20 +320,20 @@ function HistoricoSLL() {
                     </table>
                   </div>
 
-                  <h3 className="historico-section-title">Áreas da Service Line</h3>
+                  <h3 className="historico-section-title">{t('historico_areas_title')}</h3>
                   <div className="table-wrap orders-table-wrap">
                     <table className="table orders-table">
                       <thead>
                         <tr>
-                          <th>Área</th>
-                          <th>Total Badges</th>
-                          <th>Ações</th>
+                          <th>{t('header_area')}</th>
+                           <th>{t('header_total_badges')}</th>
+                           <th>{t('header_actions')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {pagedData.length === 0 && (
                           <tr>
-                            <td colSpan={3} className="empty-state orders-empty-row">Nenhuma área encontrada.</td>
+                            <td colSpan={3} className="empty-state orders-empty-row">{t('no_items')}</td>
                           </tr>
                         )}
                         {pagedData.map((item) => (
@@ -352,7 +348,7 @@ function HistoricoSLL() {
                                   onClick={() => openModal('areaPendentes', item.id)}
                                 >
                                   <Eye size={16} />
-                                  Ver Pendentes
+                                  {t('ver_pendentes')}
                                 </button>
                                 <button
                                   type="button"
@@ -360,7 +356,7 @@ function HistoricoSLL() {
                                   onClick={() => openModal('areaAceites', item.id)}
                                 >
                                   <Eye size={16} />
-                                  Ver Aceites
+                                  {t('ver_aceites')}
                                 </button>
                                 <button
                                   type="button"
@@ -368,7 +364,7 @@ function HistoricoSLL() {
                                   onClick={() => openModal('areaRejeitados', item.id)}
                                 >
                                   <Eye size={16} />
-                                  Ver Rejeitados
+                                  {t('ver_rejeitados')}
                                 </button>
                               </div>
                             </td>
@@ -385,16 +381,16 @@ function HistoricoSLL() {
                   <table className="table orders-table">
                     <thead>
                       <tr>
-                        <th>Badge</th>
-                        <th>Área</th>
-                        <th>Nível</th>
-                        <th>Ações</th>
+                        <th>{t('header_badge')}</th>
+                         <th>{t('header_area')}</th>
+                         <th>{t('header_level')}</th>
+                         <th>{t('header_actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {pagedData.length === 0 && (
                         <tr>
-                          <td colSpan={4} className="empty-state orders-empty-row">Nenhum badge encontrado.</td>
+                          <td colSpan={4} className="empty-state orders-empty-row">{t('no_items')}</td>
                         </tr>
                       )}
                       {pagedData.map((item) => (
@@ -410,7 +406,7 @@ function HistoricoSLL() {
                                 onClick={() => openModal('badgePendentes', item.id)}
                               >
                                 <Eye size={16} />
-                                Ver Pendentes
+                                {t('ver_pendentes')}
                               </button>
                               <button
                                 type="button"
@@ -418,7 +414,7 @@ function HistoricoSLL() {
                                 onClick={() => openModal('badgeAceites', item.id)}
                               >
                                 <Eye size={16} />
-                                Ver Aceites
+                                {t('ver_aceites')}
                               </button>
                               <button
                                 type="button"
@@ -426,7 +422,7 @@ function HistoricoSLL() {
                                 onClick={() => openModal('badgeRejeitados', item.id)}
                               >
                                 <Eye size={16} />
-                                Ver Rejeitados
+                                {t('ver_rejeitados')}
                               </button>
                             </div>
                           </td>
@@ -442,17 +438,17 @@ function HistoricoSLL() {
                   <table className="table orders-table">
                     <thead>
                       <tr>
-                        <th>Consultor</th>
-                        <th>Email</th>
-                        <th>Pontos</th>
-                        <th>Estado</th>
-                        <th>Ações</th>
+                        <th>{t('header_consultant')}</th>
+                         <th>{t('header_email')}</th>
+                         <th>{t('header_points')}</th>
+                         <th>{t('header_status')}</th>
+                         <th>{t('header_actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {pagedData.length === 0 && (
                         <tr>
-                          <td colSpan={5} className="empty-state orders-empty-row">Nenhum consultor encontrado.</td>
+                          <td colSpan={5} className="empty-state orders-empty-row">{t('no_items')}</td>
                         </tr>
                       )}
                       {pagedData.map((item) => (
@@ -478,7 +474,7 @@ function HistoricoSLL() {
                                 onClick={() => openModal('consultorPendentes', item.id)}
                               >
                                 <Eye size={16} />
-                                Ver Pendentes
+                                {t('ver_pendentes')}
                               </button>
                               <button
                                 type="button"
@@ -486,7 +482,7 @@ function HistoricoSLL() {
                                 onClick={() => openModal('consultorAceites', item.id)}
                               >
                                 <Eye size={16} />
-                                Ver Aceites
+                                {t('ver_aceites')}
                               </button>
                               <button
                                 type="button"
@@ -494,7 +490,7 @@ function HistoricoSLL() {
                                 onClick={() => openModal('consultorRejeitados', item.id)}
                               >
                                 <Eye size={16} />
-                                Ver Rejeitados
+                                {t('ver_rejeitados')}
                               </button>
                             </div>
                           </td>
@@ -516,27 +512,27 @@ function HistoricoSLL() {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                   <h2>
-                    {modalType === 'consultor' && 'Detalhes do Consultor'}
-                    {modalType === 'badge' && 'Detalhes do Badge'}
-                    {modalType.includes('serviceLine') && modalType.includes('Pendentes') && 'Pedidos Pendentes da Service Line'}
-                    {modalType.includes('serviceLine') && modalType.includes('Aceites') && 'Pedidos Aceites da Service Line'}
-                    {modalType.includes('serviceLine') && modalType.includes('Rejeitados') && 'Pedidos Rejeitados da Service Line'}
-                    {modalType.includes('area') && modalType.includes('Pendentes') && 'Pedidos Pendentes da Área'}
-                    {modalType.includes('area') && modalType.includes('Aceites') && 'Pedidos Aceites da Área'}
-                    {modalType.includes('area') && modalType.includes('Rejeitados') && 'Pedidos Rejeitados da Área'}
-                    {modalType.includes('badge') && modalType.includes('Pendentes') && 'Pedidos Pendentes do Badge'}
-                    {modalType.includes('badge') && modalType.includes('Aceites') && 'Pedidos Aceites do Badge'}
-                    {modalType.includes('badge') && modalType.includes('Rejeitados') && 'Pedidos Rejeitados do Badge'}
-                    {modalType.includes('consultor') && modalType.includes('Pendentes') && 'Pedidos Pendentes do Consultor'}
-                    {modalType.includes('consultor') && modalType.includes('Aceites') && 'Pedidos Aceites do Consultor'}
-                    {modalType.includes('consultor') && modalType.includes('Rejeitados') && 'Pedidos Rejeitados do Consultor'}
+                    {modalType === 'consultor' && t('modal_consultant_details')}
+                    {modalType === 'badge' && t('modal_badge_details')}
+                    {modalType.includes('serviceLine') && modalType.includes('Pendentes') && t('modal_pending_service_line')}
+                    {modalType.includes('serviceLine') && modalType.includes('Aceites') && t('modal_accepted_service_line')}
+                    {modalType.includes('serviceLine') && modalType.includes('Rejeitados') && t('modal_rejected_service_line')}
+                    {modalType.includes('area') && modalType.includes('Pendentes') && t('modal_pending_area')}
+                    {modalType.includes('area') && modalType.includes('Aceites') && t('modal_accepted_area')}
+                    {modalType.includes('area') && modalType.includes('Rejeitados') && t('modal_rejected_area')}
+                    {modalType.includes('badge') && modalType.includes('Pendentes') && t('modal_pending_badge')}
+                    {modalType.includes('badge') && modalType.includes('Aceites') && t('modal_accepted_badge')}
+                    {modalType.includes('badge') && modalType.includes('Rejeitados') && t('modal_rejected_badge')}
+                    {modalType.includes('consultor') && modalType.includes('Pendentes') && t('modal_pending_consultant')}
+                    {modalType.includes('consultor') && modalType.includes('Aceites') && t('modal_accepted_consultant')}
+                    {modalType.includes('consultor') && modalType.includes('Rejeitados') && t('modal_rejected_consultant')}
                   </h2>
                   <button type="button" className="modal-close" onClick={closeModal}>
                     <X size={24} />
                   </button>
                 </div>
                 <div className="modal-body">
-                  {modalLoading && <p>A carregar...</p>}
+                  {modalLoading && <p>{t('loading')}</p>}
                   {!modalLoading && modalData && (
                     <>
                       {modalType === 'consultor' && modalData.consultor && (
@@ -544,18 +540,18 @@ function HistoricoSLL() {
                           <div className="modal-info">
                             <h3>{modalData.consultor.name}</h3>
                             <p>{modalData.consultor.email}</p>
-                            <p><strong>Total de Pontos:</strong> {modalData.consultor.totalPoints}</p>
+                            <p><strong>{t('total_points')}:</strong> {modalData.consultor.totalPoints}</p>
                           </div>
-                          <h4>Badges Obtidos ({modalData.badgesObtidos?.length || 0})</h4>
+                          <h4>{t('badges_obtained')} ({modalData.badgesObtidos?.length || 0})</h4>
                           {modalData.badgesObtidos?.length > 0 ? (
                             <table className="table orders-table">
                               <thead>
                                 <tr>
-                                  <th>Badge</th>
-                                  <th>Área</th>
-                                  <th>Service Line</th>
-                                  <th>Pontos</th>
-                                  <th>Data</th>
+                                  <th>{t('header_badge')}</th>
+                                   <th>{t('header_area')}</th>
+                                   <th>{t('header_service_line')}</th>
+                                   <th>{t('header_points')}</th>
+                                   <th>{t('header_date')}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -571,18 +567,18 @@ function HistoricoSLL() {
                               </tbody>
                             </table>
                           ) : (
-                            <p>Nenhum badge obtido.</p>
+                            <p>{t('no_items')}</p>
                           )}
-                          <h4 style={{ marginTop: '20px' }}>Badges em Progresso ({modalData.badgesEmProgresso?.length || 0})</h4>
+                          <h4 style={{ marginTop: '20px' }}>{t('badges_in_progress')} ({modalData.badgesEmProgresso?.length || 0})</h4>
                           {modalData.badgesEmProgresso?.length > 0 ? (
                             <table className="table orders-table">
                               <thead>
                                 <tr>
-                                  <th>Badge</th>
-                                  <th>Área</th>
-                                  <th>Service Line</th>
-                                  <th>Estado</th>
-                                  <th>Data Pedido</th>
+                                  <th>{t('header_badge')}</th>
+                                   <th>{t('header_area')}</th>
+                                   <th>{t('header_service_line')}</th>
+                                   <th>{t('header_status')}</th>
+                                   <th>{t('header_request_date')}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -598,7 +594,7 @@ function HistoricoSLL() {
                               </tbody>
                             </table>
                           ) : (
-                            <p>Nenhum badge em progresso.</p>
+                            <p>{t('no_items')}</p>
                           )}
                         </div>
                       )}
@@ -607,19 +603,19 @@ function HistoricoSLL() {
                         <div className="modal-section">
                           <div className="modal-info">
                             <h3>{modalData.badge.name}</h3>
-                            <p><strong>Área:</strong> {modalData.badge.areaName || '-'}</p>
-                            <p><strong>Service Line:</strong> {modalData.badge.serviceLineName || '-'}</p>
-                            <p><strong>Nível:</strong> {normalizeLevelTitle(modalData.badge.level)}</p>
-                            <p><strong>Pontos:</strong> {modalData.badge.points}</p>
+                            <p><strong>{t('header_area')}:</strong> {modalData.badge.areaName || '-'}</p>
+                             <p><strong>{t('header_service_line')}:</strong> {modalData.badge.serviceLineName || '-'}</p>
+                             <p><strong>{t('header_level')}:</strong> {normalizeLevelTitle(modalData.badge.level)}</p>
+                             <p><strong>{t('header_points')}:</strong> {modalData.badge.points}</p>
                           </div>
-                          <h4>Consultores que Obtiveram ({modalData.totalObtidos})</h4>
+                          <h4>{t('consultants_obtained')} ({modalData.totalObtidos})</h4>
                           {modalData.consultoresObtidos?.length > 0 ? (
                             <table className="table orders-table">
                               <thead>
                                 <tr>
-                                  <th>Consultor</th>
-                                  <th>Email</th>
-                                  <th>Data</th>
+                                  <th>{t('header_consultant')}</th>
+                                   <th>{t('header_email')}</th>
+                                   <th>{t('header_date')}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -633,17 +629,17 @@ function HistoricoSLL() {
                               </tbody>
                             </table>
                           ) : (
-                            <p>Nenhum consultor obteve este badge.</p>
+                            <p>{t('no_consultants_obtained')}</p>
                           )}
-                          <h4 style={{ marginTop: '20px' }}>Consultores em Progresso ({modalData.totalEmProgresso})</h4>
+                          <h4 style={{ marginTop: '20px' }}>{t('consultants_in_progress')} ({modalData.totalEmProgresso})</h4>
                           {modalData.consultoresEmProgresso?.length > 0 ? (
                             <table className="table orders-table">
                               <thead>
                                 <tr>
-                                  <th>Consultor</th>
-                                  <th>Email</th>
-                                  <th>Estado</th>
-                                  <th>Data Pedido</th>
+                                  <th>{t('header_consultant')}</th>
+                                   <th>{t('header_email')}</th>
+                                   <th>{t('header_status')}</th>
+                                   <th>{t('header_request_date')}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -658,7 +654,7 @@ function HistoricoSLL() {
                               </tbody>
                             </table>
                           ) : (
-                            <p>Nenhum consultor em progresso.</p>
+                            <p>{t('no_consultants_in_progress')}</p>
                           )}
                         </div>
                       )}
@@ -672,39 +668,39 @@ function HistoricoSLL() {
                                 <tr>
                                   {modalType.includes('serviceLine') && (
                                     <>
-                                      <th>ID</th>
-                                      <th>Service Line</th>
-                                      <th>Descrição</th>
-                                      <th>Data</th>
-                                      <th>Estado</th>
+                                      <th>{t('header_id')}</th>
+                                      <th>{t('header_service_line')}</th>
+                                      <th>{t('header_description')}</th>
+                                      <th>{t('header_date')}</th>
+                                      <th>{t('header_status')}</th>
                                     </>
                                   )}
                                   {modalType.includes('area') && (
                                     <>
-                                      <th>ID</th>
-                                      <th>Área</th>
-                                      <th>Badge</th>
-                                      <th>Consultor</th>
-                                      <th>Data</th>
-                                      <th>Estado</th>
+                                      <th>{t('header_id')}</th>
+                                      <th>{t('header_area')}</th>
+                                      <th>{t('header_badge')}</th>
+                                      <th>{t('header_consultant')}</th>
+                                      <th>{t('header_date')}</th>
+                                      <th>{t('header_status')}</th>
                                     </>
                                   )}
                                   {modalType.includes('badge') && (
                                     <>
-                                      <th>ID</th>
-                                      <th>Badge</th>
-                                      <th>Consultor</th>
-                                      <th>Data</th>
-                                      <th>Estado</th>
+                                      <th>{t('header_id')}</th>
+                                      <th>{t('header_badge')}</th>
+                                      <th>{t('header_consultant')}</th>
+                                      <th>{t('header_date')}</th>
+                                      <th>{t('header_status')}</th>
                                     </>
                                   )}
                                   {modalType.includes('consultor') && (
                                     <>
-                                      <th>ID</th>
-                                      <th>Consultor</th>
-                                      <th>Badge</th>
-                                      <th>Data</th>
-                                      <th>Estado</th>
+                                      <th>{t('header_id')}</th>
+                                      <th>{t('header_consultant')}</th>
+                                      <th>{t('header_badge')}</th>
+                                      <th>{t('header_date')}</th>
+                                      <th>{t('header_status')}</th>
                                     </>
                                   )}
                                 </tr>
@@ -754,7 +750,7 @@ function HistoricoSLL() {
                               </tbody>
                             </table>
                           ) : (
-                            <p>Nenhum registro encontrado.</p>
+                            <p>{t('no_items')}</p>
                           )}
                         </div>
                       )}

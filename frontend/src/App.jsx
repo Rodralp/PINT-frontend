@@ -23,6 +23,7 @@ import GestaoPedidosSLL from './pages/ServiceLineLeader/GestaoPedidos_SLL'
 import PedidoSLL from './pages/ServiceLineLeader/Pedido_SLL'
 import RankingSLL from './pages/ServiceLineLeader/Ranking_SLL'
 import MinhaServiceLineSLL from './pages/ServiceLineLeader/MinhaServiceLine_SLL'
+import BadgeDetalheSLL from './pages/ServiceLineLeader/BadgeDetalhe_SLL'
 import HistoricoSLL from './pages/ServiceLineLeader/Historico_SLL'
 import DashboardAG from './pages/AdminGestor/Dashboard_AG'
 import CatalogoBadges from './pages/CatalogoBadges'
@@ -143,6 +144,7 @@ function App() {
         <Route path='/service-line-leader/dashboard' element={<DashboardSLL />} />
         <Route path='/service-line-leader/definicoes' element={<Definicoes />} />
         <Route path='/service-line-leader/minha-service-line' element={<MinhaServiceLineSLL />} />
+        <Route path='/service-line-leader/badge/:badgeId' element={<BadgeDetalheSLL />} />
         <Route path='/service-line-leader/ranking' element={<RankingSLL />} />
         <Route path='/service-line-leader/pedidos' element={<GestaoPedidosSLL />} />
         <Route path='/service-line-leader/pedidos/:pedidoId' element={<PedidoSLL />} />

@@ -1,6 +1,6 @@
 import apiClient from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
 
 const getStoredLoginData = () => {
   const sessionLoginData = sessionStorage.getItem('loginData');

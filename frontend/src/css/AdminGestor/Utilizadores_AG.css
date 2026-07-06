@@ -1,5 +1,9 @@
 .page:has(.ag-users-tabs .ag-users-tab.active) .shell {
-  border-top-left-radius: 0;
+  border-top-left-radius: 0 !important;
+}
+
+.ag-users-shell {
+  border: none;
 }
 
 .ag-users-tabs {

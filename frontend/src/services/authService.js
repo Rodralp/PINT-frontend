@@ -63,6 +63,10 @@ export async function recoverPassword(payload) {
   return response.data;
 }
 
+export async function fetchRgpdTopics() {
+  const response = await apiClient.get('/auth/rgpd-topics');
+  return response.data;
+}
 export async function changePassword(payload) {
   const accountId = Number(payload?.accountId);
   const currentPassword = String(payload?.currentPassword || '');

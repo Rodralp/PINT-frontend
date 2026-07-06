@@ -20,14 +20,14 @@
 
 .tm-export-shell {
   background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: none;
   border-radius: var(--radius-4xl);
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02), 0 10px 30px rgba(15, 23, 42, 0.04);
   padding: var(--sp-4) var(--sp-4) var(--sp-3);
 }
 
 .page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .shell {
-  border-top-left-radius: 0;
+  border-top-left-radius: 0 !important;
 }
 
 .tm-export-tabs {

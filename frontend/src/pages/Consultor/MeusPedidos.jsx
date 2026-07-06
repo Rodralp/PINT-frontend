@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -13,46 +14,48 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchMyRequests } from '../../services/consultorService';
 import '../../css/Consultor/MeusPedidos.css';
 
-const statusConfig = {
-  aprovado: {
-    label: 'Aprovado',
-    cardClass: 'status-card approved',
-    badgeClass: 'success',
-    Icon: CheckCircle2,
-  },
-  pendente: {
-    label: 'Pendente',
-    cardClass: 'status-card pending',
-    badgeClass: 'warning',
-    Icon: Search,
-  },
-  rejeitado: {
-    label: 'Rejeitado',
-    cardClass: 'status-card rejected',
-    badgeClass: 'danger',
-    Icon: AlertTriangle,
-  },
-  validacao: {
-    label: 'Em Validação',
-    cardClass: 'status-card in-review',
-    badgeClass: 'warning',
-    Icon: SearchCheck,
-  },
-};
-
-const filters = [
-  { id: 'aprovado', label: 'Aprovado' },
-  { id: 'pendente', label: 'Pendente' },
-  { id: 'rejeitado', label: 'Rejeitado' },
-];
-
 const ITEMS_PER_PAGE = 10;
 
 function MeusPedidos() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [allRequests, setAllRequests] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
+
+  const statusConfig = {
+    aprovado: {
+      label: t('meus_pedidos_status_approved'),
+      cardClass: 'status-card approved',
+      badgeClass: 'success',
+      Icon: CheckCircle2,
+    },
+    pendente: {
+      label: t('meus_pedidos_status_pending'),
+      cardClass: 'status-card pending',
+      badgeClass: 'warning',
+      Icon: Search,
+    },
+    rejeitado: {
+      label: t('meus_pedidos_status_rejected'),
+      cardClass: 'status-card rejected',
+      badgeClass: 'danger',
+      Icon: AlertTriangle,
+    },
+    validacao: {
+      label: t('meus_pedidos_status_in_review'),
+      cardClass: 'status-card in-review',
+      badgeClass: 'warning',
+      Icon: SearchCheck,
+    },
+  };
+
+  const filters = useMemo(() => [
+    { id: 'aprovado', label: t('meus_pedidos_status_approved') },
+    { id: 'pendente', label: t('meus_pedidos_status_pending') },
+    { id: 'rejeitado', label: t('meus_pedidos_status_rejected') },
+  ], [t]);
+
   const filtersFromUrl = useMemo(() => {
     const param = searchParams.get('filters');
     if (param) {
@@ -61,7 +64,7 @@ function MeusPedidos() {
       return validIds.length > 0 ? validIds : filters.map((f) => f.id);
     }
     return filters.map((filter) => filter.id);
-  }, []);
+  }, [searchParams, filters]);
   const [activeFilters, setActiveFilters] = useState(filtersFromUrl);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +83,7 @@ function MeusPedidos() {
       } catch {
         if (isMounted) {
           setAllRequests([]);
-          setStatusMessage('Não foi possível carregar os pedidos. Tente novamente em alguns segundos.');
+          setStatusMessage(t('error_generic'));
           setIsLoading(false);
         }
       }
@@ -139,7 +142,7 @@ function MeusPedidos() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar pedidos..." />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }
@@ -148,7 +151,7 @@ function MeusPedidos() {
     <Layout>
       <div className="page orders-page">
         <header className="page-header orders-header">
-          <h1>Meus Pedidos</h1>
+          <h1>{t('meus_pedidos_title')}</h1>
         </header>
 
         {statusMessage && (
@@ -163,7 +166,7 @@ function MeusPedidos() {
               <Clock3 size={26} strokeWidth={2} />
             </div>
             <div className="status-card-content">
-              <span>Todos</span>
+              <span>{t('meus_pedidos_all')}</span>
               <strong>{counts.submitted}</strong>
             </div>
           </article>
@@ -201,9 +204,9 @@ function MeusPedidos() {
 
         <section className="shell orders-shell">
           <div className="orders-shell-header">
-            <h2>Histórico de Candidaturas de Badges</h2>
+            <h2>{t('meus_pedidos_history_title')}</h2>
             <div className="orders-filter-row">
-              <span>Filtrar por:</span>
+              <span>{t('meus_pedidos_filter_by')}</span>
               {filters.map((filter) => (
                 <button
                   key={filter.id}
@@ -222,17 +225,17 @@ function MeusPedidos() {
             <table className="table orders-table">
               <thead>
                 <tr>
-                  <th>Badge Pedida</th>
-                  <th>Nível</th>
-                  <th>Data do Pedido</th>
-                  <th>Estado do Pedido</th>
-                  <th>Detalhes do Pedido</th>
+                  <th>{t('meus_pedidos_badge_requested')}</th>
+                  <th>{t('meus_pedidos_level')}</th>
+                  <th>{t('meus_pedidos_request_date')}</th>
+                  <th>{t('meus_pedidos_request_status')}</th>
+                  <th>{t('meus_pedidos_request_details')}</th>
                 </tr>
               </thead>
               <tbody>
                 {pagedRequests.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="orders-empty-row">Sem pedidos para os filtros escolhidos.</td>
+                    <td colSpan={5} className="orders-empty-row">{t('no_items')}</td>
                   </tr>
                 )}
 
@@ -255,7 +258,7 @@ function MeusPedidos() {
                           className="btn-outline orders-view-btn"
                           onClick={() => handleOpenRequestDetails(request)}
                         >
-                          Ver
+                          {t('view')}
                         </button>
                       </td>
                     </tr>

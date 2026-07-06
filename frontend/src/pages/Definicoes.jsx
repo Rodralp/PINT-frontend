@@ -38,7 +38,6 @@ const roleLabelKeyByRole = {
 const DEFAULT_NOTIFICATION_SETTINGS = {
   emailUpdates: true,
   inAppAlerts: true,
-  weeklySummary: false,
 };
 
 const getStoredLoginData = () => {
@@ -387,7 +386,7 @@ function Definicoes() {
             </div>
             <div className="settings-info-box">
               <span>{t('settings_field_role')}</span>
-              <strong>{t(roleLabelKey)}</strong>
+              <strong>{roles.map((role) => t(roleLabelKeyByRole[role] || roleLabelKeyByRole.consultor)).join(' + ')}</strong>
             </div>
           </div>
 
@@ -510,15 +509,7 @@ function Definicoes() {
               />
             </label>
 
-            <label className="settings-toggle-item">
-              <span>{t('settings_notifications_weekly')}</span>
-              <input
-                type="checkbox"
-                checked={Boolean(notificationSettings.weeklySummary)}
-                disabled={isLoadingNotifications || isSavingNotifications}
-                onChange={() => handleToggleNotification('weeklySummary')}
-              />
-            </label>
+
           </div>
 
           {isLoadingNotifications && (

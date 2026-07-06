@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Search,
   Filter,
@@ -22,47 +23,47 @@ import { fetchHistoricoConsultores } from '../../services/talentManagerService';
 import '../../css/TalentManager/Exportacoes_TM.css';
 import '../../css/Consultor/CatalogoBadges_C.css';
 
-const tabs = [
-  { id: 'pedidos', label: 'Pedidos de Badges' },
-  { id: 'badges', label: 'Badges' },
-  { id: 'consultores', label: 'Consultores' },
+const getTabs = (t) => [
+  { id: 'pedidos', label: t('export_tab_requests') },
+  { id: 'badges', label: t('export_tab_badges') },
+  { id: 'consultores', label: t('export_tab_consultants') },
 ];
 
-const requestStatusFilters = [
-  { id: 'enviado', label: 'Enviados' },
-  { id: 'pendente', label: 'Pendentes' },
-  { id: 'rejeitado', label: 'Rejeitados' },
+const getRequestStatusFilters = (t) => [
+  { id: 'enviado', label: t('export_filter_sent') },
+  { id: 'pendente', label: t('export_filter_pending') },
+  { id: 'rejeitado', label: t('export_filter_rejected') },
 ];
 
-const levelFilterOptions = [
-  { id: 'todos', label: 'Todos os níveis' },
-  { id: 'junior', label: 'Júnior' },
-  { id: 'intermedio', label: 'Intermédio' },
-  { id: 'senior', label: 'Sénior' },
-  { id: 'especialista', label: 'Especialista' },
-  { id: 'lider', label: 'Líder de Conhecimento' },
+const getLevelFilterOptions = (t) => [
+  { id: 'todos', label: t('export_filter_all_levels') },
+  { id: 'junior', label: t('badge_level_junior') },
+  { id: 'intermedio', label: t('badge_level_intermediate') },
+  { id: 'senior', label: t('badge_level_senior') },
+  { id: 'especialista', label: t('badge_level_specialist') },
+  { id: 'lider', label: t('badge_level_knowledge_lead') },
 ];
 
-const consultantFilterOptions = [
-  { id: 'todos', label: 'Todos os estados' },
-  { id: 'ativo', label: 'Ativo' },
-  { id: 'inativo', label: 'Inativo' },
+const getConsultantFilterOptions = (t) => [
+  { id: 'todos', label: t('export_filter_all_states') },
+  { id: 'ativo', label: t('active') },
+  { id: 'inativo', label: t('inactive') },
 ];
 
-const requestSortOptions = [
-  { id: 'recentes', label: 'Mais recentes' },
-  { id: 'antigas', label: 'Mais antigas' },
-  { id: 'consultor_az', label: 'Consultor (A-Z)' },
+const getRequestSortOptions = (t) => [
+  { id: 'recentes', label: t('export_sort_recent') },
+  { id: 'antigas', label: t('export_sort_oldest') },
+  { id: 'consultor_az', label: t('export_sort_consultant_az') },
 ];
 
-const badgeSortOptions = [
-  { id: 'padrao', label: 'Ordem padrão' },
+const getBadgeSortOptions = (t) => [
+  { id: 'padrao', label: t('export_sort_default') },
   { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
   { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
   { id: 'area_asc', label: 'Área (A-Z)' },
 ];
 
-const consultantSortOptions = [
+const getConsultantSortOptions = (t) => [
   { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
   { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
   { id: 'badges_desc', label: 'Badges (Maior para Menor)' },
@@ -85,11 +86,11 @@ const badgeLevels = [
   { id: 'lider', label: 'Líder de Conhecimento', points: 300, badgeImage: '/badges/Líder de Conhecimento.png' },
 ];
 
-const requestStatusMeta = {
-  enviado: { label: 'Enviados', className: 'sent' },
-  pendente: { label: 'Pendentes', className: 'pending' },
-  rejeitado: { label: 'Rejeitados', className: 'rejected' },
-};
+const getRequestStatusMeta = (t) => ({
+  enviado: { label: t('export_filter_sent'), className: 'sent' },
+  pendente: { label: t('export_filter_pending'), className: 'pending' },
+  rejeitado: { label: t('export_filter_rejected'), className: 'rejected' },
+});
 
 const parsePtDate = (value) => {
   const normalized = String(value || '').trim();
@@ -133,13 +134,13 @@ const normalizeLevelId = (level) => {
   return 'junior';
 };
 
-const getExpirationStatus = (validade) => {
+const getExpirationStatus = (validade, t) => {
   if (!validade) return null;
   const today = new Date();
   const expDate = new Date(validade);
   const daysUntil = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-  if (daysUntil <= 0) return { status: 'expired', label: 'Expirada', days: daysUntil };
-  if (daysUntil <= 30) return { status: 'expiring', label: `Expira em ${daysUntil} dias`, days: daysUntil };
+  if (daysUntil <= 0) return { status: 'expired', label: t('export_expired'), days: daysUntil };
+  if (daysUntil <= 30) return { status: 'expiring', label: `${t('export_expires')} ${daysUntil} dias`, days: daysUntil };
   return null;
 };
 
@@ -208,17 +209,17 @@ const normalizeConsultantStatus = (status) => {
   return 'inativo';
 };
 
-const toConsultantStatusLabel = (status) => {
+const toConsultantStatusLabel = (status, t) => {
   const normalized = normalizeConsultantStatus(status);
   if (normalized === 'ativo') {
-    return 'Ativo';
+    return t('active');
   }
 
   if (normalized === 'pendente') {
-    return 'Pendentes';
+    return t('export_filter_pending');
   }
 
-  return 'Inativo';
+  return t('inactive');
 };
 
 const buildBadgeDisplayMeta = (level) => {
@@ -496,6 +497,7 @@ const generateConsultantsCSV = (consultants) => {
 };
 
 function ExportacoesTM() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [requestItems, setRequestItems] = useState([]);
   const [consultantItems, setConsultantItems] = useState([]);
@@ -563,7 +565,7 @@ function ExportacoesTM() {
         setConsultantItems(formattedConsultants);
       } catch (err) {
         console.error('Error loading export data:', err);
-        setError('Falha ao carregar dados para exportação');
+        setError(t('export_error_load'));
       } finally {
         setLoading(false);
       }
@@ -576,7 +578,7 @@ function ExportacoesTM() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState(tabDefaults.pedidos.filter);
   const [sortBy, setSortBy] = useState(tabDefaults.pedidos.sort);
-  const [activeRequestStatuses, setActiveRequestStatuses] = useState(requestStatusFilters.map((item) => item.id));
+  const [activeRequestStatuses, setActiveRequestStatuses] = useState(() => getRequestStatusFilters(t).map((item) => item.id));
   const [selectedRequestIds, setSelectedRequestIds] = useState([]);
   const [selectedBadgeIds, setSelectedBadgeIds] = useState([]);
   const [selectedConsultantIds, setSelectedConsultantIds] = useState([]);
@@ -588,21 +590,21 @@ function ExportacoesTM() {
   const sortDropdownRef = useRef(null);
 
   const filterOptions = useMemo(
-    () => (activeTab === 'consultores' ? consultantFilterOptions : levelFilterOptions),
-    [activeTab],
+    () => (activeTab === 'consultores' ? getConsultantFilterOptions(t) : getLevelFilterOptions(t)),
+    [activeTab, t],
   );
 
   const sortOptions = useMemo(() => {
     if (activeTab === 'pedidos') {
-      return requestSortOptions;
+      return getRequestSortOptions(t);
     }
 
     if (activeTab === 'consultores') {
-      return consultantSortOptions;
+      return getConsultantSortOptions(t);
     }
 
-    return badgeSortOptions;
-  }, [activeTab]);
+    return getBadgeSortOptions(t);
+  }, [activeTab, t]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -813,7 +815,7 @@ function ExportacoesTM() {
   const hasActiveFilter = activeFilter !== tabDefaults[activeTab].filter;
   const hasActiveSort = sortBy !== tabDefaults[activeTab].sort;
 
-  const searchPlaceholder = activeTab === 'consultores' ? 'Pesquisar consultores' : 'Pesquisar badges';
+  const searchPlaceholder = activeTab === 'consultores' ? t('export_search_consultants') : t('export_search_badges');
 
   const userName = getLoginName() || 'João Gomes';
 
@@ -836,7 +838,7 @@ function ExportacoesTM() {
     setShowSortDropdown(false);
 
     if (tabId === 'pedidos') {
-      setActiveRequestStatuses(requestStatusFilters.map((item) => item.id));
+      setActiveRequestStatuses(getRequestStatusFilters(t).map((item) => item.id));
     }
   };
 
@@ -915,7 +917,7 @@ function ExportacoesTM() {
   const exportBadgesToPDF = () => {
     const selected = badgeItems.filter((item) => selectedBadgeIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um badge para exportar.');
+      alert(t('export_select_badge'));
       return;
     }
     try {
@@ -926,14 +928,14 @@ function ExportacoesTM() {
       setTimeout(() => printWindow.print(), 500);
     } catch (error) {
       console.error('Error generating badge pages:', error);
-      alert('Erro ao gerar páginas das badges. Por favor, tente novamente.');
+      alert(t('export_error_badge_pdf'));
     }
   };
 
   const exportBadgesToExcel = () => {
     const selected = badgeItems.filter((item) => selectedBadgeIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um badge para exportar.');
+      alert(t('export_select_badge'));
       return;
     }
     try {
@@ -949,14 +951,14 @@ function ExportacoesTM() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating CSV:', error);
-      alert('Erro ao gerar CSV. Por favor, tente novamente.');
+      alert(t('export_error_badge_excel'));
     }
   };
 
   const exportRequestsToPDF = () => {
     const selected = requestItems.filter((item) => selectedRequestIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um pedido para exportar.');
+      alert(t('export_select_request'));
       return;
     }
     try {
@@ -967,14 +969,14 @@ function ExportacoesTM() {
       setTimeout(() => printWindow.print(), 500);
     } catch (error) {
       console.error('Error generating requests PDF:', error);
-      alert('Erro ao gerar PDF dos pedidos. Por favor, tente novamente.');
+      alert(t('export_error_request_pdf'));
     }
   };
 
   const exportRequestsToExcel = () => {
     const selected = requestItems.filter((item) => selectedRequestIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um pedido para exportar.');
+      alert(t('export_select_request'));
       return;
     }
     try {
@@ -990,14 +992,14 @@ function ExportacoesTM() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating requests CSV:', error);
-      alert('Erro ao gerar CSV dos pedidos. Por favor, tente novamente.');
+      alert(t('export_error_request_excel'));
     }
   };
 
   const exportConsultantsToPDF = () => {
     const selected = consultantItems.filter((item) => selectedConsultantIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um consultor para exportar.');
+      alert(t('export_select_consultant'));
       return;
     }
     try {
@@ -1008,14 +1010,14 @@ function ExportacoesTM() {
       setTimeout(() => printWindow.print(), 500);
     } catch (error) {
       console.error('Error generating consultants PDF:', error);
-      alert('Erro ao gerar PDF dos consultores. Por favor, tente novamente.');
+      alert(t('export_error_consultant_pdf'));
     }
   };
 
   const exportConsultantsToExcel = () => {
     const selected = consultantItems.filter((item) => selectedConsultantIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um consultor para exportar.');
+      alert(t('export_select_consultant'));
       return;
     }
     try {
@@ -1031,14 +1033,14 @@ function ExportacoesTM() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating consultants CSV:', error);
-      alert('Erro ao gerar CSV dos consultores. Por favor, tente novamente.');
+      alert(t('export_error_consultant_excel'));
     }
   };
 
   if (loading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar dados..." />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }
@@ -1048,7 +1050,7 @@ function ExportacoesTM() {
       <Layout>
         <div className="page">
           <header className="page-header">
-            <h1>Exportações Talent Manager</h1>
+            <h1>{t('export_title_tm')}</h1>
           </header>
           <div className="tm-export-error">
             <p>{error}</p>
@@ -1062,11 +1064,11 @@ function ExportacoesTM() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>Exportações Talent Manager</h1>
+          <h1>{t('export_title_tm')}</h1>
         </header>
 
         <div className="tm-export-tabs" role="tablist" aria-label="Separadores de exportação">
-          {tabs.map((tab) => (
+          {getTabs(t).map((tab) => (
             <button
               key={tab.id}
               type="button"
@@ -1080,7 +1082,7 @@ function ExportacoesTM() {
           ))}
         </div>
 
-        <section className="shell">
+        <section className="shell tm-export-shell">
 
           <div className="toolbar tm-export-toolbar">
             <label className="search-wrap tm-export-search" htmlFor="tm-export-search-input">
@@ -1107,7 +1109,7 @@ function ExportacoesTM() {
                 }}
               >
                 <Filter size={18} />
-                <span className="tm-export-control-btn-label">Filtrar pesquisa</span>
+                <span className="tm-export-control-btn-label">{t('export_filter_search')}</span>
               </button>
 
               {showFilterDropdown && (
@@ -1140,7 +1142,7 @@ function ExportacoesTM() {
                 }}
               >
                 <SlidersHorizontal size={18} />
-                <span className="tm-export-control-btn-label">Ordenar</span>
+                <span className="tm-export-control-btn-label">{t('export_sort_btn')}</span>
               </button>
 
               {showSortDropdown && (
@@ -1167,26 +1169,26 @@ function ExportacoesTM() {
           {activeTab === 'pedidos' && (
             <>
               <div className="tm-export-section-head">
-                <h2>Pedidos de Badges</h2>
+                <h2>{t('export_tab_requests')}</h2>
                 <div className="tm-export-section-actions">
                   <button type="button" className="tm-export-link-btn" onClick={toggleSelectAll}>
-                    {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
+                    {allSelectedCurrentTab ? t('deselect_all') : t('select_all')}
                   </button>
                   <span className="tm-export-selected-count">{selectedCount} selecionados</span>
                   <button type="button" className="tm-export-btn secondary" aria-label="Exportar pedidos em PDF" onClick={exportRequestsToPDF}>
                     <FileDown size={16} />
-                    <span>Exportar PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button type="button" className="tm-export-btn primary" aria-label="Exportar pedidos em Excel" onClick={exportRequestsToExcel}>
                     <ArrowDownToLine size={16} />
-                    <span>Exportar Excel</span>
+                    <span>{t('export_excel')}</span>
                   </button>
                 </div>
               </div>
 
               <div className="tm-export-status-row">
-                <span>Filtrar por:</span>
-                {requestStatusFilters.map((item) => (
+                <span>{t('pedidos_filter_by')}</span>
+                {getRequestStatusFilters(t).map((item) => (
                   <button
                     key={item.id}
                     type="button"
@@ -1204,23 +1206,23 @@ function ExportacoesTM() {
                   <thead>
                     <tr>
                       <th />
-                      <th>Nome do Consultor</th>
-                      <th>Badge Pedida</th>
-                      <th>Nível</th>
-                      <th>Data do Pedido</th>
-                      <th>Estado do Pedido</th>
-                      <th>Detalhes do Pedido</th>
+                      <th>{t('export_th_consultant')}</th>
+                      <th>{t('export_th_badge')}</th>
+                      <th>{t('export_th_level')}</th>
+                      <th>{t('export_th_request_date')}</th>
+                      <th>{t('export_th_request_state')}</th>
+                      <th>{t('export_th_request_details')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedRequests.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="empty-state tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
+                        <td colSpan={7} className="empty-state tm-export-empty-row">{t('export_no_results')}</td>
                       </tr>
                     )}
 
                     {pagedRequests.map((item) => {
-                      const status = requestStatusMeta[item.status] || requestStatusMeta.pendente;
+                      const status = getRequestStatusMeta(t)[item.status] || getRequestStatusMeta(t).pendente;
 
                       return (
                         <tr key={item.id}>
@@ -1246,7 +1248,7 @@ function ExportacoesTM() {
                               className="tm-export-view-btn"
                               onClick={() => navigate(`/talent-manager/pedidos/${item.detailId}`)}
                             >
-                              Ver
+                              {t('pedidos_btn_view')}
                             </button>
                           </td>
                         </tr>
@@ -1261,19 +1263,19 @@ function ExportacoesTM() {
           {activeTab === 'badges' && (
             <>
               <div className="tm-export-section-head">
-                <h2>Badges</h2>
+                <h2>{t('export_tab_badges')}</h2>
                 <div className="tm-export-section-actions">
                   <button type="button" className="tm-export-link-btn" onClick={toggleSelectAll}>
-                    {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
+                    {allSelectedCurrentTab ? t('deselect_all') : t('select_all')}
                   </button>
                   <span className="tm-export-selected-count">{selectedCount} selecionados</span>
                   <button type="button" className="tm-export-btn secondary" aria-label="Exportar badges em PDF" onClick={exportBadgesToPDF} disabled={selectedBadgeIds.length === 0}>
                     <FileDown size={16} />
-                    <span>Exportar PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button type="button" className="tm-export-btn primary" aria-label="Exportar badges em Excel" onClick={exportBadgesToExcel} disabled={selectedBadgeIds.length === 0}>
                     <ArrowDownToLine size={16} />
-                    <span>Exportar Excel</span>
+                    <span>{t('export_excel')}</span>
                   </button>
                 </div>
               </div>
@@ -1283,7 +1285,7 @@ function ExportacoesTM() {
                   const isSelected = selectedBadgeIds.includes(item.id);
                   const badgeTitle = item.name || item.area || 'Badge';
                   const levelLabel = item.isSpecial ? 'Especial' : item.levelLabel || item.level;
-                  const expirationInfo = getExpirationStatus(item.validade);
+                  const expirationInfo = getExpirationStatus(item.validade, t);
 
                   return (
                     <article
@@ -1320,7 +1322,7 @@ function ExportacoesTM() {
                       <div className="catalog-card-meta">
                         <div className="catalog-meta-row">
                           <Trophy size={14} />
-                          <span>{item.points} pontos</span>
+                          <span>{item.points} {t('export_points_suffix')}</span>
                         </div>
                         <div className="catalog-meta-row" style={{
                           color: expirationInfo?.status === 'expiring' ? '#b45309'
@@ -1331,8 +1333,8 @@ function ExportacoesTM() {
                           <span>
                             {item.validade
                               ? (expirationInfo?.status === 'expired'
-                                ? 'Expirada'
-                                : `Expira: ${new Date(item.validade).toLocaleDateString('pt-PT')}`
+                                ? t('export_expired')
+                                : `${t('export_expires')} ${new Date(item.validade).toLocaleDateString('pt-PT')}`
                               )
                               : item.date
                             }
@@ -1350,19 +1352,19 @@ function ExportacoesTM() {
           {activeTab === 'consultores' && (
             <>
               <div className="tm-export-section-head">
-                <h2>Consultores</h2>
+                <h2>{t('export_tab_consultants')}</h2>
                 <div className="tm-export-section-actions">
                   <button type="button" className="tm-export-link-btn" onClick={toggleSelectAll}>
-                    {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
+                    {allSelectedCurrentTab ? t('deselect_all') : t('select_all')}
                   </button>
                   <span className="tm-export-selected-count">{selectedCount} selecionados</span>
                   <button type="button" className="tm-export-btn secondary" aria-label="Exportar consultores em PDF" onClick={exportConsultantsToPDF}>
                     <FileDown size={16} />
-                    <span>Exportar PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button type="button" className="tm-export-btn primary" aria-label="Exportar consultores em Excel" onClick={exportConsultantsToExcel}>
                     <ArrowDownToLine size={16} />
-                    <span>Exportar Excel</span>
+                    <span>{t('export_excel')}</span>
                   </button>
                 </div>
               </div>
@@ -1372,19 +1374,19 @@ function ExportacoesTM() {
                   <thead>
                     <tr>
                       <th />
-                      <th>Ranking</th>
-                      <th>Nome</th>
-                      <th>Email</th>
-                      <th>Pontos</th>
-                      <th>Data de Entrada</th>
-                      <th>Badges</th>
-                      <th>Estado</th>
+                      <th>{t('export_th_ranking')}</th>
+                      <th>{t('export_th_name')}</th>
+                      <th>{t('export_th_email')}</th>
+                      <th>{t('export_th_points')}</th>
+                      <th>{t('export_th_entry_date')}</th>
+                      <th>{t('export_th_badges')}</th>
+                      <th>{t('export_th_state')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedConsultants.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="empty-state tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
+                        <td colSpan={8} className="empty-state tm-export-empty-row">{t('export_no_results')}</td>
                       </tr>
                     )}
 
@@ -1420,7 +1422,7 @@ function ExportacoesTM() {
                           </td>
                           <td>
                             <span className={`tm-export-consultor-status ${item.status}`}>
-                              {toConsultantStatusLabel(item.status)}
+                              {toConsultantStatusLabel(item.status, t)}
                             </span>
                           </td>
                         </tr>

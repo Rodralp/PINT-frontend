@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowDownToLine,
   Clock3,
@@ -20,67 +21,6 @@ import { fetchAdminUsers } from '../../services/adminUserService';
 import { fetchCatalogBadges } from '../../services/consultorService';
 import '../../css/AdminGestor/Exportacoes_AG.css';
 import '../../css/Consultor/CatalogoBadges_C.css';
-
-const tabs = [
-  { id: 'pedidos', label: 'Pedidos de Badges' },
-  { id: 'badges', label: 'Badges' },
-  { id: 'consultores', label: 'Consultores' },
-];
-
-const requestStatusFilters = [
-  { id: 'enviado', label: 'Enviados' },
-  { id: 'pendente', label: 'Pendentes' },
-  { id: 'rejeitado', label: 'Rejeitados' },
-];
-
-const levelFilterOptions = [
-  { id: 'todos', label: 'Todos os níveis' },
-  { id: 'junior', label: 'Júnior' },
-  { id: 'intermedio', label: 'Intermédio' },
-  { id: 'senior', label: 'Sénior' },
-  { id: 'especialista', label: 'Especialista' },
-  { id: 'lider', label: 'Líder de Conhecimento' },
-];
-
-const consultantFilterOptions = [
-  { id: 'todos', label: 'Todos os estados' },
-  { id: 'ativo', label: 'Ativo' },
-  { id: 'inativo', label: 'Inativo' },
-];
-
-const requestSortOptions = [
-  { id: 'recentes', label: 'Mais recentes' },
-  { id: 'antigas', label: 'Mais antigas' },
-  { id: 'consultor_az', label: 'Consultor (A-Z)' },
-];
-
-const badgeSortOptions = [
-  { id: 'padrao', label: 'Ordem padrão' },
-  { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
-  { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
-  { id: 'area_asc', label: 'Área (A-Z)' },
-];
-
-const consultantSortOptions = [
-  { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
-  { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
-  { id: 'badges_desc', label: 'Badges (Maior para Menor)' },
-  { id: 'badges_asc', label: 'Badges (Menor para Maior)' },
-  { id: 'nome_az', label: 'Nome (A-Z)' },
-  { id: 'entrada_recente', label: 'Data de entrada (Recente)' },
-];
-
-const tabDefaults = {
-  pedidos: { filter: 'todos', sort: 'recentes' },
-  badges: { filter: 'todos', sort: 'padrao' },
-  consultores: { filter: 'todos', sort: 'points_desc' },
-};
-
-const requestStatusMeta = {
-  enviado: { label: 'Enviados', className: 'sent' },
-  pendente: { label: 'Pendentes', className: 'pending' },
-  rejeitado: { label: 'Rejeitados', className: 'rejected' },
-};
 
 const parsePtDate = (value) => {
   const normalized = String(value || '').trim();
@@ -124,13 +64,13 @@ const normalizeLevelId = (level) => {
   return 'junior';
 };
 
-const getExpirationStatus = (validade) => {
+const getExpirationStatus = (validade, t) => {
   if (!validade) return null;
   const today = new Date();
   const expDate = new Date(validade);
   const daysUntil = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-  if (daysUntil <= 0) return { status: 'expired', label: 'Expirada', days: daysUntil };
-  if (daysUntil <= 30) return { status: 'expiring', label: `Expira em ${daysUntil} dias`, days: daysUntil };
+  if (daysUntil <= 0) return { status: 'expired', label: t('export_expired'), days: daysUntil };
+  if (daysUntil <= 30) return { status: 'expiring', label: `${t('export_expires')} ${daysUntil} dias`, days: daysUntil };
   return null;
 };
 
@@ -199,17 +139,17 @@ const normalizeConsultantStatus = (status) => {
   return 'inativo';
 };
 
-const toConsultantStatusLabel = (status) => {
+const toConsultantStatusLabel = (status, t) => {
   const normalized = normalizeConsultantStatus(status);
   if (normalized === 'ativo') {
-    return 'Ativo';
+    return t('active');
   }
 
   if (normalized === 'pendente') {
-    return 'Pendentes';
+    return t('export_filter_pending');
   }
 
-  return 'Inativo';
+  return t('inactive');
 };
 
 const getLoginName = () => {
@@ -227,27 +167,27 @@ const getLoginName = () => {
   }
 };
 
-const translateLevel = (levelKey) => {
-  const translations = {
-    'badge_level_junior': 'Júnior',
-    'badge_level_intermediate': 'Intermédio',
-    'badge_level_senior': 'Sénior',
-    'badge_level_specialist': 'Especialista',
-    'badge_level_knowledge_lead': 'Líder de Conhecimento',
-    'junior': 'Júnior',
-    'intermedio': 'Intermédio',
-    'senior': 'Sénior',
-    'especialista': 'Especialista',
-    'lider': 'Líder de Conhecimento'
+const translateLevel = (levelKey, t) => {
+  const map = {
+    'badge_level_junior': 'badge_level_junior',
+    'badge_level_intermediate': 'badge_level_intermediate',
+    'badge_level_senior': 'badge_level_senior',
+    'badge_level_specialist': 'badge_level_specialist',
+    'badge_level_knowledge_lead': 'badge_level_knowledge_lead',
+    'junior': 'badge_level_junior',
+    'intermedio': 'badge_level_intermediate',
+    'senior': 'badge_level_senior',
+    'especialista': 'badge_level_specialist',
+    'lider': 'badge_level_knowledge_lead'
   };
-  return translations[levelKey] || levelKey;
+  return t(map[levelKey] || levelKey);
 };
 
-const generateBadgesCSV = (badges) => {
+const generateBadgesCSV = (badges, t) => {
   const BOM = '\uFEFF';
-  const headers = ['Nome da Badge', 'Tipo', 'Área', 'Pontos', 'Data', 'ID'];
+  const headers = [t('export_csv_badge_name'), t('export_csv_type'), t('export_th_area'), t('export_th_points'), t('export_th_date'), 'ID'];
   const rows = badges.map(badge => {
-    const levelName = translateLevel(badge.levelId || badge.level);
+    const levelName = translateLevel(badge.levelId || badge.level, t);
     return [
       `"${badge.name || badge.area} - ${levelName}"`,
       `"${levelName}"`,
@@ -264,13 +204,13 @@ const generateBadgesCSV = (badges) => {
   ].join('\n');
 };
 
-const generateBadgePagesPDF = (badges, userName) => {
+const generateBadgePagesPDF = (badges, userName, t) => {
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
-      <title>Badges Export</title>
+      <title>${t('export_tab_badges')}</title>
       <style>
         @media print { @page { size: A4 portrait; margin: 0; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } .no-print { display: none; } }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -297,25 +237,25 @@ const generateBadgePagesPDF = (badges, userName) => {
           <div class="brand">SOFTINSA</div>
           <div class="title">Badge ${index + 1} de ${badges.length}</div>
           <div class="badge-container">
-            <img src="${badge.badgeImage}" alt="${translateLevel(badge.levelId || badge.level)}" class="badge-image-simple" />
+            <img src="${badge.badgeImage}" alt="${translateLevel(badge.levelId || badge.level, t)}" class="badge-image-simple" />
           </div>
           <div class="detail-row">
-            <span class="detail-label">Área</span>
+            <span class="detail-label">${t('export_th_area')}</span>
             <span class="detail-value">${badge.area}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Nível</span>
-            <span class="detail-value">${translateLevel(badge.levelId || badge.level)}</span>
+            <span class="detail-label">${t('export_th_level')}</span>
+            <span class="detail-value">${translateLevel(badge.levelId || badge.level, t)}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Pontos</span>
+            <span class="detail-label">${t('export_th_points')}</span>
             <span class="detail-value">${badge.points}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Data</span>
+            <span class="detail-label">${t('export_th_date')}</span>
             <span class="detail-value">${badge.date}</span>
           </div>
-          <div class="text-light">Dados da Badge</div>
+          <div class="text-light">${t('export_badge_data')}</div>
           <div class="user-name">${userName}</div>
         </div>
       `).join('')}
@@ -325,13 +265,13 @@ const generateBadgePagesPDF = (badges, userName) => {
   return html;
 };
 
-const generateRequestsPDF = (requests) => {
+const generateRequestsPDF = (requests, t) => {
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
-      <title>Pedidos de Badges</title>
+      <title>${t('export_tab_requests')}</title>
       <style>
         @media print { @page { size: A4 landscape; margin: 20px; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -352,18 +292,18 @@ const generateRequestsPDF = (requests) => {
     </head>
     <body>
       <div class="header">
-        <h1>Pedidos de Badges</h1>
-        <p>Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
+        <h1>${t('export_tab_requests')}</h1>
+        <p>${t('export_date_label')}: ${new Date().toLocaleDateString('pt-PT')}</p>
       </div>
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Consultor</th>
-            <th>Badge</th>
-            <th>Nível</th>
-            <th>Data</th>
-            <th>Estado</th>
+            <th>${t('export_th_consultant')}</th>
+            <th>${t('export_th_badge')}</th>
+            <th>${t('export_th_level')}</th>
+            <th>${t('export_th_date')}</th>
+            <th>${t('export_th_status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -385,9 +325,9 @@ const generateRequestsPDF = (requests) => {
   return html;
 };
 
-const generateRequestsCSV = (requests) => {
+const generateRequestsCSV = (requests, t) => {
   const BOM = '\uFEFF';
-  const headers = ['ID', 'Consultor', 'Badge', 'Nível', 'Data', 'Estado'];
+  const headers = ['ID', t('export_th_consultant'), t('export_th_badge'), t('export_th_level'), t('export_th_date'), t('export_th_status')];
   const rows = requests.map(req => [
     req.id,
     `"${req.consultant}"`,
@@ -399,13 +339,13 @@ const generateRequestsCSV = (requests) => {
   return BOM + [headers.join(';'), ...rows.map(row => row.join(';'))].join('\n');
 };
 
-const generateConsultantsPDF = (consultants) => {
+const generateConsultantsPDF = (consultants, t) => {
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
-      <title>Consultores</title>
+      <title>${t('export_tab_consultants')}</title>
       <style>
         @media print { @page { size: A4 landscape; margin: 20px; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -425,19 +365,19 @@ const generateConsultantsPDF = (consultants) => {
     </head>
     <body>
       <div class="header">
-        <h1>Consultores</h1>
-        <p>Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
+        <h1>${t('export_tab_consultants')}</h1>
+        <p>${t('export_date_label')}: ${new Date().toLocaleDateString('pt-PT')}</p>
       </div>
       <table>
         <thead>
           <tr>
-            <th>Ranking</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Pontos</th>
-            <th>Data de Entrada</th>
-            <th>Badges</th>
-            <th>Estado</th>
+            <th>${t('export_th_ranking')}</th>
+            <th>${t('export_th_name')}</th>
+            <th>${t('export_th_email')}</th>
+            <th>${t('export_th_points')}</th>
+            <th>${t('export_th_joined_date')}</th>
+            <th>${t('export_th_badges')}</th>
+            <th>${t('export_th_status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -460,9 +400,9 @@ const generateConsultantsPDF = (consultants) => {
   return html;
 };
 
-const generateConsultantsCSV = (consultants) => {
+const generateConsultantsCSV = (consultants, t) => {
   const BOM = '\uFEFF';
-  const headers = ['Ranking', 'Nome', 'Email', 'Pontos', 'Data de Entrada', 'Badges', 'Estado'];
+  const headers = [t('export_th_ranking'), t('export_th_name'), t('export_th_email'), t('export_th_points'), t('export_th_joined_date'), t('export_th_badges'), t('export_th_status')];
   const rows = consultants.map((c, index) => [
     index + 1,
     `"${c.name}"`,
@@ -477,6 +417,69 @@ const generateConsultantsCSV = (consultants) => {
 
 function ExportacoesAG() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const tabs = useMemo(() => [
+    { id: 'pedidos', label: t('export_tab_requests') },
+    { id: 'badges', label: t('export_tab_badges') },
+    { id: 'consultores', label: t('export_tab_consultants') },
+  ], [t]);
+
+  const requestStatusFilters = useMemo(() => [
+    { id: 'enviado', label: t('export_filter_sent') },
+    { id: 'pendente', label: t('export_filter_pending') },
+    { id: 'rejeitado', label: t('export_filter_rejected') },
+  ], [t]);
+
+  const levelFilterOptions = useMemo(() => [
+    { id: 'todos', label: t('export_filter_all_levels') },
+    { id: 'junior', label: t('badge_level_junior') },
+    { id: 'intermedio', label: t('badge_level_intermediate') },
+    { id: 'senior', label: t('badge_level_senior') },
+    { id: 'especialista', label: t('badge_level_specialist') },
+    { id: 'lider', label: t('badge_level_knowledge_lead') },
+  ], [t]);
+
+  const consultantFilterOptions = useMemo(() => [
+    { id: 'todos', label: t('export_filter_all_states') },
+    { id: 'ativo', label: t('active') },
+    { id: 'inativo', label: t('inactive') },
+  ], [t]);
+
+  const requestSortOptions = useMemo(() => [
+    { id: 'recentes', label: t('export_sort_recent') },
+    { id: 'antigas', label: t('export_sort_oldest') },
+    { id: 'consultor_az', label: t('export_sort_consultant_az') },
+  ], [t]);
+
+  const badgeSortOptions = useMemo(() => [
+    { id: 'padrao', label: t('export_sort_default') },
+    { id: 'points_desc', label: t('export_sort_points_desc') },
+    { id: 'points_asc', label: t('export_sort_points_asc') },
+    { id: 'area_asc', label: t('export_sort_area_az') },
+  ], [t]);
+
+  const consultantSortOptions = useMemo(() => [
+    { id: 'points_desc', label: t('export_sort_points_desc') },
+    { id: 'points_asc', label: t('export_sort_points_asc') },
+    { id: 'badges_desc', label: t('export_sort_badges_desc') },
+    { id: 'badges_asc', label: t('export_sort_badges_asc') },
+    { id: 'nome_az', label: t('export_sort_name_az') },
+    { id: 'entrada_recente', label: t('export_sort_joined_recent') },
+  ], [t]);
+
+  const tabDefaults = useMemo(() => ({
+    pedidos: { filter: 'todos', sort: 'recentes' },
+    badges: { filter: 'todos', sort: 'padrao' },
+    consultores: { filter: 'todos', sort: 'points_desc' },
+  }), []);
+
+  const requestStatusMeta = useMemo(() => ({
+    enviado: { label: t('export_filter_sent'), className: 'sent' },
+    pendente: { label: t('export_filter_pending'), className: 'pending' },
+    rejeitado: { label: t('export_filter_rejected'), className: 'rejected' },
+  }), [t]);
+
   const [requestItems, setRequestItems] = useState([]);
   const [consultantItems, setConsultantItems] = useState([]);
   const [badgeItems, setBadgeItems] = useState([]);
@@ -518,7 +521,7 @@ function ExportacoesAG() {
         const formattedBadges = (Array.isArray(badgesData) ? badgesData : []).map((badge, index) => {
           const isSpecial = Boolean(badge?.isSpecial) || badge?.typeId === 'special' || !badge?.levelKey;
           const levelKey = isSpecial ? null : (badge?.levelKey || badge?.typeId || null);
-          const levelLabel = isSpecial ? 'Especial' : (badge?.levelLabel || badge?.level || translateLevel(levelKey) || 'Badge');
+          const levelLabel = isSpecial ? 'Especial' : (badge?.levelLabel || badge?.level || translateLevel(levelKey, t) || 'Badge');
           const typeId = badge?.typeId || levelKey || (isSpecial ? 'special' : null);
 
           return {
@@ -543,7 +546,7 @@ function ExportacoesAG() {
         setBadgeItems(formattedBadges);
       } catch (err) {
         console.error('Error loading export data:', err);
-        setError('Falha ao carregar dados para exportação');
+        setError(t('export_load_error'));
       } finally {
         setLoading(false);
       }
@@ -793,7 +796,7 @@ function ExportacoesAG() {
   const hasActiveFilter = activeFilter !== tabDefaults[activeTab].filter;
   const hasActiveSort = sortBy !== tabDefaults[activeTab].sort;
 
-  const searchPlaceholder = activeTab === 'consultores' ? 'Pesquisar consultores' : 'Pesquisar badges';
+  const searchPlaceholder = activeTab === 'consultores' ? t('export_search_consultants') : t('export_search_badges');
 
   const userName = getLoginName() || 'João Gomes';
 
@@ -886,29 +889,29 @@ function ExportacoesAG() {
   const exportBadgesToPDF = () => {
     const selected = badgeItems.filter((item) => selectedBadgeIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um badge para exportar.');
+      alert(t('export_select_badge_alert'));
       return;
     }
     try {
-      const htmlContent = generateBadgePagesPDF(selected, userName);
+      const htmlContent = generateBadgePagesPDF(selected, userName, t);
       const printWindow = window.open('', '_blank');
       printWindow.document.write(htmlContent);
       printWindow.document.close();
       setTimeout(() => printWindow.print(), 500);
     } catch (error) {
       console.error('Error generating badge pages:', error);
-      alert('Erro ao gerar páginas das badges. Por favor, tente novamente.');
+      alert(t('export_error_pages'));
     }
   };
 
   const exportBadgesToExcel = () => {
     const selected = badgeItems.filter((item) => selectedBadgeIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um badge para exportar.');
+      alert(t('export_select_badge_alert'));
       return;
     }
     try {
-      const csvContent = generateBadgesCSV(selected);
+      const csvContent = generateBadgesCSV(selected, t);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -920,36 +923,36 @@ function ExportacoesAG() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating CSV:', error);
-      alert('Erro ao gerar CSV. Por favor, tente novamente.');
+      alert(t('export_error_csv'));
     }
   };
 
   const exportRequestsToPDF = () => {
     const selected = requestItems.filter((item) => selectedRequestIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um pedido para exportar.');
+      alert(t('export_select_badge_alert'));
       return;
     }
     try {
-      const htmlContent = generateRequestsPDF(selected);
+      const htmlContent = generateRequestsPDF(selected, t);
       const printWindow = window.open('', '_blank');
       printWindow.document.write(htmlContent);
       printWindow.document.close();
       setTimeout(() => printWindow.print(), 500);
     } catch (error) {
       console.error('Error generating requests PDF:', error);
-      alert('Erro ao gerar PDF dos pedidos. Por favor, tente novamente.');
+      alert(t('export_error_pages'));
     }
   };
 
   const exportRequestsToExcel = () => {
     const selected = requestItems.filter((item) => selectedRequestIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um pedido para exportar.');
+      alert(t('export_select_badge_alert'));
       return;
     }
     try {
-      const csvContent = generateRequestsCSV(selected);
+      const csvContent = generateRequestsCSV(selected, t);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -961,36 +964,36 @@ function ExportacoesAG() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating requests CSV:', error);
-      alert('Erro ao gerar CSV dos pedidos. Por favor, tente novamente.');
+      alert(t('export_error_csv'));
     }
   };
 
   const exportConsultantsToPDF = () => {
     const selected = consultantItems.filter((item) => selectedConsultantIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um consultor para exportar.');
+      alert(t('export_select_badge_alert'));
       return;
     }
     try {
-      const htmlContent = generateConsultantsPDF(selected);
+      const htmlContent = generateConsultantsPDF(selected, t);
       const printWindow = window.open('', '_blank');
       printWindow.document.write(htmlContent);
       printWindow.document.close();
       setTimeout(() => printWindow.print(), 500);
     } catch (error) {
       console.error('Error generating consultants PDF:', error);
-      alert('Erro ao gerar PDF dos consultores. Por favor, tente novamente.');
+      alert(t('export_error_pages'));
     }
   };
 
   const exportConsultantsToExcel = () => {
     const selected = consultantItems.filter((item) => selectedConsultantIds.includes(item.id));
     if (selected.length === 0) {
-      alert('Por favor, selecione pelo menos um consultor para exportar.');
+      alert(t('export_select_badge_alert'));
       return;
     }
     try {
-      const csvContent = generateConsultantsCSV(selected);
+      const csvContent = generateConsultantsCSV(selected, t);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -1002,14 +1005,14 @@ function ExportacoesAG() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating consultants CSV:', error);
-      alert('Erro ao gerar CSV dos consultores. Por favor, tente novamente.');
+      alert(t('export_error_csv'));
     }
   };
 
   if (loading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar dados..." />
+        <LoadingSpinner fullPage message={t('export_loading')} />
       </Layout>
     );
   }
@@ -1019,7 +1022,7 @@ function ExportacoesAG() {
       <Layout>
         <div className="page">
           <header className="page-header">
-            <h1>Exportações Administrador / Gestor</h1>
+            <h1>{t('export_title_ag')}</h1>
           </header>
           <div className="tm-export-error">
             <p>{error}</p>
@@ -1033,7 +1036,7 @@ function ExportacoesAG() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>Exportações Administrador / Gestor</h1>
+          <h1>{t('export_title_ag')}</h1>
         </header>
 
         <div className="tm-export-tabs" role="tablist" aria-label="Separadores de exportação">
@@ -1051,7 +1054,7 @@ function ExportacoesAG() {
           ))}
         </div>
 
-        <section className="shell">
+        <section className="shell tm-export-shell">
 
           <div className="toolbar tm-export-toolbar">
             <label className="search-wrap tm-export-search" htmlFor="tm-export-search-input">
@@ -1078,7 +1081,7 @@ function ExportacoesAG() {
                 }}
               >
                 <Filter size={18} />
-                <span className="tm-export-control-btn-label">Filtrar pesquisa</span>
+                <span className="tm-export-control-btn-label">{t('export_filter_search')}</span>
               </button>
 
               {showFilterDropdown && (
@@ -1111,7 +1114,7 @@ function ExportacoesAG() {
                 }}
               >
                 <SlidersHorizontal size={18} />
-                <span className="tm-export-control-btn-label">Ordenar</span>
+                <span className="tm-export-control-btn-label">{t('export_sort_btn')}</span>
               </button>
 
               {showSortDropdown && (
@@ -1138,25 +1141,25 @@ function ExportacoesAG() {
           {activeTab === 'pedidos' && (
             <>
               <div className="tm-export-section-head">
-                <h2>Pedidos de Badges</h2>
+                <h2>{t('export_tab_requests')}</h2>
                 <div className="tm-export-section-actions">
                   <button type="button" className="tm-export-link-btn" onClick={toggleSelectAll}>
-                    {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
+                    {allSelectedCurrentTab ? t('deselect_all') : t('select_all')}
                   </button>
-                  <span className="tm-export-selected-count">{selectedCount} selecionados</span>
+                  <span className="tm-export-selected-count">{t('exports_selected_count', { count: selectedCount })}</span>
                   <button type="button" className="tm-export-btn secondary" aria-label="Exportar pedidos em PDF" onClick={exportRequestsToPDF}>
                     <FileDown size={16} />
-                    <span>Exportar PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button type="button" className="tm-export-btn primary" aria-label="Exportar pedidos em Excel" onClick={exportRequestsToExcel}>
                     <ArrowDownToLine size={16} />
-                    <span>Exportar Excel</span>
+                    <span>{t('export_excel')}</span>
                   </button>
                 </div>
               </div>
 
               <div className="tm-export-status-row">
-                <span>Filtrar por:</span>
+                <span>{t('pedidos_filter_by')}</span>
                 {requestStatusFilters.map((item) => (
                   <button
                     key={item.id}
@@ -1175,18 +1178,18 @@ function ExportacoesAG() {
                   <thead>
                     <tr>
                       <th />
-                      <th>Nome do Consultor</th>
-                      <th>Badge Pedida</th>
-                      <th>Nível</th>
-                      <th>Data do Pedido</th>
-                      <th>Estado do Pedido</th>
-                      <th>Detalhes do Pedido</th>
+                      <th>{t('export_th_consultant')}</th>
+                      <th>{t('export_th_badge')}</th>
+                      <th>{t('export_th_level')}</th>
+                      <th>{t('export_th_request_date')}</th>
+                      <th>{t('export_th_request_status')}</th>
+                      <th>{t('export_th_request_details')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedRequests.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="empty-state tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
+                        <td colSpan={7} className="empty-state tm-export-empty-row">{t('export_no_results')}</td>
                       </tr>
                     )}
 
@@ -1217,7 +1220,7 @@ function ExportacoesAG() {
                               className="tm-export-view-btn"
                               onClick={() => navigate(`/admin-gestor/pedidos/${item.detailId}`)}
                             >
-                              Ver
+                              {t('pedidos_btn_view')}
                             </button>
                           </td>
                         </tr>
@@ -1232,19 +1235,19 @@ function ExportacoesAG() {
           {activeTab === 'badges' && (
             <>
               <div className="tm-export-section-head">
-                <h2>Badges</h2>
+                <h2>{t('export_tab_badges')}</h2>
                 <div className="tm-export-section-actions">
                   <button type="button" className="tm-export-link-btn" onClick={toggleSelectAll}>
-                    {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
+                    {allSelectedCurrentTab ? t('deselect_all') : t('select_all')}
                   </button>
-                  <span className="tm-export-selected-count">{selectedCount} selecionados</span>
+                  <span className="tm-export-selected-count">{t('exports_selected_count', { count: selectedCount })}</span>
                   <button type="button" className="tm-export-btn secondary" aria-label="Exportar badges em PDF" onClick={exportBadgesToPDF} disabled={selectedBadgeIds.length === 0}>
                     <FileDown size={16} />
-                    <span>Exportar PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button type="button" className="tm-export-btn primary" aria-label="Exportar badges em Excel" onClick={exportBadgesToExcel} disabled={selectedBadgeIds.length === 0}>
                     <ArrowDownToLine size={16} />
-                    <span>Exportar Excel</span>
+                    <span>{t('export_excel')}</span>
                   </button>
                 </div>
               </div>
@@ -1291,7 +1294,7 @@ function ExportacoesAG() {
                       <div className="catalog-card-meta">
                         <div className="catalog-meta-row">
                           <Trophy size={14} />
-                          <span>{item.points} pontos</span>
+                          <span>{item.points} {t('export_points_suffix')}</span>
                         </div>
                         <div className="catalog-meta-row" style={{
                           color: expirationInfo?.status === 'expiring' ? '#b45309'
@@ -1302,8 +1305,8 @@ function ExportacoesAG() {
                           <span>
                             {item.validade
                               ? (expirationInfo?.status === 'expired'
-                                ? 'Expirada'
-                                : `Expira: ${new Date(item.validade).toLocaleDateString('pt-PT')}`
+                                ? t('export_expired')
+                                : `${t('export_expires')} ${new Date(item.validade).toLocaleDateString('pt-PT')}`
                               )
                               : item.date
                             }
@@ -1321,19 +1324,19 @@ function ExportacoesAG() {
           {activeTab === 'consultores' && (
             <>
               <div className="tm-export-section-head">
-                <h2>Consultores</h2>
+                <h2>{t('export_tab_consultants')}</h2>
                 <div className="tm-export-section-actions">
                   <button type="button" className="tm-export-link-btn" onClick={toggleSelectAll}>
-                    {allSelectedCurrentTab ? 'Desselecionar todos' : 'Selecionar todos'}
+                    {allSelectedCurrentTab ? t('deselect_all') : t('select_all')}
                   </button>
-                  <span className="tm-export-selected-count">{selectedCount} selecionados</span>
+                  <span className="tm-export-selected-count">{t('exports_selected_count', { count: selectedCount })}</span>
                   <button type="button" className="tm-export-btn secondary" aria-label="Exportar consultores em PDF" onClick={exportConsultantsToPDF}>
                     <FileDown size={16} />
-                    <span>Exportar PDF</span>
+                    <span>{t('export_pdf')}</span>
                   </button>
                   <button type="button" className="tm-export-btn primary" aria-label="Exportar consultores em Excel" onClick={exportConsultantsToExcel}>
                     <ArrowDownToLine size={16} />
-                    <span>Exportar Excel</span>
+                    <span>{t('export_excel')}</span>
                   </button>
                 </div>
               </div>
@@ -1343,19 +1346,19 @@ function ExportacoesAG() {
                   <thead>
                     <tr>
                       <th />
-                      <th>Ranking</th>
-                      <th>Nome</th>
-                      <th>Email</th>
-                      <th>Pontos</th>
-                      <th>Data de Entrada</th>
-                      <th>Badges</th>
-                      <th>Estado</th>
+                      <th>{t('export_th_ranking')}</th>
+                      <th>{t('export_th_name')}</th>
+                      <th>{t('export_th_email')}</th>
+                      <th>{t('export_th_points')}</th>
+                      <th>{t('export_th_joined_date')}</th>
+                      <th>{t('export_th_badges')}</th>
+                      <th>{t('export_th_status')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedConsultants.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="empty-state tm-export-empty-row">Sem resultados para os filtros escolhidos.</td>
+                        <td colSpan={8} className="empty-state tm-export-empty-row">{t('export_no_results')}</td>
                       </tr>
                     )}
 
@@ -1391,7 +1394,7 @@ function ExportacoesAG() {
                           </td>
                           <td>
                             <span className={`tm-export-consultor-status ${item.status}`}>
-                              {toConsultantStatusLabel(item.status)}
+                              {toConsultantStatusLabel(item.status, t)}
                             </span>
                           </td>
                         </tr>

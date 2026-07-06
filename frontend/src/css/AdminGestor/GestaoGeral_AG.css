@@ -1,5 +1,9 @@
 .page:has(.ag-general-tabs .ag-general-tab:first-of-type.active) .shell {
-  border-top-left-radius: 0;
+  border-top-left-radius: 0 !important;
+}
+
+.ag-general-shell {
+  border: none;
 }
 
 .ag-general-tabs {
@@ -156,6 +160,12 @@
   width: 17px;
   height: 17px;
   accent-color: #1b84f4;
+}
+
+.ag-general-table input[type='checkbox'].ag-email-disabled {
+  accent-color: #cbd5e1;
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .ag-general-empty-row {

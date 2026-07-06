@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   ArrowDown,
@@ -17,61 +18,62 @@ import { fetchManagedRequests } from '../../services/requestManagementService';
 
 const ITEMS_PER_PAGE = 10;
 
-const tableFilters = [
-  { id: 'aprovado', label: 'Aprovado' },
-  { id: 'pendente', label: 'Pendente' },
-  { id: 'rejeitado', label: 'Rejeitado' },
-];
-
 const tableStatusStyles = {
   aprovado: 'approved',
   pendente: 'pending',
   rejeitado: 'rejected',
 };
 
-const getTableLabel = (tableStatus) => {
-  if (tableStatus === 'aprovado') {
-    return 'Aprovado';
-  }
-
-  if (tableStatus === 'rejeitado') {
-    return 'Rejeitado';
-  }
-
-  return 'Pendente';
-};
-
-const statusConfig = {
-  submetido: {
-    label: 'Todos',
-    tone: 'gray',
-    icon: Clock3,
-  },
-  validacao: {
-    label: 'Em Validação',
-    tone: 'amber',
-    icon: SearchCheck,
-  },
-  rejeitado: {
-    label: 'Rejeitados',
-    tone: 'red',
-    icon: AlertTriangle,
-  },
-  aprovado: {
-    label: 'Aprovados',
-    tone: 'green',
-    icon: CheckCircle2,
-  },
-};
-
 function GestaoPedidosSLL() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
-  const [activeFilters, setActiveFilters] = useState(tableFilters.map((filter) => filter.id));
+  const [activeFilters, setActiveFilters] = useState(['aprovado', 'pendente', 'rejeitado']);
   const [page, setPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+
+  const tableFilters = useMemo(() => [
+    { id: 'aprovado', label: t('pedidos_status_validated') },
+    { id: 'pendente', label: t('pedidos_status_pending') },
+    { id: 'rejeitado', label: t('badge_status_rejected') },
+  ], [t]);
+
+  const statusConfig = useMemo(() => ({
+    submetido: {
+      label: t('pedidos_status_all'),
+      tone: 'gray',
+      icon: Clock3,
+    },
+    validacao: {
+      label: t('badge_status_in_review'),
+      tone: 'amber',
+      icon: SearchCheck,
+    },
+    rejeitado: {
+      label: t('pedidos_status_rejected'),
+      tone: 'red',
+      icon: AlertTriangle,
+    },
+    aprovado: {
+      label: t('pedidos_status_approved'),
+      tone: 'green',
+      icon: CheckCircle2,
+    },
+  }), [t]);
+
+  const getTableLabel = (tableStatus) => {
+    if (tableStatus === 'aprovado') {
+      return t('pedidos_status_validated');
+    }
+
+    if (tableStatus === 'rejeitado') {
+      return t('badge_status_rejected');
+    }
+
+    return t('pedidos_status_pending');
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -122,7 +124,7 @@ function GestaoPedidosSLL() {
       { id: 'rejected', label: statusConfig.rejeitado.label, tone: statusConfig.rejeitado.tone, icon: statusConfig.rejeitado.icon, value: summaryCounts.rejected },
       { id: 'approved', label: statusConfig.aprovado.label, tone: statusConfig.aprovado.tone, icon: statusConfig.aprovado.icon, value: summaryCounts.approved },
     ],
-    [summaryCounts],
+    [summaryCounts, statusConfig],
   );
 
   const filteredRequests = useMemo(() => {
@@ -213,7 +215,7 @@ function GestaoPedidosSLL() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar pedidos..." />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }
@@ -226,7 +228,7 @@ function GestaoPedidosSLL() {
             <ArrowLeft size={22} />
           </button>
           <div>
-            <h1>Gestão de Pedidos</h1>
+            <h1>{t('pedidos_title')}</h1>
           </div>
         </header>
 
@@ -253,9 +255,9 @@ function GestaoPedidosSLL() {
 
           <div className="sll-orders-board-header">
             <div>
-              <h2>Pedidos de Todos os Consultores</h2>
+              <h2>{t('pedidos_subtitle')}</h2>
                 <div className="sll-orders-filter-inline">
-                  <p>Filtrar por:</p>
+                  <p>{t('pedidos_filter_by')}</p>
                   <div className="sll-orders-filter-row">
                     {tableFilters.map((filter) => (
                       <button
@@ -278,28 +280,28 @@ function GestaoPedidosSLL() {
               <thead>
                 <tr>
                   <th className="sortable" onClick={() => toggleSort('consultant')}>
-                    <span className="sll-orders-sort-head">Nome do Consultor {renderSortIcon('consultant')}</span>
+                    <span className="sll-orders-sort-head">{t('pedidos_th_consultant')} {renderSortIcon('consultant')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('badge')}>
-                    <span className="sll-orders-sort-head">Badge Pedida {renderSortIcon('badge')}</span>
+                    <span className="sll-orders-sort-head">{t('pedidos_th_badge')} {renderSortIcon('badge')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('level')}>
-                    <span className="sll-orders-sort-head">Nível {renderSortIcon('level')}</span>
+                    <span className="sll-orders-sort-head">{t('pedidos_th_level')} {renderSortIcon('level')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('date')}>
-                    <span className="sll-orders-sort-head">Data do Pedido {renderSortIcon('date')}</span>
+                    <span className="sll-orders-sort-head">{t('pedidos_th_date')} {renderSortIcon('date')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('status')}>
-                    <span className="sll-orders-sort-head">Estado do Pedido {renderSortIcon('status')}</span>
+                    <span className="sll-orders-sort-head">{t('pedidos_th_status')} {renderSortIcon('status')}</span>
                   </th>
-                  <th>Detalhes do Pedido</th>
+                  <th>{t('pedidos_th_details')}</th>
                 </tr>
               </thead>
               <tbody>
                 {pagedRequests.length === 0 && (
                   <tr>
                     <td colSpan={6} className="empty-state sll-orders-empty-row">
-                      Sem pedidos para os filtros escolhidos.
+                      {t('pedidos_no_results')}
                     </td>
                   </tr>
                 )}
@@ -324,7 +326,7 @@ function GestaoPedidosSLL() {
                           className="sll-view-btn"
                           onClick={() => navigate(`/service-line-leader/pedidos/${request.id}`)}
                         >
-                          Ver
+                          {t('pedidos_btn_view')}
                         </button>
                       </td>
                     </tr>
