@@ -237,7 +237,8 @@ function Exportacoes() {
         }
         
         if (Array.isArray(data) && data.length > 0) {
-          setBadgeItems(data.map(normalizeBadgeItem));
+          const obtainedBadges = data.filter((item) => item.status === 'obtido');
+          setBadgeItems(obtainedBadges.map(normalizeBadgeItem));
         } else {
           setBadgeItems([]);
         }

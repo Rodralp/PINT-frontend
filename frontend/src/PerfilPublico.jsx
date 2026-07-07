@@ -113,8 +113,8 @@ function PerfilPublico() {
 						joined: data.joined ?? data.user?.joined ?? '',
 							certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
 								.map((item) => ({
-									title: item.title || item.name || '',
-									levelKey: item.levelKey || item.subtitleKey || '',
+									title: item.title ?? item.name ?? '',
+									levelKey: item.levelKey ?? item.subtitleKey ?? '',
 								}))
 								.filter((it) => it.title) : [],
 					};
