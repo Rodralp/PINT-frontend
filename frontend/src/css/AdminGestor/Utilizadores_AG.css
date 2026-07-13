@@ -76,7 +76,7 @@
   border: 1px solid #ced7e3;
   border-radius: var(--radius-xl);
   height: 42px;
-  padding: var(--sp-3) var(--sp-3);
+  padding: 0 var(--sp-3);
   min-width: 200px;
   color: #1f2937;
   background: #ffffff;
@@ -153,6 +153,21 @@
 .ag-user-status.pendente {
   background: #fef3c7;
   color: #b45309;
+}
+
+.ag-user-status.completo {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ag-user-status.rejeitado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.ag-user-status.sent {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .ag-users-actions {

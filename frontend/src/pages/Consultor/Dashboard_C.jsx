@@ -390,7 +390,7 @@ function DashboardC() {
             </div>
 
             <div className="dashboard-list dashboard-suggestions-list">
-              {suggestionItems.map(({ title, subtitleKey, accent, badgeDbId, badgeImage, levelKey, typeId }, index) => (
+              {suggestionItems.map(({ title, subtitleKey, badgeDbId, badgeImage, levelKey, typeId }, index) => (
                 <article
                   key={`${title}-${index}`}
                   className="dashboard-list-item dashboard-suggestion-item dashboard-clickable"
@@ -437,7 +437,7 @@ function DashboardC() {
           onClose={() => setIsSuggestionsModalOpen(false)}
           title={t('dashboard_suggestions')}
           items={allSuggestionItems}
-          renderItem={({ title, subtitleKey, accent, badgeDbId, badgeImage, levelKey, typeId }) => (
+          renderItem={({ title, subtitleKey, badgeDbId, badgeImage, levelKey, typeId }) => (
             <article
               className="dashboard-list-item dashboard-suggestion-item"
               style={{ cursor: badgeDbId ? 'pointer' : 'default' }}

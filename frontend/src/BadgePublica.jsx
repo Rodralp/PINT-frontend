@@ -72,7 +72,7 @@ function BadgePublica() {
     }
 
     return defaultBadgeDetails;
-  }, [location.state, badgeId]);
+  }, [location.state]);
 
   const resolvedBadgeDbId = useMemo(
     () => resolveBadgeDbId(badgeId, badge),
@@ -103,7 +103,7 @@ function BadgePublica() {
             // ignore navigation errors
           }
         }
-      } catch (e) {
+      } catch {
         // ignore and keep fallback
       }
     };
@@ -127,7 +127,7 @@ function BadgePublica() {
         if (isMounted && Array.isArray(reqs)) {
           setDynamicRequirements(reqs);
         }
-      } catch (e) {
+      } catch {
         // ignore and keep static requirements
       }
     };
@@ -211,7 +211,7 @@ function BadgePublica() {
             </p>
 
             <section className="bp-requirements-card">
-              <h3>Requisitos</h3>
+              <h3>{t('requirements')}</h3>
               {requirements.length === 0 ? (
                 <p className="bp-requirements-empty">Sem requisitos definidos para este badge.</p>
               ) : (

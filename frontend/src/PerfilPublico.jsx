@@ -65,7 +65,7 @@ function PerfilPublico() {
 			}
 
 			return defaultConsultor;
-		}, [consultorId, location.state, remoteConsultor]);
+		}, [location.state, remoteConsultor]);
 
 		useEffect(() => {
 			let isMounted = true;
@@ -76,7 +76,7 @@ function PerfilPublico() {
 					const data = await fetchPublicProfile(decodedId);
 					if (!isMounted || !data) return;
 
-					// Map server profile structure to expected consultor shape used in this page
+				// Map server profile structure to expected consultor shape used in this page
 				const mapped = {
 					id: data.user?.id ?? data.id ?? decodedId,
 					name: data.user?.name ?? data.nome ?? data.user?.nome ?? '',
@@ -108,16 +108,16 @@ function PerfilPublico() {
 						description: item.description ?? '',
 						date: item.date ?? '',
 						icon: Award,
-						})) : [],
-						location: data.location ?? '',
-						joined: data.joined ?? data.user?.joined ?? '',
-							certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
-								.map((item) => ({
-									title: item.title ?? item.name ?? '',
-									levelKey: item.levelKey ?? item.subtitleKey ?? '',
-								}))
-								.filter((it) => it.title) : [],
-					};
+					})) : [],
+					location: data.location ?? '',
+					joined: data.joined ?? data.user?.joined ?? '',
+					certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
+						.map((item) => ({
+							title: item.title ?? item.name ?? '',
+							levelKey: item.levelKey ?? item.subtitleKey ?? '',
+						}))
+						.filter((it) => it.title) : [],
+				};
 
 					setRemoteConsultor(mapped);
 
@@ -149,10 +149,10 @@ function PerfilPublico() {
 						}
 					} catch { /* no vitrine */ }
 
-					if (isMounted) setIsLoading(false);
-				} catch (e) {
-					if (isMounted) setIsLoading(false);
-				}
+			if (isMounted) setIsLoading(false);
+			} catch {
+				if (isMounted) setIsLoading(false);
+			}
 			};
 
 			loadPublicProfile();
@@ -173,18 +173,6 @@ function PerfilPublico() {
 
 	const hasServiceLineStats = Array.isArray(consultor.serviceLineStats)
 		&& consultor.serviceLineStats.length > 0;
-
-	const activityItems = useMemo(() => {
-		if (Array.isArray(consultor.activityItems) && consultor.activityItems.length > 0) {
-			return consultor.activityItems;
-		}
-
-		return [
-			{ id: 'a1', description: `Subiu para ${consultor.badges} badges concluidas`, date: '5 dias atras', icon: Award },
-			{ id: 'a2', description: `Alcancou ${consultor.points} pontos`, date: '1 semana atras', icon: Zap },
-			{ id: 'a3', description: `Nova skill em ${consultor.serviceLine}`, date: '2 semanas atras', icon: Star },
-		];
-	}, [consultor.activityItems, consultor.badges, consultor.points, consultor.serviceLine]);
 
 	const handleGoBack = () => {
 		navigate('/galeria-publica');
@@ -320,18 +308,18 @@ function PerfilPublico() {
 											}
 										}}
 									>
-											<div className="pp-vitrine-badge-img">
-												<BadgeImage
-													src={badge.badgeImage}
-													alt={badge.name || 'Badge'}
-													levelKey={badge.levelKey}
-													typeId={badge.typeId}
-													levelLabel={badge.levelLabel}
-												/>
-											</div>
-											<span className="pp-vitrine-badge-name">{badge.name}</span>
+										<div className="pp-vitrine-badge-img">
+											<BadgeImage
+												src={badge.badgeImage}
+												alt={badge.name || 'Badge'}
+												levelKey={badge.levelKey}
+												typeId={badge.typeId}
+												levelLabel={badge.levelLabel}
+											/>
 										</div>
-									))}
+										<span className="pp-vitrine-badge-name">{badge.name}</span>
+									</div>
+								))}
 								</div>
 							</section>
 						)}

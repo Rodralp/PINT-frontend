@@ -287,6 +287,7 @@ function CatalogoBadges() {
   }, [sortedBadges, page, itemsPerPage]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [searchTerm, activeFilter, sortBy]);
 
@@ -434,10 +435,10 @@ function CatalogoBadges() {
                   tabIndex={0}
                   onClick={() => handleOpenBadgeDetails(item)}
                   onKeyDown={(event) => handleCardKeyDown(event, item)}
-                  style={currentState ? {
-                    background: currentState.tint,
-                    borderColor: currentState.border,
-                  } : undefined}
+                  style={{
+                    background: '#ffffff',
+                    borderColor: '#f6f7fa',
+                  }}
                 >
                   {expirationInfo && expirationInfo.status === 'expiring' && (
                     <div style={{

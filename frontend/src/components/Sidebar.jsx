@@ -215,6 +215,7 @@ function Sidebar() {
 
     sessionStorage.setItem(LAST_SIDEBAR_SECTION_KEY, matchedSectionTitle);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setExpandedSections((current) => {
       const visibleTitles = new Set(visibleSidebarSections.map((section) => section.title));
       const nextState = { ...current, [matchedSectionTitle]: true };

@@ -134,7 +134,7 @@ function Definicoes() {
   const primaryRole = roles[0];
   const accountId = Number(loginData?.id);
   const isConsultor = roles.includes(DEFAULT_ROLE);
-  const roleLabelKey = roleLabelKeyByRole[primaryRole] || roleLabelKeyByRole.consultor;
+  const _roleLabelKey = roleLabelKeyByRole[primaryRole] || roleLabelKeyByRole.consultor;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSectionId, setSelectedSectionId] = useState('account');

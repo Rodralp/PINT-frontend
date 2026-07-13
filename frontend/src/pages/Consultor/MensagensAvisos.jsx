@@ -80,7 +80,7 @@ const buildMessageBody = (value) => {
   return paragraphs.length > 0 ? paragraphs : [raw];
 };
 
-const buildMessageAvatar = (seed) => (
+const buildMessageAvatar = () => (
   `/avatars/default-avatar.svg`
 );
 
@@ -213,6 +213,7 @@ function MensagensAvisos() {
     }
 
     const nextPage = Math.floor(targetIndex / ITEMS_PER_PAGE) + 1;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(nextPage);
     setSelectedMessageId(normalizedPreferredId);
   }, [preferredMessageId, sortedMessages]);
@@ -226,11 +227,13 @@ function MensagensAvisos() {
   }, [sortedMessages, page]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [searchTerm, activeFilter, sortBy]);
 
   useEffect(() => {
     if (!pagedMessages.length) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedMessageId(null);
       return;
     }

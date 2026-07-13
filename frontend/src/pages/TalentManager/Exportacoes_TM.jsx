@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { downloadHtmlAsPdf, resolveImageUrl, renderMaskedBadge } from '../../utils/pdfExport.js';
 import {
   Search,
   Filter,
@@ -20,6 +21,7 @@ import BadgeImage from '../../components/BadgeImage';
 import { fetchManagedRequests } from '../../services/requestManagementService';
 import { fetchCatalogBadges } from '../../services/consultorService';
 import { fetchHistoricoConsultores } from '../../services/talentManagerService';
+import { fetchBadgeAssignmentReport } from '../../services/reportService';
 import '../../css/TalentManager/Exportacoes_TM.css';
 import '../../css/Consultor/CatalogoBadges_C.css';
 
@@ -27,6 +29,7 @@ const getTabs = (t) => [
   { id: 'pedidos', label: t('export_tab_requests') },
   { id: 'badges', label: t('export_tab_badges') },
   { id: 'consultores', label: t('export_tab_consultants') },
+  { id: 'relatorio', label: t('export_tab_report') },
 ];
 
 const getRequestStatusFilters = (t) => [
@@ -63,6 +66,7 @@ const getBadgeSortOptions = (t) => [
   { id: 'area_asc', label: 'Área (A-Z)' },
 ];
 
+// eslint-disable-next-line no-unused-vars
 const getConsultantSortOptions = (t) => [
   { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
   { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
@@ -76,6 +80,7 @@ const tabDefaults = {
   pedidos: { filter: 'todos', sort: 'recentes' },
   badges: { filter: 'todos', sort: 'padrao' },
   consultores: { filter: 'todos', sort: 'points_desc' },
+  relatorio: { filter: 'todos', sort: 'padrao' },
 };
 
 const badgeLevels = [
@@ -84,7 +89,20 @@ const badgeLevels = [
   { id: 'senior', label: 'Sénior', points: 200, badgeImage: '/badges/Sénior.png' },
   { id: 'especialista', label: 'Especialista', points: 250, badgeImage: '/badges/Especialista.png' },
   { id: 'lider', label: 'Líder de Conhecimento', points: 300, badgeImage: '/badges/Líder de Conhecimento.png' },
+  { id: 'especial', label: 'Especial', points: 0, badgeImage: '/badges/Especial.png' },
 ];
+
+const ALL_LEVEL_NAMES = ['Nível Júnior', 'Nível Intermédio', 'Nível Sénior', 'Nível Especialista', 'Nível Lider de Conhecimento', 'Especial'];
+
+const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'];
+
+const buildBarChartScale = (data) => {
+  const maxVal = Math.max(...data.map((d) => d.value), 1);
+  const step = Math.max(1, Math.ceil(maxVal / 4));
+  const max = step * 4;
+  const ticks = [0, 1, 2, 3, 4].map((m) => step * m);
+  return { max, ticks };
+};
 
 const getRequestStatusMeta = (t) => ({
   enviado: { label: t('export_filter_sent'), className: 'sent' },
@@ -222,7 +240,7 @@ const toConsultantStatusLabel = (status, t) => {
   return t('inactive');
 };
 
-const buildBadgeDisplayMeta = (level) => {
+const _buildBadgeDisplayMeta = (level) => {
   const levelId = normalizeLevelId(level);
   const template = badgeLevels.find((item) => item.id === levelId) || badgeLevels[0];
 
@@ -285,61 +303,49 @@ const generateBadgesCSV = (badges) => {
   ].join('\n');
 };
 
-const generateBadgePagesPDF = (badges, userName) => {
+const generateBadgePagesPDF = async (badges, userName) => {
+  const renderedBadges = await Promise.all(
+    badges.map((badge) =>
+      renderMaskedBadge(resolveImageUrl(badge.badgeImage), badge.levelId || badge.level, 120)
+    )
+  );
+
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
       <title>Badges Export</title>
-      <style>
-        @media print { @page { size: A4 portrait; margin: 0; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } .no-print { display: none; } }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 40px; }
-        .page-break { page-break-after: always; }
-        .badge-card { background: white; border-radius: 24px; padding: 60px 80px; max-width: 600px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0, 102, 255, 0.15); border: 4px solid #0066ff; position: relative; margin-bottom: 40px; }
-        .brand { font-size: 18px; font-weight: 700; color: #0066ff; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
-        .title { font-size: 28px; font-weight: 700; color: #495057; margin-bottom: 30px; }
-        .badge-container { margin: 30px 0 40px 0; display: flex; justify-content: center; align-items: center; }
-        .badge-image-simple { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1)); }
-        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e9ecef; font-size: 16px; }
-        .detail-label { font-weight: 600; color: #495057; }
-        .detail-value { font-weight: 700; color: #0066ff; }
-        .text-light { font-size: 16px; color: #868e96; margin: 12px 0; }
-        .user-name { font-size: 22px; font-weight: 700; color: #343a40; margin: 8px 0; }
-        .area { font-size: 20px; font-weight: 700; color: #343a40; margin: 8px 0; }
-        .level { font-size: 16px; color: #868e96; margin: 8px 0; }
-        .date { font-size: 15px; color: #868e96; margin-top: 20px; }
-      </style>
     </head>
-    <body>
-      ${badges.map((badge, index) => `
-        <div class="badge-card ${index < badges.length - 1 ? 'page-break' : ''}">
-          <div class="brand">SOFTINSA</div>
-          <div class="title">Badge ${index + 1} de ${badges.length}</div>
-          <div class="badge-container">
-            <img src="${badge.badgeImage}" alt="${translateLevel(badge.levelId || badge.level)}" class="badge-image-simple" />
+    <body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;">
+      ${badges.map((badge, index) => {
+        const badgeDataUrl = renderedBadges[index];
+        return `
+        <div style="background:white;border-radius:24px;padding:60px 80px;max-width:600px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,102,255,0.15);border:4px solid #0066ff;position:relative;margin-bottom:40px;overflow:hidden;${index < badges.length - 1 ? 'page-break-after:always;' : ''}">
+          <div style="font-size:18px;font-weight:700;color:#0066ff;letter-spacing:2px;margin-bottom:30px;text-transform:uppercase;">SOFTINSA</div>
+          <div style="margin:0 auto 40px auto;display:flex;justify-content:center;align-items:center;width:120px;height:120px;">
+            <img src="${badgeDataUrl}" alt="Badge" style="width:120px;height:120px;object-fit:contain;" />
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Área</span>
-            <span class="detail-value">${badge.area}</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
+            <span style="font-weight:600;color:#495057;">Área</span>
+            <span style="font-weight:700;color:#0066ff;">${badge.area || ''}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Nível</span>
-            <span class="detail-value">${translateLevel(badge.levelId || badge.level)}</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
+            <span style="font-weight:600;color:#495057;">Nível</span>
+            <span style="font-weight:700;color:#0066ff;">${translateLevel(badge.levelId || badge.level)}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Pontos</span>
-            <span class="detail-value">${badge.points}</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
+            <span style="font-weight:600;color:#495057;">Pontos</span>
+            <span style="font-weight:700;color:#0066ff;">${badge.points || ''}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">Data</span>
-            <span class="detail-value">${badge.date}</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
+            <span style="font-weight:600;color:#495057;">Data</span>
+            <span style="font-weight:700;color:#0066ff;">${badge.date || ''}</span>
           </div>
-          <div class="text-light">Atribuído a</div>
-          <div class="user-name">${userName}</div>
-        </div>
-      `).join('')}
+          <div style="font-size:16px;color:#868e96;margin:12px 0;">Atribuído a</div>
+          <div style="font-size:22px;font-weight:700;color:#343a40;margin:8px 0;">${userName}</div>
+        </div>`;
+      }).join('')}
     </body>
     </html>
   `;
@@ -353,49 +359,32 @@ const generateRequestsPDF = (requests) => {
     <head>
       <meta charset="UTF-8">
       <title>Pedidos de Badges</title>
-      <style>
-        @media print { @page { size: A4 landscape; margin: 20px; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; padding: 40px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 28px; color: #343a40; margin-bottom: 8px; }
-        .header p { color: #868e96; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        thead { background: #0066ff; color: white; }
-        th { padding: 14px 16px; text-align: left; font-weight: 600; font-size: 14px; }
-        td { padding: 12px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #495057; }
-        tr:last-child td { border-bottom: none; }
-        .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        .status.sent { background: #d1ecf1; color: #0c5460; }
-        .status.pending { background: #fff3cd; color: #856404; }
-        .status.rejected { background: #f8d7da; color: #721c24; }
-      </style>
     </head>
-    <body>
-      <div class="header">
-        <h1>Pedidos de Badges</h1>
-        <p>Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
+    <body style="margin:0;padding:20px;font-family:'Segoe UI',Arial,sans-serif;">
+      <div style="text-align:center;margin-bottom:30px;">
+        <h1 style="font-size:28px;color:#343a40;margin:0 0 8px 0;">Pedidos de Badges</h1>
+        <p style="color:#868e96;font-size:14px;margin:0;">Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
       </div>
-      <table>
+      <table style="width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Consultor</th>
-            <th>Badge</th>
-            <th>Nível</th>
-            <th>Data</th>
-            <th>Estado</th>
+          <tr style="background:#0066ff;color:white;">
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">ID</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Consultor</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Badge</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Nível</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Data</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Estado</th>
           </tr>
         </thead>
         <tbody>
           ${requests.map(req => `
             <tr>
-              <td>${req.id}</td>
-              <td>${req.consultant}</td>
-              <td>${req.badge}</td>
-              <td>${req.level}</td>
-              <td>${req.date}</td>
-              <td><span class="status ${req.status}">${req.status}</span></td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${req.id}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${req.consultant}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${req.badge}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${req.level}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${req.date}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;"><span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;text-transform:uppercase;background:${req.status === 'enviado' ? '#d1fae5' : req.status === 'pendente' ? '#fef3c7' : '#fee2e2'};color:${req.status === 'enviado' ? '#047857' : req.status === 'pendente' ? '#b45309' : '#b91c1c'};">${req.status === 'enviado' ? 'Aprovado' : req.status === 'pendente' ? 'Pendente' : 'Rejeitado'}</span></td>
             </tr>
           `).join('')}
         </tbody>
@@ -427,50 +416,34 @@ const generateConsultantsPDF = (consultants) => {
     <head>
       <meta charset="UTF-8">
       <title>Consultores</title>
-      <style>
-        @media print { @page { size: A4 landscape; margin: 20px; } body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f9fa; padding: 40px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 28px; color: #343a40; margin-bottom: 8px; }
-        .header p { color: #868e96; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        thead { background: #0066ff; color: white; }
-        th { padding: 14px 16px; text-align: left; font-weight: 600; font-size: 14px; }
-        td { padding: 12px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #495057; }
-        tr:last-child td { border-bottom: none; }
-        .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        .status.ativo { background: #d4edda; color: #155724; }
-        .status.inativo { background: #f8d7da; color: #721c24; }
-      </style>
     </head>
-    <body>
-      <div class="header">
-        <h1>Consultores</h1>
-        <p>Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
+    <body style="margin:0;padding:20px;font-family:'Segoe UI',Arial,sans-serif;">
+      <div style="text-align:center;margin-bottom:30px;">
+        <h1 style="font-size:28px;color:#343a40;margin:0 0 8px 0;">Consultores</h1>
+        <p style="color:#868e96;font-size:14px;margin:0;">Data de exportação: ${new Date().toLocaleDateString('pt-PT')}</p>
       </div>
-      <table>
+      <table style="width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
         <thead>
-          <tr>
-            <th>Ranking</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Pontos</th>
-            <th>Data de Entrada</th>
-            <th>Badges</th>
-            <th>Estado</th>
+          <tr style="background:#0066ff;color:white;">
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Ranking</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Nome</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Email</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Pontos</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Data de Entrada</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Badges</th>
+            <th style="padding:14px 16px;text-align:left;font-weight:600;font-size:14px;">Estado</th>
           </tr>
         </thead>
         <tbody>
           ${consultants.map((c, index) => `
             <tr>
-              <td>${index + 1}</td>
-              <td>${c.name}</td>
-              <td>${c.email}</td>
-              <td>${c.points}</td>
-              <td>${c.joinedAt}</td>
-              <td>${c.badges}</td>
-              <td><span class="status ${c.status}">${c.status}</span></td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${index + 1}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${c.name}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${c.email}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${c.points}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${c.joinedAt}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;">${c.badges}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid #e9ecef;font-size:14px;color:#495057;"><span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;text-transform:uppercase;background:${c.status === 'ativo' ? '#d4edda' : '#f8d7da'};color:${c.status === 'ativo' ? '#155724' : '#721c24'};">${c.status}</span></td>
             </tr>
           `).join('')}
         </tbody>
@@ -586,6 +559,15 @@ function ExportacoesTM() {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [page, setPage] = useState(1);
 
+  const [reportData, setReportData] = useState([]);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportAreaId, setReportAreaId] = useState('');
+  const [reportNivelId, setReportNivelId] = useState('');
+  const [reportDateFrom, setReportDateFrom] = useState('');
+  const [reportDateTo, setReportDateTo] = useState('');
+  const [expandedReportAreas, setExpandedReportAreas] = useState([]);
+  const [reportGenerated, setReportGenerated] = useState(false);
+
   const filterDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
 
@@ -666,7 +648,8 @@ function ExportacoesTM() {
         normalizedSearch.length === 0
         || item.area.toLowerCase().includes(normalizedSearch)
         || item.level.toLowerCase().includes(normalizedSearch);
-      const matchesLevel = activeFilter === 'todos' || item.levelId === activeFilter;
+      const matchesLevel = activeFilter === 'todos' || item.levelId === activeFilter
+        || (activeFilter === 'especial' && item.isSpecial);
 
       return matchesSearch && matchesLevel;
     });
@@ -819,7 +802,7 @@ function ExportacoesTM() {
 
   const userName = getLoginName() || 'João Gomes';
 
-  const handleGoBack = () => {
+  const _handleGoBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
       return;
@@ -914,18 +897,16 @@ function ExportacoesTM() {
   };
 
   // Export handlers
-  const exportBadgesToPDF = () => {
+  const exportBadgesToPDF = async () => {
     const selected = badgeItems.filter((item) => selectedBadgeIds.includes(item.id));
     if (selected.length === 0) {
       alert(t('export_select_badge'));
       return;
     }
     try {
-      const htmlContent = generateBadgePagesPDF(selected, userName);
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      setTimeout(() => printWindow.print(), 500);
+      const htmlContent = await generateBadgePagesPDF(selected, userName);
+      const date = new Date().toISOString().split('T')[0];
+      downloadHtmlAsPdf(htmlContent, `badges-${date}.pdf`);
     } catch (error) {
       console.error('Error generating badge pages:', error);
       alert(t('export_error_badge_pdf'));
@@ -963,10 +944,8 @@ function ExportacoesTM() {
     }
     try {
       const htmlContent = generateRequestsPDF(selected);
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      setTimeout(() => printWindow.print(), 500);
+      const date = new Date().toISOString().split('T')[0];
+      downloadHtmlAsPdf(htmlContent, `pedidos-${date}.pdf`, { orientation: 'portrait' });
     } catch (error) {
       console.error('Error generating requests PDF:', error);
       alert(t('export_error_request_pdf'));
@@ -1004,10 +983,8 @@ function ExportacoesTM() {
     }
     try {
       const htmlContent = generateConsultantsPDF(selected);
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      setTimeout(() => printWindow.print(), 500);
+      const date = new Date().toISOString().split('T')[0];
+      downloadHtmlAsPdf(htmlContent, `consultores-${date}.pdf`, { orientation: 'portrait' });
     } catch (error) {
       console.error('Error generating consultants PDF:', error);
       alert(t('export_error_consultant_pdf'));
@@ -1035,6 +1012,193 @@ function ExportacoesTM() {
       console.error('Error generating consultants CSV:', error);
       alert(t('export_error_consultant_excel'));
     }
+  };
+
+  const generateReport = async () => {
+    try {
+      setReportLoading(true);
+      const data = await fetchBadgeAssignmentReport({
+        areaId: reportAreaId,
+        nivelId: reportNivelId,
+        dateFrom: reportDateFrom,
+        dateTo: reportDateTo,
+      });
+      setReportData(Array.isArray(data) ? data : []);
+      setExpandedReportAreas([]);
+      setReportGenerated(true);
+    } catch (err) {
+      console.error('Error generating report:', err);
+      setReportData([]);
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  const reportSummary = useMemo(() => {
+    const map = {};
+    reportData.forEach((row) => {
+      const key = row.areaNome || '-';
+      if (!map[key]) {
+        map[key] = { area: key, totalBadges: 0, totalPoints: 0 };
+      }
+      map[key].totalBadges += 1;
+      map[key].totalPoints += Number(row.pontosObtidos || row.badgePontos || 0);
+    });
+    return Object.values(map).sort((a, b) => a.area.localeCompare(b.area));
+  }, [reportData]);
+
+  const toggleReportArea = (area) => {
+    setExpandedReportAreas((prev) => prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]);
+  };
+
+  const chartByArea = useMemo(() => {
+    const map = {};
+    badgeItems.filter((b) => !b.isSpecial).forEach((b) => {
+      if (b.area) map[b.area] = 0;
+    });
+    reportData.forEach((r) => {
+      if (!r.areaNome) return;
+      map[r.areaNome] = (map[r.areaNome] || 0) + 1;
+    });
+    return Object.entries(map).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [reportData, badgeItems]);
+
+  const chartByLevel = useMemo(() => {
+    const map = {};
+    ALL_LEVEL_NAMES.forEach((name) => { map[name] = 0; });
+    reportData.forEach((r) => {
+      const key = r.nivelNome || '-';
+      map[key] = (map[key] || 0) + 1;
+    });
+    return Object.entries(map).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [reportData]);
+
+  const buildPieGradient = (data, total) => {
+    if (total === 0) return 'conic-gradient(#e2e8f0 0% 100%)';
+    let acc = 0;
+    const segments = data.map((d, i) => {
+      const start = acc;
+      acc += (d.value / total) * 100;
+      return `${CHART_COLORS[i % CHART_COLORS.length]} ${start}% ${acc}%`;
+    });
+    return `conic-gradient(${segments.join(', ')})`;
+  };
+
+  const buildChartSectionHtml = (data, title) => {
+    const total = data.reduce((s, d) => s + d.value, 0);
+    const maxVal = Math.max(...data.map((d) => d.value), 1);
+    const step = Math.max(1, Math.ceil(maxVal / 4));
+    const chartMax = step * 4;
+    const ticks = [0, 1, 2, 3, 4].map((m) => step * m);
+
+    const barColumns = data.map((d, i) => {
+      const pct = chartMax > 0 ? (d.value / chartMax) * 100 : 0;
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0"><span style="font-size:9px;font-weight:700;color:#2f3747">${d.value}</span><div style="width:100%;height:100px;display:flex;align-items:flex-end;justify-content:center"><div style="width:60%;max-width:32px;height:${pct}%;background:${color};border-radius:3px 3px 0 0"></div></div><span style="font-size:8px;color:#64748b;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%">${d.name}</span></div>`;
+    }).join('');
+
+    const legendItems = data.map((d, i) => {
+      const pct = total > 0 ? Math.round((d.value / total) * 100) : 0;
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      return `<div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span><span style="overflow:hidden;text-overflow:ellipsis;max-width:120px">${d.name}</span><span style="font-weight:700;color:#2f3747;flex-shrink:0">${pct}%</span></div>`;
+    }).join('');
+
+    const radius = 48;
+    const circumference = 2 * Math.PI * radius;
+    let offset = 0;
+    const svgSegments = total === 0 ? '' : data.map((d, i) => {
+      const pct = d.value / total;
+      const segLen = pct * circumference;
+      const rest = circumference - segLen;
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      const seg = `<circle cx="60" cy="60" r="${radius}" fill="none" stroke="${color}" stroke-width="24" stroke-dasharray="${segLen} ${rest}" stroke-dashoffset="${-offset}" />`;
+      offset += segLen;
+      return seg;
+    }).join('');
+    const pieSvg = total === 0
+      ? '<div style="width:120px;height:120px;border-radius:50%;background:#e2e8f0;flex-shrink:0"></div>'
+      : `<svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0"><g transform="rotate(-90 60 60)">${svgSegments}</g></svg>`;
+
+    return `
+      <div style="display:flex;gap:12px;margin-bottom:16px;page-break-inside:avoid">
+        <div style="flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px;min-width:0">
+          <h4 style="font-size:12px;font-weight:700;color:#2f3747;margin:0 0 8px">${title} — ${t('report_chart_bar')}</h4>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:140px;padding-left:24px;position:relative">
+            <div style="position:absolute;left:0;top:0;bottom:0;width:22px;display:flex;flex-direction:column-reverse;justify-content:space-between;pointer-events:none">
+              ${ticks.map((tick) => `<span style="font-size:8px;color:#8892a4;line-height:1;text-align:right">${tick}</span>`).join('')}
+            </div>
+            ${barColumns}
+          </div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px;min-width:0">
+          <h4 style="font-size:12px;font-weight:700;color:#2f3747;margin:0 0 8px">${title} — ${t('report_chart_pie')}</h4>
+          <div style="display:flex;align-items:center;gap:12px;justify-content:center">
+            ${pieSvg}
+            <div style="display:flex;flex-direction:column;gap:4px;min-width:0">${legendItems}</div>
+          </div>
+        </div>
+      </div>`;
+  };
+
+  const exportReportToPDF = async () => {
+    if (reportData.length === 0) return;
+
+    const areaChartsHtml = reportAreaId === '' && reportNivelId !== 'especial'
+      ? buildChartSectionHtml(chartByArea, t('report_chart_by_area'))
+      : '';
+    const levelChartsHtml = reportNivelId === ''
+      ? buildChartSectionHtml(chartByLevel, t('report_chart_by_level'))
+      : '';
+
+    const summaryRowsHtml = reportSummary.map((row) => {
+      return `<tr><td style="padding:10px 14px;border-bottom:1px solid #e9ecef;font-size:13px;color:#495057;font-weight:600">${row.area}</td><td style="padding:10px 14px;border-bottom:1px solid #e9ecef;font-size:13px;color:#495057;text-align:center">${row.totalBadges}</td><td style="padding:10px 14px;border-bottom:1px solid #e9ecef;font-size:13px;color:#495057;text-align:right">${new Intl.NumberFormat('pt-PT').format(row.totalPoints)}</td></tr>`;
+    }).join('');
+
+    const detailRowsHtml = reportData.map((r) => `<tr><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057">${r.areaNome || '-'}</td><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057">${r.consultorNome || '-'}</td><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057">${r.consultorEmail || '-'}</td><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057">${r.badgeNome || '-'}</td><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057">${r.nivelNome || '-'}</td><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057;white-space:nowrap">${r.dataObtencao || '-'}</td><td style="padding:8px 10px;border-bottom:1px solid #e9ecef;font-size:12px;color:#495057;text-align:right">${r.pontosObtidos || r.badgePontos || 0}</td></tr>`).join('');
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>${t('export_tab_report')}</title>
+      </head>
+      <body style="margin:0;padding:16px;font-family:'Segoe UI',Arial,sans-serif;font-size:12px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <h1 style="font-size:24px;color:#343a40;margin:0 0 6px 0;">${t('export_tab_report')}</h1>
+          <p style="color:#868e96;font-size:13px;margin:0;">${t('export_date_label')}: ${new Date().toLocaleDateString('pt-PT')}</p>
+        </div>
+        ${areaChartsHtml}
+        ${levelChartsHtml}
+        <div style="page-break-before:always"></div>
+        <h2 style="font-size:15px;color:#2f3747;margin:20px 0 10px;font-weight:700">${t('report_summary_title')}</h2>
+        <table style="width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);margin-bottom:20px"><thead><tr style="background:#0066ff;color:white;"><th style="padding:12px 14px;text-align:left;font-weight:600;font-size:13px;">${t('report_col_area')}</th><th style="padding:12px 14px;text-align:center;font-weight:600;font-size:13px;">${t('report_total_badges')}</th><th style="padding:12px 14px;text-align:right;font-weight:600;font-size:13px;">${t('report_total_points')}</th></tr></thead><tbody>${summaryRowsHtml}</tbody></table>
+        <div style="page-break-before:always"></div>
+        <h2 style="font-size:15px;color:#2f3747;margin:20px 0 10px;font-weight:700">${t('report_detail_title')}</h2>
+        <table style="width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05)"><thead><tr style="background:#0066ff;color:white;"><th style="padding:10px 10px;text-align:left;font-weight:600;font-size:12px;">${t('report_col_area')}</th><th style="padding:10px 10px;text-align:left;font-weight:600;font-size:12px;">${t('report_col_consultant')}</th><th style="padding:10px 10px;text-align:left;font-weight:600;font-size:12px;">Email</th><th style="padding:10px 10px;text-align:left;font-weight:600;font-size:12px;">${t('report_col_badge')}</th><th style="padding:10px 10px;text-align:left;font-weight:600;font-size:12px;">${t('report_col_level')}</th><th style="padding:10px 10px;text-align:left;font-weight:600;font-size:12px;">${t('report_col_date')}</th><th style="padding:10px 10px;text-align:right;font-weight:600;font-size:12px;">${t('report_col_points')}</th></tr></thead><tbody>${detailRowsHtml}</tbody></table>
+      </body>
+      </html>
+    `;
+
+    const filename = `relatorio-badges-${new Date().toISOString().split('T')[0]}.pdf`;
+    await downloadHtmlAsPdf(html, filename, { orientation: 'portrait' });
+  };
+
+  const exportReportToExcel = () => {
+    if (reportData.length === 0) return;
+    const BOM = '\uFEFF';
+    const headers = [t('report_col_area'), t('report_col_consultant'), 'Email', t('report_col_badge'), t('report_col_level'), t('report_col_date'), t('report_col_points')];
+    const rows = reportData.map((r) => [r.areaNome || '-', r.consultorNome || '-', r.consultorEmail || '-', r.badgeNome || '-', r.nivelNome || '-', r.dataObtencao || '-', r.pontosObtidos || r.badgePontos || 0]);
+    const csv = BOM + [headers.join(';'), ...rows.map((row) => row.join(';'))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `relatorio-badges-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -1084,6 +1248,7 @@ function ExportacoesTM() {
 
         <section className="shell tm-export-shell">
 
+          {activeTab !== 'relatorio' && (
           <div className="toolbar tm-export-toolbar">
             <label className="search-wrap tm-export-search" htmlFor="tm-export-search-input">
               <Search size={20} />
@@ -1165,6 +1330,7 @@ function ExportacoesTM() {
               )}
             </div>
           </div>
+          )}
 
           {activeTab === 'pedidos' && (
             <>
@@ -1431,6 +1597,222 @@ function ExportacoesTM() {
                   </tbody>
                 </table>
               </div>
+            </>
+          )}
+
+          {activeTab === 'relatorio' && (
+            <>
+              <div className="tm-export-section-head">
+                <h2>{t('export_tab_report')}</h2>
+                <div className="tm-export-section-actions">
+                  <button type="button" className="tm-export-btn secondary" onClick={exportReportToPDF} disabled={reportData.length === 0}>
+                    <FileDown size={16} /> {t('export_pdf')}
+                  </button>
+                  <button type="button" className="tm-export-btn primary" onClick={exportReportToExcel} disabled={reportData.length === 0}>
+                    <ArrowDownToLine size={16} /> {t('export_excel')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="tm-export-report-filters" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('report_filter_area')}</label>
+                  <select value={reportAreaId} onChange={(e) => { setReportAreaId(e.target.value); setReportGenerated(false); }} disabled={reportNivelId === 'especial'} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #dbe6f2', fontSize: 13, opacity: reportNivelId === 'especial' ? 0.5 : 1 }}>
+                    <option value="">{t('export_filter_all')}</option>
+                    {[...new Set(badgeItems.filter((b) => !b.isSpecial).map((b) => b.area).filter(Boolean))].sort().map((area) => (
+                      <option key={area} value={area}>{area}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('report_filter_level')}</label>
+                  <select value={reportNivelId} onChange={(e) => { setReportNivelId(e.target.value); if (e.target.value === 'especial') setReportAreaId(''); setReportGenerated(false); }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #dbe6f2', fontSize: 13 }}>
+                    <option value="">{t('export_filter_all')}</option>
+                    {badgeLevels.map((l) => (
+                      <option key={l.id} value={l.id}>{l.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('report_filter_date_from')}</label>
+                  <input type="date" value={reportDateFrom} onChange={(e) => { setReportDateFrom(e.target.value); setReportGenerated(false); }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #dbe6f2', fontSize: 13 }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('report_filter_date_to')}</label>
+                  <input type="date" value={reportDateTo} onChange={(e) => { setReportDateTo(e.target.value); setReportGenerated(false); }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #dbe6f2', fontSize: 13 }} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                  <button type="button" className="tm-export-btn primary" onClick={generateReport} disabled={reportLoading}>
+                    {reportLoading ? '...' : t('report_generate')}
+                  </button>
+                </div>
+              </div>
+
+              {reportLoading && <LoadingSpinner />}
+
+              {!reportLoading && reportGenerated && reportData.length > 0 && (
+                <>
+                  {(() => {
+                    const totalArea = chartByArea.reduce((s, d) => s + d.value, 0);
+                    const areaScale = buildBarChartScale(chartByArea);
+                    const totalLevel = chartByLevel.reduce((s, d) => s + d.value, 0);
+                    const levelScale = buildBarChartScale(chartByLevel);
+                    return (
+                      <div className="report-chart-grid">
+                        {reportAreaId === '' && reportNivelId !== 'especial' && (
+                          <>
+                            <div className="report-chart-card">
+                              <h4>{t('report_chart_by_area')}</h4>
+                              <div className="report-bar-chart">
+                                <div className="report-bar-chart-y-axis">
+                                  {areaScale.ticks.map((tick) => (
+                                    <span key={tick} className="report-bar-chart-y-tick">{tick}</span>
+                                  ))}
+                                </div>
+                                {chartByArea.map((d, i) => (
+                                  <div key={d.name} className="report-bar-column">
+                                    <span className="report-bar-value">{d.value}</span>
+                                    <div className="report-bar-track">
+                                      <div className="report-bar" style={{ height: `${(d.value / areaScale.max) * 100}%`, background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                                    </div>
+                                    <span className="report-bar-label" title={d.name}>{d.name}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="report-chart-card">
+                              <h4>{t('report_chart_by_area')}</h4>
+                              <div className="report-pie-wrap">
+                                <div className="report-pie" style={{ background: buildPieGradient(chartByArea, totalArea) }} />
+                                <div className="report-pie-legend">
+                                  {chartByArea.map((d, i) => (
+                                    <div key={d.name} className="report-pie-legend-item">
+                                      <span className="report-pie-legend-dot" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                                      <span className="report-pie-legend-name">{d.name}</span>
+                                      <span className="report-pie-legend-pct">{totalArea > 0 ? Math.round((d.value / totalArea) * 100) : 0}%</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {reportNivelId === '' && (
+                          <>
+                            <div className="report-chart-card">
+                              <h4>{t('report_chart_by_level')}</h4>
+                              <div className="report-bar-chart">
+                                <div className="report-bar-chart-y-axis">
+                                  {levelScale.ticks.map((tick) => (
+                                    <span key={tick} className="report-bar-chart-y-tick">{tick}</span>
+                                  ))}
+                                </div>
+                                {chartByLevel.map((d, i) => (
+                                  <div key={d.name} className="report-bar-column">
+                                    <span className="report-bar-value">{d.value}</span>
+                                    <div className="report-bar-track">
+                                      <div className="report-bar" style={{ height: `${(d.value / levelScale.max) * 100}%`, background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                                    </div>
+                                    <span className="report-bar-label" title={d.name}>{d.name}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="report-chart-card">
+                              <h4>{t('report_chart_by_level')}</h4>
+                              <div className="report-pie-wrap">
+                                <div className="report-pie" style={{ background: buildPieGradient(chartByLevel, totalLevel) }} />
+                                <div className="report-pie-legend">
+                                  {chartByLevel.map((d, i) => (
+                                    <div key={d.name} className="report-pie-legend-item">
+                                      <span className="report-pie-legend-dot" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                                      <span className="report-pie-legend-name">{d.name}</span>
+                                      <span className="report-pie-legend-pct">{totalLevel > 0 ? Math.round((d.value / totalLevel) * 100) : 0}%</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{t('report_summary_title')}</h3>
+                  <div className="tm-export-table-wrap" style={{ marginBottom: 20 }}>
+                    <table className="table orders-table">
+                      <thead>
+                        <tr>
+                          <th>{t('report_col_area')}</th>
+                          <th>{t('report_total_badges')}</th>
+                          <th>{t('report_total_points')}</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reportSummary.map((row) => (
+                          <React.Fragment key={row.area}>
+                            <tr>
+                              <td><strong>{row.area}</strong></td>
+                              <td>{row.totalBadges}</td>
+                              <td>{new Intl.NumberFormat('pt-PT').format(row.totalPoints)}</td>
+                              <td>
+                                <button type="button" className="tm-export-btn secondary" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => toggleReportArea(row.area)}>
+                                  {expandedReportAreas.includes(row.area) ? '▾' : '▸'} {t('report_detail_title')}
+                                </button>
+                              </td>
+                            </tr>
+                            {expandedReportAreas.includes(row.area) && reportData.filter((r) => (r.areaNome || '-') === row.area).map((r, idx) => (
+                              <tr key={idx} style={{ background: '#f9fafb' }}>
+                                <td style={{ paddingLeft: 24 }}>{r.consultorNome}</td>
+                                <td>{r.badgeNome}</td>
+                                <td>{r.nivelNome}</td>
+                                <td>{r.dataObtencao}</td>
+                                <td>{r.pontosObtidos || r.badgePontos || 0}</td>
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{t('report_detail_title')}</h3>
+                  <div className="tm-export-table-wrap">
+                    <table className="table orders-table">
+                      <thead>
+                        <tr>
+                          <th>{t('report_col_area')}</th>
+                          <th>{t('report_col_consultant')}</th>
+                          <th>Email</th>
+                          <th>{t('report_col_badge')}</th>
+                          <th>{t('report_col_level')}</th>
+                          <th>{t('report_col_date')}</th>
+                          <th>{t('report_col_points')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reportData.map((r, idx) => (
+                          <tr key={idx}>
+                            <td>{r.areaNome || '-'}</td>
+                            <td>{r.consultorNome}</td>
+                            <td>{r.consultorEmail}</td>
+                            <td>{r.badgeNome}</td>
+                            <td>{r.nivelNome || '-'}</td>
+                            <td>{r.dataObtencao}</td>
+                            <td>{r.pontosObtidos || r.badgePontos || 0}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+
+              {!reportLoading && reportData.length === 0 && reportAreaId === '' && reportDateFrom === '' && reportDateTo === '' && (
+                <p style={{ color: '#8892a4', textAlign: 'center', padding: 40 }}>{t('report_no_data')}</p>
+              )}
             </>
           )}
 

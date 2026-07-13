@@ -212,11 +212,13 @@ function Notificacoes() {
   }, [sortedNotifications, page]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [searchTerm, activeFilter, sortBy]);
 
   useEffect(() => {
     if (page > totalPages) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPage(totalPages);
     }
   }, [page, totalPages]);

@@ -16,8 +16,3 @@ export async function updateAdminRgpdTopics(rows) {
   const response = await apiClient.put(`${BASE_PATH}/rgpd`, { rows: rows || [] });
   return response.data;
 }
-
-export async function updateAdminGeneralSettings(rows) {
-  const response = await apiClient.put(`${BASE_PATH}/settings`, { rows: rows || [] });
-  return response.data;
-}

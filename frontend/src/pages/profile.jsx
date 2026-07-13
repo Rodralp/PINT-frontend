@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
@@ -42,9 +42,9 @@ const normalizeLevelId = (level) => {
 import '../css/Consultor/Dashboard_C.css';
 import '../css/profile.css';
 
-const defaultTimelineValues = Array.from({ length: 12 }, () => 0);
+const _defaultTimelineValues = Array.from({ length: 12 }, () => 0);
 
-const calculateVisibleTimelinePoints = (containerWidth, totalPoints) => {
+const _calculateVisibleTimelinePoints = (containerWidth, totalPoints) => {
   const minColumnWidth = 42;
   const maxPointsByWidth = Math.floor(containerWidth / minColumnWidth);
   return Math.max(4, Math.min(totalPoints, maxPointsByWidth));
@@ -85,13 +85,13 @@ const defaultActivityItems = [];
 
 function Profile() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [profileStats, setProfileStats] = useState(defaultProfileStats);
   const [skillsItems, setSkillsItems] = useState(defaultSkillsItems);
-  const [certificationsItems, setCertificationsItems] = useState(defaultCertificationsItems);
+  const [, setCertificationsItems] = useState(defaultCertificationsItems);
   const [activityItems, setActivityItems] = useState(defaultActivityItems);
   const [serviceLineStats, setServiceLineStats] = useState([]);
-  const [badgeItems, setBadgeItems] = useState([]);
+  const [, setBadgeItems] = useState([]);
   const [vitrineItems, setVitrineItems] = useState([]);
   const [profileLocation, setProfileLocation] = useState('Portugal');
   const [profileJoined, setProfileJoined] = useState('2023');
@@ -102,7 +102,7 @@ function Profile() {
   const userName = loginData?.nome || t('app_user_default');
   const userEmail = loginData?.email || 'user@example.com';
 
-  const initialSeed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
+  const _initialSeed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
   const initialAvatar = loginData?.avatar || `/avatars/default-avatar.svg`;
 
   const [profileAvatar, setProfileAvatar] = useState(initialAvatar);
@@ -205,7 +205,7 @@ function Profile() {
               id: `vitrine-${v.nbadge}`,
               badgeDbId: v.nbadge,
               name: v.b_nome || 'Badge',
-              badgeImage: v.imagem || '/badges/default.png',
+              badgeImage: v.imagem,
               points: v.pontos || 0,
               isSpecial,
               levelKey: resolvedLevelId || undefined,
@@ -394,7 +394,7 @@ function Profile() {
             </div>
 
             <div className="vitrine-grid">
-              {(vitrineItems.length > 0 ? vitrineItems : badgeItems.slice(0, 8)).map((badge) => (
+              {vitrineItems.map((badge) => (
                 <div key={badge.id} className="vitrine-item" title={badge.name || badge.area}>
                   <BadgeImage
                     className="vitrine-badge-image"
@@ -408,8 +408,8 @@ function Profile() {
                   <span className="vitrine-badge-name">{badge.name || badge.area}</span>
                 </div>
               ))}
-              {vitrineItems.length === 0 && badgeItems.length === 0 && (
-                <p className="badge-admin-muted">{t('no_certifications') || 'Nenhum badge obtido.'}</p>
+              {vitrineItems.length === 0 && (
+                <p className="badge-admin-muted">{t('vitrine_empty') || 'Nenhuma badge na vitrine.'}</p>
               )}
             </div>
           </section>
@@ -485,7 +485,8 @@ function Profile() {
         isOpen={isCertificationsModalOpen}
         onClose={() => setIsCertificationsModalOpen(false)}
         title="Vitrine"
-        items={vitrineItems.length > 0 ? vitrineItems : badgeItems}
+        items={vitrineItems}
+        emptyMessage={t('vitrine_empty') || 'Nenhuma badge na vitrine.'}
         renderItem={(badge) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 48, height: 48, flexShrink: 0 }}>

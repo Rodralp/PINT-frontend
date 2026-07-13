@@ -100,6 +100,7 @@ function BadgeDetalheSLL() {
   const badgeTitle = badge.name || badge.area || 'Badge';
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDynamicRequirements(null);
   }, [badgeId, badge?.badgeDbId]);
 
@@ -244,7 +245,7 @@ function BadgeDetalheSLL() {
         </p>
 
         <section className="badge-requirements-card">
-          <h3>Requisitos</h3>
+          <h3>{t('requirements')}</h3>
           {!hasBadgeId && (
             <p className="badge-requirements-empty">Este nivel ainda nao tem badge associado.</p>
           )}

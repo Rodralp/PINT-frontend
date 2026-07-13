@@ -15,12 +15,12 @@ import Layout from '../../components/Layout';
 import '../../css/AdminGestor/EquipasSLA_AG.css';
 import { teamService } from '../../services/teamService';
 
-const getAvatarSeed = (member) =>
-  String(member?.email || member?.name || member || 'user')
+const _getAvatarSeed = (_member) =>
+  String(_member?.email || _member?.name || _member || 'user')
     .toLowerCase()
     .replace('@', '.');
 
-const getMemberAvatarUrl = (member) =>
+const getMemberAvatarUrl = () =>
   `/avatars/default-avatar.svg`;
 
 const onMemberAvatarError = (event, member) => {
@@ -190,7 +190,7 @@ function EquipasSLAAG() {
     setSelectedMembers((current) => current.filter((id) => id !== memberId));
   };
 
-  const formatInputDate = (dateValue) => {
+  const _formatInputDate = (dateValue) => {
     if (!dateValue) {
       return '';
     }

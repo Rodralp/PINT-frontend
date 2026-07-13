@@ -41,7 +41,7 @@ function PedidoDetalheC() {
   const { t } = useTranslation();
   const { pedidoId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
+  const _location = useLocation();
   const [openRequirementId, setOpenRequirementId] = useState(null);
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);

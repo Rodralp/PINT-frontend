@@ -11,6 +11,7 @@ import '../../css/AdminGestor/BadgeAdmin.css';
 const SPECIAL_BADGE_TYPE = 'special';
 const STANDARD_BADGE_TYPE = 'standard';
 const MAX_BADGE_IMAGE_SIZE_BYTES = 1_500_000;
+const BADGE_PLACEHOLDER = '/badges/badge-not-found.svg';
 
 const badgeLevels = [
   { levelKey: 'badge_level_junior', label: 'Júnior', points: 100, badgeImage: '/badges/J%C3%BAnior.png' },
@@ -142,7 +143,7 @@ const buildFormState = (badge, isCreate) => {
       ? 0
       : levelMeta.points;
 
-  const badgeImage = badge?.badgeImage || (isSpecial ? '/badges/Especial.png' : levelMeta.badgeImage);
+  const badgeImage = badge?.badgeImage || BADGE_PLACEHOLDER;
 
   const specialRequirements = Array.isArray(badge?.specialRequirements) && badge.specialRequirements.length > 0
     ? badge.specialRequirements.map((req) => buildRequirement(req))
@@ -322,9 +323,9 @@ function BadgeAdmin() {
           levelId: null,
           badgeTypeId: '',
           points: '0',
-          badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/')
+          badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/') && current.badgeImage !== BADGE_PLACEHOLDER
             ? current.badgeImage
-            : '/badges/default.png',
+            : BADGE_PLACEHOLDER,
           specialRequirements: current.specialRequirements.length > 0
             ? current.specialRequirements
             : [buildRequirement()],
@@ -343,9 +344,9 @@ function BadgeAdmin() {
         levelId: nextLevelId,
         badgeTypeId: badgeTypeMeta.levelKey,
         points: String(badgeTypeMeta.points),
-        badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/')
+        badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/') && current.badgeImage !== BADGE_PLACEHOLDER
           ? current.badgeImage
-          : badgeTypeMeta.badgeImage,
+          : BADGE_PLACEHOLDER,
         requirements: current.requirements && current.requirements.length > 0
           ? current.requirements
           : [buildStandardRequirement()],
@@ -361,9 +362,9 @@ function BadgeAdmin() {
       ...current,
       badgeTypeId: selectedMeta.levelKey,
       points: String(selectedMeta.points),
-      badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/')
+      badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/') && current.badgeImage !== BADGE_PLACEHOLDER
         ? current.badgeImage
-        : selectedMeta.badgeImage,
+        : BADGE_PLACEHOLDER,
     }));
   };
 
@@ -408,7 +409,7 @@ function BadgeAdmin() {
   const clearCustomImage = () => {
     setForm((current) => ({
       ...current,
-      badgeImage: isSpecial ? '/badges/Especial.png' : selectedBadgeTypeMeta.badgeImage,
+      badgeImage: BADGE_PLACEHOLDER,
     }));
   };
 
@@ -590,7 +591,7 @@ function BadgeAdmin() {
       levelId: isSpecial ? null : form.levelId,
       isSpecial,
       typeId: isSpecial ? SPECIAL_BADGE_TYPE : form.badgeTypeId,
-      badgeImage: form.badgeImage || null,
+      badgeImage: form.badgeImage && form.badgeImage !== BADGE_PLACEHOLDER ? form.badgeImage : null,
       specialRequirements: specialRequirementsPayload,
       requirements: requirementsPayload,
       validade: form.validade || null,

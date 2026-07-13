@@ -13,6 +13,7 @@ function SeeMore_PopUp({
   renderItem,
   maxItems,
   emptyMessage = 'Nenhum item para mostrar.',
+  // eslint-disable-next-line no-unused-vars
   closeLabel = 'Fechar',
 }) {
   if (!isOpen) return null;

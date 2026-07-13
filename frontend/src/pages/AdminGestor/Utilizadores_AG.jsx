@@ -632,7 +632,7 @@ function UtilizadoresAG() {
                 {!isLoading && pagedUsers.length === 0 && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
-                      Sem resultados.
+                      {t('users_no_results')}
                     </td>
                   </tr>
                 )}
@@ -667,7 +667,7 @@ function UtilizadoresAG() {
                               onClick={() => openPermissionsModal(user)}
                             >
                               <ShieldCheck size={14} />
-                              Editar permissoes
+                              {t('users_edit_permissions')}
                             </button>
                             <button
                               type="button"
@@ -675,7 +675,7 @@ function UtilizadoresAG() {
                               disabled={!['ativo', 'inativo'].includes(String(user.status).toLowerCase()) || isSaving}
                               onClick={() => handleDeactivateUser(user)}
                             >
-                              {String(user.status).toLowerCase() === 'inativo' ? 'Reativar conta' : 'Desativar conta'}
+                              {String(user.status).toLowerCase() === 'inativo' ? t('users_reactivate') : t('users_deactivate')}
                             </button>
                           </div>
                         </td>
@@ -700,14 +700,14 @@ function UtilizadoresAG() {
                               className="ag-users-reject-btn"
                               onClick={() => handlePendingDecision(user.id, 'reject')}
                             >
-                              Rejeitar
+                              {t('users_reject')}
                             </button>
                             <button
                               type="button"
                               className="ag-users-approve-btn"
                               onClick={() => handlePendingDecision(user.id, 'approve')}
                             >
-                              Aprovar
+                              {t('users_approve')}
                             </button>
                           </div>
                         </td>
@@ -725,7 +725,7 @@ function UtilizadoresAG() {
           <div className="ag-users-modal-overlay" role="dialog" aria-modal="true">
             <div className="ag-users-modal-card" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
               <div className="ag-users-modal-head">
-                <h2>Adicionar Utilizador</h2>
+                <h2>{t('users_modal_add_title')}</h2>
                 <button type="button" onClick={() => setShowCreateModal(false)}>
                   <X size={18} />
                 </button>
@@ -737,38 +737,38 @@ function UtilizadoresAG() {
                 </div>
               ) : (
                 <div className="ag-users-note">
-                  Preencha os dados do novo utilizador. Para Service Line Leader, selecione uma Service Line.
+                  {t('users_modal_add_info')}
                 </div>
               )}
 
-              <label htmlFor="ag-create-nome">Nome</label>
+              <label htmlFor="ag-create-nome">{t('users_field_name')}</label>
               <input
                 id="ag-create-nome"
                 value={createForm.nome}
                 onChange={(event) => setCreateForm((current) => ({ ...current, nome: event.target.value }))}
-                placeholder="Nome do utilizador"
+                placeholder={t('users_placeholder_name')}
               />
 
-              <label htmlFor="ag-create-email">Email</label>
+              <label htmlFor="ag-create-email">{t('users_field_email')}</label>
               <input
                 id="ag-create-email"
                 type="email"
                 value={createForm.email}
                 onChange={(event) => setCreateForm((current) => ({ ...current, email: event.target.value }))}
-                placeholder="utilizador@softinsa.pt"
+                placeholder={t('users_placeholder_email')}
               />
 
-              <label htmlFor="ag-create-password">Password</label>
+              <label htmlFor="ag-create-password">{t('users_field_password')}</label>
               <input
                 id="ag-create-password"
                 type="password"
                 value={createForm.senha}
                 onChange={(event) => setCreateForm((current) => ({ ...current, senha: event.target.value }))}
-                placeholder="Defina uma password"
+                placeholder={t('users_placeholder_password')}
               />
 
               <div className="ag-users-roles-box">
-                <strong>Tipos de Conta</strong>
+                <strong>{t('users_field_account_types')}</strong>
                 {Object.entries(roleLabels).map(([roleId, roleLabel]) => (
                   <label key={roleId} className="ag-users-check-row">
                     <input
@@ -783,7 +783,7 @@ function UtilizadoresAG() {
 
               {createForm.roles.includes('service-line-leader') && (
                 <div className="ag-users-roles-box">
-                  <strong>Service Line</strong>
+                  <strong>{t('users_field_service_line')}</strong>
                   {serviceLines.map((line) => (
                     <label key={line.id} className="ag-users-check-row">
                       <input
@@ -800,11 +800,11 @@ function UtilizadoresAG() {
 
               <div className="ag-users-modal-actions">
                 <button type="button" onClick={() => setShowCreateModal(false)}>
-                  Cancelar
+                  {t('cancel')}
                 </button>
                 <button type="button" className="primary" onClick={handleCreateUser} disabled={isSaving}>
                   <Check size={16} />
-                  Criar
+                  {t('users_btn_create')}
                 </button>
               </div>
             </div>
@@ -816,7 +816,7 @@ function UtilizadoresAG() {
             <div className="ag-users-modal-card wide" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
               <div className="ag-users-modal-head">
                 <div>
-                  <h2>Editar Permissoes de Acesso</h2>
+                  <h2>{t('users_modal_edit_title')}</h2>
                   <p>{selectedUser.nome}</p>
                 </div>
                 <button
@@ -836,12 +836,12 @@ function UtilizadoresAG() {
                 </div>
               ) : (
                 <div className="ag-users-note">
-                  Selecione os tipos de conta. Para Service Line Lider, selecione tambem a Service Line.
+                  {t('users_modal_edit_info')}
                 </div>
               )}
 
               <div className="ag-users-roles-box">
-                <strong>Tipos de Conta</strong>
+                <strong>{t('users_field_account_types')}</strong>
                 {Object.entries(roleLabels).map(([roleId, roleLabel]) => (
                   <label key={roleId} className="ag-users-check-row">
                     <input
@@ -856,7 +856,7 @@ function UtilizadoresAG() {
 
               {permissionsForm.roles.includes('service-line-leader') && (
                 <div className="ag-users-roles-box">
-                  <strong>Service Line</strong>
+                  <strong>{t('users_field_service_line')}</strong>
                   {serviceLines.map((line) => (
                     <label key={line.id} className="ag-users-check-row">
                       <input
@@ -879,10 +879,10 @@ function UtilizadoresAG() {
                     setSelectedUser(null);
                   }}
                 >
-                  Cancelar
+                  {t('cancel')}
                 </button>
                 <button type="button" className="primary" onClick={handleSavePermissions} disabled={isSaving}>
-                  Guardar Alteracoes
+                  {t('users_btn_save')}
                 </button>
               </div>
             </div>

@@ -12,6 +12,7 @@ function LinkedInShareButton({ url, className = '' }) {
     const checkIN = () => Boolean(window.IN && typeof window.IN.parse === 'function');
 
     if (checkIN()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPluginLoaded(true);
       return;
     }

@@ -63,6 +63,18 @@ export async function recoverPassword(payload) {
   return response.data;
 }
 
+export async function resetPassword(payload) {
+  const email = normalizeEmail(payload?.email || '');
+  const newPassword = String(payload?.newPassword || '');
+
+  if (!email || !newPassword) {
+    throw new Error('Missing required fields.');
+  }
+
+  const response = await apiClient.post('/auth/reset-password', { email, newPassword });
+  return sanitizeAccount(response.data);
+}
+
 export async function fetchRgpdTopics() {
   const response = await apiClient.get('/auth/rgpd-topics');
   return response.data;

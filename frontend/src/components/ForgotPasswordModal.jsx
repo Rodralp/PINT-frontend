@@ -1,15 +1,43 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { recoverPassword } from '../services/authService';
+import { recoverPassword, resetPassword } from '../services/authService';
 import '../css/ForgotPassword.css';
 import PuzzleCaptcha from './PuzzleCaptcha';
 
+const dashboardPathByRole = {
+  consultor: '/consultor/dashboard',
+  'talent-manager': '/talent-manager/dashboard',
+  'service-line-leader': '/service-line-leader/dashboard',
+  'admin-gestor': '/admin-gestor/dashboard',
+};
+
+const DEFAULT_ROLE = 'consultor';
+
+const normalizeRoles = (rolesValue) => {
+  const rawRoles = Array.isArray(rolesValue)
+    ? rolesValue
+    : typeof rolesValue === 'string'
+      ? rolesValue.split(';')
+      : [];
+  const parsedRoles = rawRoles.map((r) => String(r).trim().toLowerCase()).filter(Boolean);
+  const unique = [...new Set(parsedRoles)];
+  return unique.length > 0 ? unique : [DEFAULT_ROLE];
+};
+
+const resolveDashboardPath = (rolesValue) => {
+  const roles = normalizeRoles(rolesValue);
+  return roles.map((role) => dashboardPathByRole[role]).find(Boolean) || '/consultor/dashboard';
+};
+
 function ForgotPasswordModal({ isOpen, onClose }) {
   const { t } = useTranslation();
-  const [step, setStep] = useState('email'); // email, captcha, success
+  const [step, setStep] = useState('email');
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [recoveredPassword, setRecoveredPassword] = useState('');
+  const [, setRecoveredAccountId] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = () => {
@@ -25,13 +53,26 @@ function ForgotPasswordModal({ isOpen, onClose }) {
     return true;
   };
 
+  const validatePassword = () => {
+    if (!newPassword || newPassword.length < 6) {
+      setPasswordError(t('forgot_password_too_short'));
+      return false;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError(t('forgot_password_mismatch'));
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
+
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     if (validateEmail()) {
       try {
         setIsLoading(true);
         const data = await recoverPassword({ email });
-        setRecoveredPassword(data.password);
+        setRecoveredAccountId(data.accountId);
         setStep('captcha');
       } catch {
         setEmailError(t('forgot_email_not_found'));
@@ -42,13 +83,51 @@ function ForgotPasswordModal({ isOpen, onClose }) {
   };
 
   const handleCaptchaComplete = () => {
-    setStep('success');
+    setStep('newPassword');
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (!validatePassword()) return;
+
+    try {
+      setIsLoading(true);
+      const account = await resetPassword({ email, newPassword });
+
+      const accountRoles = normalizeRoles(account.roles ?? account.role);
+
+      const dadosLogin = {
+        id: account.id,
+        nome: account.nome,
+        email: account.email,
+        role: accountRoles[0],
+        roles: accountRoles,
+        status: account.status,
+        hasPreferences: Boolean(account.hasPreferences),
+        token: account.token,
+      };
+
+      sessionStorage.setItem('loginData', JSON.stringify(dadosLogin));
+
+      const dashboardPath = resolveDashboardPath(accountRoles);
+      const mustChoosePreferences = accountRoles.includes(DEFAULT_ROLE) && !account.hasPreferences;
+
+      handleReset();
+      window.location.href = mustChoosePreferences ? '/consultor/preferencias' : dashboardPath;
+    } catch {
+      setPasswordError(t('forgot_password_error'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     setEmail('');
     setEmailError('');
-    setRecoveredPassword('');
+    setRecoveredAccountId(null);
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError('');
     setStep('email');
     onClose();
   };
@@ -93,37 +172,40 @@ function ForgotPasswordModal({ isOpen, onClose }) {
           </div>
         )}
 
-        {step === 'success' && (
-          <div className="forgot-password-content forgot-success">
+        {step === 'newPassword' && (
+          <div className="forgot-password-content">
             <div className="forgot-success-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
-            <h2>{t('forgot_success_title')}</h2>
-            <p>{t('forgot_success_subtitle')}</p>
+            <h2>{t('forgot_set_new_password')}</h2>
+            <p>{t('forgot_subtitle')}</p>
             
-            <div className="forgot-password-display">
-              <code>{recoveredPassword}</code>
-              <button 
-                type="button"
-                className="forgot-btn-copy"
-                onClick={() => {
-                  navigator.clipboard.writeText(recoveredPassword);
-                  alert(t('forgot_copied_alert'));
-                }}
-              >
-                {t('forgot_copy')}
+            <form onSubmit={handlePasswordSubmit}>
+              <div className="forgot-form-group">
+                <input
+                  type="password"
+                  placeholder={t('forgot_new_password')}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="forgot-input"
+                />
+              </div>
+              <div className="forgot-form-group">
+                <input
+                  type="password"
+                  placeholder={t('forgot_confirm_password')}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={passwordError ? 'forgot-input error' : 'forgot-input'}
+                />
+                {passwordError && <span className="forgot-error">{passwordError}</span>}
+              </div>
+              <button type="submit" className="forgot-btn-continue">
+                {isLoading ? 'A guardar...' : t('forgot_set_new_password')}
               </button>
-            </div>
-
-            <p className="forgot-info">
-              {t('forgot_warning_info')}
-            </p>
-
-            <button className="forgot-btn-close" onClick={handleReset}>
-              {t('forgot_close')}
-            </button>
+            </form>
           </div>
         )}
       </div>
