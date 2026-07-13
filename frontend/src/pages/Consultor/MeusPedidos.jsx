@@ -244,7 +244,7 @@ function MeusPedidos() {
 
                   return (
                     <tr key={request.id}>
-                      <td>{request.badge}</td>
+                      <td>{request.name}</td>
                       <td>{request.level}</td>
                       <td>{request.date}</td>
                       <td>
