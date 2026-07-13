@@ -45,6 +45,7 @@ const normalizeBadges = (items) => {
 
     return {
       id: item.id || `${item.area || 'badge'}-${index}`,
+      badgeDbId: item.badgeDbId,
       name: item.name || item.title || item.area || 'Badge',
       area: item.area || 'Area Tecnica',
       levelKey,
@@ -55,6 +56,8 @@ const normalizeBadges = (items) => {
       badgeImage: item.badgeImage || '/badges/Interm%C3%A9dio.png',
       badgeFrameImage: item.badgeFrameImage || null,
       date: item.date || '12 Jan 2026',
+      requirements: Array.isArray(item.requirements) ? item.requirements : [],
+      validade: item.validade || null,
     };
   });
 };

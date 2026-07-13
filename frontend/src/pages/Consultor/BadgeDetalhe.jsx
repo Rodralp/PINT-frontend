@@ -95,7 +95,7 @@ const resolveBadgeDbId = (routeBadgeId, badgeState) => {
       return numericRoute;
     }
 
-    const match = fromRoute.match(/^badge-(\d+)$/i);
+    const match = fromRoute.match(/^(?:badge|catalog)-(\d+)$/i);
     if (match) {
       const numericMatch = Number(match[1]);
       if (Number.isInteger(numericMatch) && numericMatch > 0) {
@@ -111,7 +111,7 @@ const resolveBadgeDbId = (routeBadgeId, badgeState) => {
       return numericStateId;
     }
 
-    const match = fromStateId.match(/^badge-(\d+)$/i);
+    const match = fromStateId.match(/^(?:badge|catalog)-(\d+)$/i);
     if (match) {
       const numericMatch = Number(match[1]);
       if (Number.isInteger(numericMatch) && numericMatch > 0) {
