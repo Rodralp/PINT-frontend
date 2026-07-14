@@ -34,12 +34,6 @@
   object-position: center;
 }
 
-.badge-image-composite-inner--default {
-  object-fit: contain;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
 .badge-image-composite--round {
   border-radius: var(--radius-full);
 }

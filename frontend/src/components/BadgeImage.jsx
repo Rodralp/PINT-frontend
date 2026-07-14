@@ -147,9 +147,19 @@ function BadgeImage({
       >
         <span className="badge-image-composite-stage" aria-hidden="true" style={{ background: '#fff' }}>
           <img
-            className="badge-image-composite-inner badge-image-composite-inner--default"
+            className="badge-image-composite-inner"
             src={BADGE_NOT_FOUND}
             alt=""
+            style={resolvedMaskSrc ? {
+              WebkitMaskImage: `url('${resolvedMaskSrc}')`,
+              WebkitMaskSize: '100% 100%',
+              WebkitMaskPosition: 'center',
+              WebkitMaskRepeat: 'no-repeat',
+              maskImage: `url('${resolvedMaskSrc}')`,
+              maskSize: '100% 100%',
+              maskPosition: 'center',
+              maskRepeat: 'no-repeat',
+            } : undefined}
           />
           <img
             className="badge-image-composite-frame"
@@ -177,11 +187,11 @@ function BadgeImage({
           onError={() => { if (!imgFailed) setImgFailed(true); }}
           style={resolvedMaskSrc ? {
             WebkitMaskImage: `url('${resolvedMaskSrc}')`,
-            WebkitMaskSize: 'cover',
+            WebkitMaskSize: '100% 100%',
             WebkitMaskPosition: 'center',
             WebkitMaskRepeat: 'no-repeat',
             maskImage: `url('${resolvedMaskSrc}')`,
-            maskSize: 'cover',
+            maskSize: '100% 100%',
             maskPosition: 'center',
             maskRepeat: 'no-repeat',
           } : undefined}
