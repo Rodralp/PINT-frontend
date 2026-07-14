@@ -147,6 +147,21 @@ function BadgeImage({
       >
         <span className="badge-image-composite-stage" aria-hidden="true" style={{ background: '#fff' }}>
           <img
+            className="badge-image-composite-inner"
+            src={BADGE_NOT_FOUND}
+            alt=""
+            style={resolvedMaskSrc ? {
+              WebkitMaskImage: `url('${resolvedMaskSrc}')`,
+              WebkitMaskSize: 'contain',
+              WebkitMaskPosition: 'center',
+              WebkitMaskRepeat: 'no-repeat',
+              maskImage: `url('${resolvedMaskSrc}')`,
+              maskSize: 'contain',
+              maskPosition: 'center',
+              maskRepeat: 'no-repeat',
+            } : undefined}
+          />
+          <img
             className="badge-image-composite-frame"
             src={frameFailed ? null : resolvedFrameSrc}
             alt=""
