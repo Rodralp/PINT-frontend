@@ -152,11 +152,11 @@ function BadgeImage({
             alt=""
             style={resolvedMaskSrc ? {
               WebkitMaskImage: `url('${resolvedMaskSrc}')`,
-              WebkitMaskSize: 'contain',
+              WebkitMaskSize: 'cover',
               WebkitMaskPosition: 'center',
               WebkitMaskRepeat: 'no-repeat',
               maskImage: `url('${resolvedMaskSrc}')`,
-              maskSize: 'contain',
+              maskSize: 'cover',
               maskPosition: 'center',
               maskRepeat: 'no-repeat',
             } : undefined}
@@ -187,11 +187,11 @@ function BadgeImage({
           onError={() => { if (!imgFailed) setImgFailed(true); }}
           style={resolvedMaskSrc ? {
             WebkitMaskImage: `url('${resolvedMaskSrc}')`,
-            WebkitMaskSize: 'contain',
+            WebkitMaskSize: 'cover',
             WebkitMaskPosition: 'center',
             WebkitMaskRepeat: 'no-repeat',
             maskImage: `url('${resolvedMaskSrc}')`,
-            maskSize: 'contain',
+            maskSize: 'cover',
             maskPosition: 'center',
             maskRepeat: 'no-repeat',
           } : undefined}
