@@ -9,6 +9,10 @@ function PuzzleCaptcha({ onComplete }) {
   const [feedback, setFeedback] = useState('');
   const gridRef = useRef(null);
 
+  useEffect(() => {
+    generatePuzzle();
+  }, []);
+
   const generatePuzzle = () => {
     const puzzleSize = 9;
     const items = [];
@@ -37,11 +41,6 @@ function PuzzleCaptcha({ onComplete }) {
     setUserSelected(false);
     setFeedback('');
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    generatePuzzle();
-  }, []);
 
   const handlePuzzleClick = (id) => {
     if (userSelected) return;

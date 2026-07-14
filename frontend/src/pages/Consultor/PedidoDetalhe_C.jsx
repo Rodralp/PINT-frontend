@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -19,29 +18,28 @@ import { fetchPedidoDetail } from '../../services/consultorService';
 import '../../css/Shared/GestaoPedidosDetalhe.css';
 import '../../css/TalentManager/GestaoPedidos_TM.css';
 
-const statusMeta = (t) => ({
+const statusMeta = {
   pendente: {
-    label: t('pedido_detalhe_c_status_in_review'),
+    label: 'Em Validação',
     className: 'validacao',
     Icon: Clock3,
   },
   aprovado: {
-    label: t('pedido_detalhe_c_status_approved'),
+    label: 'Aprovado',
     className: 'enviado',
     Icon: CheckCircle2,
   },
   rejeitado: {
-    label: t('pedido_detalhe_c_status_rejected'),
+    label: 'Rejeitado',
     className: 'rejeitado',
     Icon: AlertTriangle,
   },
-});
+};
 
 function PedidoDetalheC() {
-  const { t } = useTranslation();
   const { pedidoId } = useParams();
   const navigate = useNavigate();
-  const _location = useLocation();
+  const location = useLocation();
   const [openRequirementId, setOpenRequirementId] = useState(null);
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -84,7 +82,7 @@ function PedidoDetalheC() {
   if (loading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('request_detail_loading')} />
+        <LoadingSpinner fullPage message="A carregar pedido..." />
       </Layout>
     );
   }
@@ -94,12 +92,12 @@ function PedidoDetalheC() {
       <Layout>
         <div className="tm-order-detail-page">
           <header className="tm-order-detail-header">
-            <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
+            <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
               <ArrowLeft size={22} />
             </button>
             <div>
-              <h1>{t('request_detail_not_found')}</h1>
-              <p>{t('request_detail_not_found_msg')}</p>
+              <h1>Pedido não encontrado</h1>
+              <p>O pedido não existe ou foi removido.</p>
             </div>
           </header>
         </div>
@@ -107,7 +105,7 @@ function PedidoDetalheC() {
     );
   }
 
-  const currentStatus = statusMeta(t)[request.status] || statusMeta(t).pendente;
+  const currentStatus = statusMeta[request.status] || statusMeta.pendente;
   const StatusIcon = currentStatus.Icon;
   const showReviewer = ['aprovado', 'rejeitado'].includes(request.status) && Boolean(request.reviewerName);
 
@@ -119,11 +117,11 @@ function PedidoDetalheC() {
     <Layout>
       <div className="tm-order-detail-page">
         <header className="tm-order-detail-header">
-          <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
+          <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
             <ArrowLeft size={22} />
           </button>
           <div>
-            <h1>{t('pedido_detalhe_c_title')}</h1>
+            <h1>Candidatura</h1>
           </div>
         </header>
 
@@ -146,16 +144,16 @@ function PedidoDetalheC() {
                 <div className="tm-order-hero-meta">
                   <span>
                     <Clock3 size={16} />
-                    <strong>{t('request_detail_expires')}</strong>
+                    <strong>Expira</strong>
                     {request.expiresAt}
                   </span>
                   <span>
                     <Users size={16} />
-                    {request.points} {t('points')}
+                    {request.points} pontos
                   </span>
                   <span>
                     <FileText size={16} />
-                    {request.requirements?.length || 0} {t('request_detail_requirements')}
+                    {request.requirements?.length || 0} requisitos
                   </span>
                 </div>
 
@@ -171,7 +169,7 @@ function PedidoDetalheC() {
             </p>
 
             <section className="tm-order-requirements-card">
-              <h3>{t('request_detail_requirements_title')}</h3>
+              <h3>Requisitos</h3>
 
               <div className="tm-order-requirements-list">
                 {(request.requirements || []).map((item) => (
@@ -179,12 +177,12 @@ function PedidoDetalheC() {
                     <div className="tm-order-requirement-head">
                       <div>
                         <p>{item.title}</p>
-                        <span>{String(item.files || 0).padStart(2, '0')} {t('request_detail_submitted_files')}</span>
+                        <span>{String(item.files || 0).padStart(2, '0')} Arquivos Submetidos</span>
                       </div>
                       <button
                         type="button"
                         className="tm-order-requirement-view-btn"
-                        aria-label={openRequirementId === item.id ? `${t('request_detail_hide')} ${item.title}` : `${t('request_detail_show')} ${item.title}`}
+                        aria-label={openRequirementId === item.id ? `Ocultar ${item.title}` : `Ver ${item.title}`}
                         aria-expanded={openRequirementId === item.id}
                         onClick={() => toggleRequirement(item.id)}
                       >
@@ -216,7 +214,7 @@ function PedidoDetalheC() {
 
           <aside className="tm-order-sidebar">
             <div className="tm-order-submission-card">
-              <h3>{t('request_detail_submitted_by')}</h3>
+              <h3>Submissão por:</h3>
               <div className="tm-order-person-card">
                 <div className="tm-order-person-avatar">{String(request.submittedBy || 'U').slice(0, 1)}</div>
                 <div>
@@ -231,7 +229,7 @@ function PedidoDetalheC() {
 
             {showReviewer ? (
               <div className="tm-order-evaluated-card">
-                <h3>{t('request_detail_verdict_by')}</h3>
+                <h3>Avaliado por:</h3>
                 <div className="tm-order-person-card compact">
                   <div className="tm-order-person-avatar evaluated">{(request.reviewerName || '?').slice(0, 1)}</div>
                   <div>
@@ -246,7 +244,7 @@ function PedidoDetalheC() {
               </div>
             ) : (
               <div className="tm-order-evaluated-card">
-                <h3>{t('request_detail_verdict')}</h3>
+                <h3>Estado da Candidatura:</h3>
                 <p>{request.reviewerNote || 'A aguardar validação.'}</p>
               </div>
             )}

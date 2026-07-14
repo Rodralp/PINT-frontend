@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Paperclip, Search, SendHorizontal, UploadCloud, UserRoundPlus, X } from 'lucide-react';
 import Layout from '../../components/Layout';
 import { fetchAnnouncementRecipients, sendAnnouncement } from '../../services/communicationService';
@@ -17,40 +16,32 @@ const MAX_FILE_MB = 10;
 const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
 
 const messageTypeOptions = [
-  { id: 'mensagem', priority: 3 },
-  { id: 'aviso', priority: 2 },
-  { id: 'importante', priority: 1 },
+  { id: 'mensagem', label: 'Mensagem', priority: 3 },
+  { id: 'aviso', label: 'Aviso', priority: 2 },
+  { id: 'importante', label: 'Importante', priority: 1 },
 ];
 
+const validateFile = (file) => {
+  const fileExtension = String(file.name || '')
+    .split('.')
+    .pop()
+    ?.toLowerCase();
+
+  const validExtension = allowedExtensions.includes(fileExtension || '');
+  const validSize = file.size <= MAX_FILE_MB * 1024 * 1024;
+
+  if (!validExtension) {
+    return { valid: false, reason: 'Formato inválido' };
+  }
+
+  if (!validSize) {
+    return { valid: false, reason: 'Ficheiro acima de 10MB' };
+  }
+
+  return { valid: true };
+};
+
 function ComunicadosAvisosAG() {
-  const { t } = useTranslation();
-
-  const messageTypeLabelMap = useMemo(() => ({
-    mensagem: t('comunicados_type_message'),
-    aviso: t('comunicados_type_notice'),
-    importante: t('comunicados_type_important'),
-  }), [t]);
-
-  const validateFile = (file) => {
-    const fileExtension = String(file.name || '')
-      .split('.')
-      .pop()
-      ?.toLowerCase();
-
-    const validExtension = allowedExtensions.includes(fileExtension || '');
-    const validSize = file.size <= MAX_FILE_MB * 1024 * 1024;
-
-    if (!validExtension) {
-      return { valid: false, reason: t('comunicados_invalid_format') };
-    }
-
-    if (!validSize) {
-      return { valid: false, reason: t('comunicados_file_too_large') };
-    }
-
-    return { valid: true };
-  };
-
   const [recipientsDirectory, setRecipientsDirectory] = useState([]);
   const [serviceLines, setServiceLines] = useState([]);
   const [title, setTitle] = useState('');
@@ -111,7 +102,7 @@ function ComunicadosAvisosAG() {
         if (isMounted) {
           setRecipientsDirectory([]);
           setServiceLines([]);
-          setStatusMessage(t('comunicados_load_error'));
+          setStatusMessage('Não foi possível carregar os dados. Tente novamente em alguns segundos.');
         }
       }
     };
@@ -121,7 +112,7 @@ function ComunicadosAvisosAG() {
     return () => {
       isMounted = false;
     };
-  }, [t]);
+  }, []);
 
   const recipientGroups = useMemo(() => {
     const groups = [];
@@ -132,7 +123,7 @@ function ComunicadosAvisosAG() {
 
     groups.push({
       id: 'grp-consultores',
-      label: t('comunicados_group_all_consultants'),
+      label: 'Todos os Consultores',
       memberIds: consultorIds,
     });
 
@@ -142,7 +133,7 @@ function ComunicadosAvisosAG() {
 
     groups.push({
       id: 'grp-sll',
-      label: t('comunicados_group_all_sll'),
+      label: 'Todos os S.L.L.',
       memberIds: sllIds,
     });
 
@@ -161,7 +152,7 @@ function ComunicadosAvisosAG() {
     });
 
     return groups;
-  }, [recipientsDirectory, serviceLines, t]);
+  }, [recipientsDirectory, serviceLines]);
 
   const filteredPeople = useMemo(() => {
     const normalizedTerm = recipientSearch.trim().toLowerCase();
@@ -303,13 +294,13 @@ function ComunicadosAvisosAG() {
         priority: messagePriority,
       });
 
-      setSendStatus(t('comunicados_send_success', { count: selectedRecipients.length }));
+      setSendStatus(`Mensagem enviada para ${selectedRecipients.length} destinatários.`);
       setTitle('');
       setMessage('');
       setAttachments([]);
       setUploadErrors([]);
     } catch (error) {
-      setSendStatus(error?.message || t('comunicados_send_error'));
+      setSendStatus(error?.message || 'Falha ao enviar a mensagem.');
     }
   };
 
@@ -317,7 +308,7 @@ function ComunicadosAvisosAG() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>{t('comunicados_title')}</h1>
+          <h1>Comunicados e Avisos</h1>
         </header>
 
         {statusMessage && (
@@ -327,7 +318,7 @@ function ComunicadosAvisosAG() {
         )}
 
         <section className="ag-announcements-compose-card">
-          <label htmlFor="ag-announcement-title">{t('comunicados_field_title')}</label>
+          <label htmlFor="ag-announcement-title">Título</label>
           <input
             id="ag-announcement-title"
             type="text"
@@ -336,10 +327,10 @@ function ComunicadosAvisosAG() {
               setTitle(event.target.value);
               setSendStatus('');
             }}
-            placeholder={t('comunicados_placeholder_title')}
+            placeholder="Digite o título do comunicado..."
           />
 
-          <label htmlFor="ag-announcement-type">{t('comunicados_field_type')}</label>
+          <label htmlFor="ag-announcement-type">Tipo de mensagem</label>
           <select
             id="ag-announcement-type"
             value={messageType}
@@ -350,12 +341,12 @@ function ComunicadosAvisosAG() {
           >
             {messageTypeOptions.map((option) => (
               <option key={option.id} value={option.id}>
-                {messageTypeLabelMap[option.id]}
+                {option.label}
               </option>
             ))}
           </select>
 
-          <label htmlFor="ag-announcement-message">{t('comunicados_field_message')}</label>
+          <label htmlFor="ag-announcement-message">Mensagem</label>
           <textarea
             id="ag-announcement-message"
             value={message}
@@ -363,11 +354,11 @@ function ComunicadosAvisosAG() {
               setMessage(event.target.value);
               setSendStatus('');
             }}
-            placeholder={t('comunicados_placeholder_message')}
+            placeholder="Escreva a mensagem aqui..."
             rows={7}
           />
 
-          <label>{t('comunicados_field_files')}</label>
+          <label>Anexar ficheiros</label>
           <div
             className={`ag-upload-dropzone ${isDragOver ? 'drag-over' : ''}`}
             role="button"
@@ -392,13 +383,13 @@ function ComunicadosAvisosAG() {
               setIsDragOver(false);
             }}
             onDrop={handleDrop}
-            aria-label={t('comunicados_aria_upload')}
+            aria-label="Zona de upload de ficheiros"
           >
             <UploadCloud size={28} />
             <p>
-              {t('comunicados_upload_hint1')}
+              Arraste ficheiros para aqui ou <span>procure</span>
             </p>
-            <small>{t('comunicados_upload_hint2')}</small>
+            <small>PDF, DOC, DOCX, XLS, XLSX (máx. 10MB)</small>
             <input
               ref={fileInputRef}
               type="file"
@@ -445,25 +436,25 @@ function ComunicadosAvisosAG() {
               disabled={!canSend}
             >
               <SendHorizontal size={16} />
-              {t('comunicados_btn_send')}
+              Enviar
             </button>
           </div>
         </section>
 
         <section className="ag-announcements-recipient-card">
           <div className="ag-recipient-header">
-            <h2>{t('comunicados_to_label')}</h2>
+            <h2>Para</h2>
             <button
               type="button"
               className="ag-add-recipient-btn"
               onClick={() => setIsRecipientPickerOpen((current) => !current)}
             >
               <UserRoundPlus size={16} />
-              {isRecipientPickerOpen ? t('comunicados_btn_close') : t('comunicados_btn_add')}
+              {isRecipientPickerOpen ? 'Fechar' : 'Adicionar'}
             </button>
           </div>
 
-          <p className="ag-recipient-summary">{selectedRecipients.length} {t('comunicados_recipients_summary')}</p>
+          <p className="ag-recipient-summary">{selectedRecipients.length} destinatários selecionados</p>
 
           {(selectedGroupIds.length > 0 || selectedPersonIds.length > 0) ? (
             <div className="ag-selected-recipient-chips">
@@ -500,7 +491,7 @@ function ComunicadosAvisosAG() {
               })}
             </div>
           ) : (
-            <p className="ag-recipient-empty">{t('comunicados_no_recipients')}</p>
+            <p className="ag-recipient-empty">Nenhum destinatário selecionado.</p>
           )}
 
           {isRecipientPickerOpen && (
@@ -512,13 +503,13 @@ function ComunicadosAvisosAG() {
                   type="text"
                   value={recipientSearch}
                   onChange={(event) => setRecipientSearch(event.target.value)}
-                  placeholder={t('comunicados_search_people')}
+                  placeholder="Pesquisar pessoas ou grupos"
                 />
               </label>
 
               <div className="ag-recipient-picker-sections">
                 <div className="ag-recipient-picker-section">
-                  <h3>{t('comunicados_section_groups')}</h3>
+                  <h3>Grupos</h3>
                   <div className="ag-recipient-options">
                     {filteredGroups.map((group) => (
                       <button
@@ -528,16 +519,16 @@ function ComunicadosAvisosAG() {
                         onClick={() => handleToggleGroup(group.id)}
                       >
                         <span>{group.label}</span>
-                        <small>{group.memberIds.length} {t('comunicados_people_count')}</small>
+                        <small>{group.memberIds.length} pessoas</small>
                       </button>
                     ))}
 
-                    {filteredGroups.length === 0 && <p className="ag-recipient-empty">{t('comunicados_no_groups')}</p>}
+                    {filteredGroups.length === 0 && <p className="ag-recipient-empty">Sem grupos encontrados.</p>}
                   </div>
                 </div>
 
                 <div className="ag-recipient-picker-section">
-                  <h3>{t('comunicados_section_people')}</h3>
+                  <h3>Pessoas</h3>
                   <div className="ag-recipient-options people">
                     {filteredPeople.map((person) => (
                       <button
@@ -551,7 +542,7 @@ function ComunicadosAvisosAG() {
                       </button>
                     ))}
 
-                    {filteredPeople.length === 0 && <p className="ag-recipient-empty">{t('comunicados_no_people')}</p>}
+                    {filteredPeople.length === 0 && <p className="ag-recipient-empty">Sem pessoas encontradas.</p>}
                   </div>
                 </div>
               </div>

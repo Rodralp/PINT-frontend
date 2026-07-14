@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Plus,
   AlarmClock,
@@ -17,11 +16,11 @@ import {
 } from '../../services/consultorService';
 import '../../css/Consultor/Lembretes.css';
 
-const MONTH_KEYS = ['lembretes_month_jan', 'lembretes_month_feb', 'lembretes_month_mar', 'lembretes_month_apr', 'lembretes_month_may', 'lembretes_month_jun', 'lembretes_month_jul', 'lembretes_month_aug', 'lembretes_month_sep', 'lembretes_month_oct', 'lembretes_month_nov', 'lembretes_month_dec'];
+const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 const isIsoDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value);
 
-const formatReminderDate = (value, monthLabels) => {
+const formatReminderDate = (value) => {
   if (!isIsoDate(value)) {
     return value;
   }
@@ -61,8 +60,6 @@ const normalizeReminder = (reminder, fallbackId) => {
 };
 
 function Lembretes() {
-  const { t } = useTranslation();
-  const monthLabels = MONTH_KEYS.map((key) => t(key));
   const [reminders, setReminders] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -91,7 +88,7 @@ function Lembretes() {
       } catch {
         if (isMounted) {
           setReminders([]);
-          setStatusMessage(t('error_generic'));
+          setStatusMessage('Nao foi possivel carregar os lembretes da base de dados.');
           setIsLoading(false);
         }
       }
@@ -104,8 +101,8 @@ function Lembretes() {
     };
   }, []);
 
-  const modalTitle = editingId ? t('lembretes_edit_reminder') : t('lembretes_new_reminder');
-  const saveLabel = editingId ? t('lembretes_save_changes') : t('lembretes_create_reminder');
+  const modalTitle = editingId ? 'Editar Lembrete' : 'Novo Lembrete';
+  const saveLabel = editingId ? 'Salvar Alteracoes' : 'Criar Lembrete';
 
   const colorLookup = useMemo(
     () => colorOptions.reduce((acc, item) => ({ ...acc, [item.id]: item }), {}),
@@ -153,15 +150,15 @@ function Lembretes() {
     const nextErrors = {};
 
     if (!formData.title.trim()) {
-      nextErrors.title = t('lembretes_title_required');
+      nextErrors.title = 'O titulo e obrigatorio.';
     }
 
     if (!formData.description.trim()) {
-      nextErrors.description = t('lembretes_description_required');
+      nextErrors.description = 'A descricao e obrigatoria.';
     }
 
     if (!isIsoDate(formData.date)) {
-      nextErrors.date = t('lembretes_date_required');
+      nextErrors.date = 'A data e obrigatoria.';
     }
 
     setErrors(nextErrors);
@@ -195,7 +192,7 @@ function Lembretes() {
         setStatusMessage('');
         closeModal();
       } catch {
-        setStatusMessage(t('lembretes_update_error'));
+        setStatusMessage('Nao foi possivel atualizar o lembrete.');
       }
 
       return;
@@ -208,7 +205,7 @@ function Lembretes() {
       setStatusMessage('');
       closeModal();
     } catch {
-      setStatusMessage(t('lembretes_create_error'));
+      setStatusMessage('Nao foi possivel criar o lembrete.');
     }
   };
 
@@ -218,14 +215,14 @@ function Lembretes() {
       setReminders((prev) => prev.filter((item) => !hasSameId(item.id, id)));
       setStatusMessage('');
     } catch {
-      setStatusMessage(t('lembretes_delete_error'));
+      setStatusMessage('Nao foi possivel apagar o lembrete.');
     }
   };
 
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('lembretes_loading')} />
+        <LoadingSpinner fullPage message="A carregar lembretes..." />
       </Layout>
     );
   }
@@ -234,7 +231,7 @@ function Lembretes() {
     <Layout>
       <div className="reminders-page">
         <header className="reminders-header">
-          <h1>{t('lembretes_title')}</h1>
+          <h1>Lembretes</h1>
         </header>
 
         <section className="reminders-shell">
@@ -246,7 +243,7 @@ function Lembretes() {
 
           <button type="button" className="reminders-new-btn" onClick={openNewReminderModal}>
             <Plus size={18} />
-            <span>{t('lembretes_new_button')}</span>
+            <span>Novo Lembrete</span>
           </button>
 
           <div className="reminders-list">
@@ -264,7 +261,7 @@ function Lembretes() {
                     <p>{reminder.description}</p>
                     <div className="reminder-date">
                       <CalendarDays size={14} />
-                      <span>{formatReminderDate(reminder.date, monthLabels)}</span>
+                      <span>{formatReminderDate(reminder.date)}</span>
                     </div>
                   </div>
 
@@ -272,7 +269,7 @@ function Lembretes() {
                     <button
                       type="button"
                       className="reminder-icon-btn"
-                      aria-label={t('lembretes_edit_label')}
+                      aria-label="Editar lembrete"
                       onClick={() => openEditReminderModal(reminder)}
                     >
                       <Pencil size={16} />
@@ -281,7 +278,7 @@ function Lembretes() {
                     <button
                       type="button"
                       className="reminder-icon-btn"
-                      aria-label={t('lembretes_delete_label')}
+                      aria-label="Apagar lembrete"
                       onClick={() => onDeleteReminder(reminder.id)}
                     >
                       <Trash2 size={16} />
@@ -293,7 +290,7 @@ function Lembretes() {
           </div>
 
           {reminders.length === 0 && (
-            <div className="reminders-empty-state">{t('lembretes_empty')}</div>
+            <div className="reminders-empty-state">Sem lembretes para mostrar.</div>
           )}
         </section>
 
@@ -302,31 +299,31 @@ function Lembretes() {
             <div className="reminder-modal" onClick={(event) => event.stopPropagation()}>
               <h2>{modalTitle}</h2>
 
-              <label htmlFor="reminder-title">{t('lembretes_field_title')}</label>
+              <label htmlFor="reminder-title">Titulo</label>
               <input
                 id="reminder-title"
                 name="title"
                 type="text"
                 value={formData.title}
                 onChange={onInputChange}
-                placeholder={t('lembretes_field_title_placeholder')}
+                placeholder="Digite o titulo do lembrete"
                 className={errors.title ? 'reminder-input-error' : ''}
               />
               {errors.title && <span className="reminder-field-error">{errors.title}</span>}
 
-              <label htmlFor="reminder-description">{t('lembretes_field_description')}</label>
+              <label htmlFor="reminder-description">Descricao</label>
               <textarea
                 id="reminder-description"
                 name="description"
                 value={formData.description}
                 onChange={onInputChange}
-                placeholder={t('lembretes_field_description_placeholder')}
+                placeholder="Digite a descricao do lembrete"
                 rows={3}
                 className={errors.description ? 'reminder-input-error' : ''}
               />
               {errors.description && <span className="reminder-field-error">{errors.description}</span>}
 
-              <label htmlFor="reminder-date">{t('lembretes_field_date')}</label>
+              <label htmlFor="reminder-date">Data</label>
               <input
                 id="reminder-date"
                 name="date"
@@ -337,8 +334,8 @@ function Lembretes() {
               />
               {errors.date && <span className="reminder-field-error">{errors.date}</span>}
 
-              <label>{t('lembretes_field_color')}</label>
-              <div className="reminder-color-picker" role="radiogroup" aria-label={t('lembretes_color_label')}>
+              <label>Cor</label>
+              <div className="reminder-color-picker" role="radiogroup" aria-label="Cor do lembrete">
                 {colorOptions.map((color) => (
                   <button
                     key={color.id}
@@ -346,14 +343,14 @@ function Lembretes() {
                     className={`reminder-color-dot ${formData.color === color.id ? 'active' : ''}`}
                     style={{ backgroundColor: color.pill }}
                     onClick={() => onColorSelect(color.id)}
-                    aria-label={`${t('lembretes_select_color')} ${color.id}`}
+                    aria-label={`Selecionar cor ${color.id}`}
                   />
                 ))}
               </div>
 
               <div className="reminder-modal-actions">
                 <button type="button" className="reminder-cancel-btn" onClick={closeModal}>
-                  {t('common_cancel')}
+                  Cancelar
                 </button>
                 <button type="button" className="reminder-save-btn" onClick={onSaveReminder}>
                   {saveLabel}

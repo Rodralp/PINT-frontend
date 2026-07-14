@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -15,7 +14,43 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchLearningPaths } from '../../services/consultorService';
 import '../../css/Consultor/LearningPaths_C.css';
 
-
+const statusConfig = {
+  obtido: {
+    label: 'Badge obtido',
+    className: 'status-obtido',
+    Icon: CheckCircle2,
+  },
+  candidatura_em_progresso: {
+    label: 'Candidatura em progresso',
+    className: 'status-progresso',
+    Icon: TimerReset,
+  },
+  'pendente-tm': {
+    label: 'Em Validacao',
+    className: 'status-validacao',
+    Icon: SearchCheck,
+  },
+  'pendente-sll': {
+    label: 'Em Validacao',
+    className: 'status-validacao',
+    Icon: SearchCheck,
+  },
+  evidencias_insuficientes: {
+    label: 'Evidencias insuficientes',
+    className: 'status-insuficiente',
+    Icon: AlertTriangle,
+  },
+  visualizar: {
+    label: 'Visualizar',
+    className: 'status-visualizar',
+    Icon: null,
+  },
+  sem_badge: {
+    label: 'Sem badge associado',
+    className: 'status-sem-badge',
+    Icon: AlertTriangle,
+  },
+};
 
 const flattenServiceLineLevels = (serviceLine) =>
   (serviceLine?.areas || []).flatMap((area) => area.levels || []);
@@ -31,52 +66,13 @@ const calculateProgress = (levels) => {
     obtidas,
     isComplete,
     percent,
+    label: isComplete ? 'Area Completada' : `${obtidas} de ${total} badges obtidas`,
   };
 };
 
 function LearningPaths() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const statusConfig = useMemo(() => ({
-    obtido: {
-      label: t('consultor_lp_status_badge_obtained'),
-      className: 'status-obtido',
-      Icon: CheckCircle2,
-    },
-    candidatura_em_progresso: {
-      label: t('consultor_lp_status_in_progress'),
-      className: 'status-progresso',
-      Icon: TimerReset,
-    },
-    'pendente-tm': {
-      label: t('consultor_lp_status_in_review'),
-      className: 'status-validacao',
-      Icon: SearchCheck,
-    },
-    'pendente-sll': {
-      label: t('consultor_lp_status_in_review'),
-      className: 'status-validacao',
-      Icon: SearchCheck,
-    },
-    evidencias_insuficientes: {
-      label: t('consultor_lp_status_insufficient'),
-      className: 'status-insuficiente',
-      Icon: AlertTriangle,
-    },
-    visualizar: {
-      label: t('consultor_lp_view'),
-      className: 'status-visualizar',
-      Icon: null,
-    },
-    sem_badge: {
-      label: t('consultor_lp_no_badge'),
-      className: 'status-sem-badge',
-      Icon: AlertTriangle,
-    },
-  }), [t]);
-
   const [learningPathsData, setLearningPathsData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -110,13 +106,7 @@ function LearningPaths() {
     return selectedPath.serviceLines.find((item) => item.id === selectedServiceLineId) || null;
   }, [selectedPath, selectedServiceLineId]);
 
-  const getProgressLabel = ({ isComplete, obtidas, total }) => (
-    isComplete
-      ? t('consultor_lp_area_completed')
-      : t('consultor_lp_progress_count', { count: obtidas, total })
-  );
-
-  const pageTitle = selectedServiceLine ? t('consultor_lp_service_line') : t('consultor_lp_title');
+  const pageTitle = selectedServiceLine ? 'Service Line' : 'Learning Paths';
 
   useEffect(() => {
     let isMounted = true;
@@ -130,13 +120,13 @@ function LearningPaths() {
           setErrorMessage('');
         } else if (isMounted) {
           setLearningPathsData([]);
-          setErrorMessage(t('no_items'));
+          setErrorMessage('Nao existem Learning Paths disponiveis para este utilizador.');
         }
       } catch (error) {
         console.error('Failed to load learning paths:', error);
         if (isMounted) {
           setLearningPathsData([]);
-          setErrorMessage(t('error_generic'));
+          setErrorMessage('Nao foi possivel carregar os Learning Paths da base de dados.');
         }
       } finally {
         if (isMounted) {
@@ -260,7 +250,7 @@ function LearningPaths() {
                 {isExpanded && (
                   <div id={`learning-path-${path.id}`} className="lp-area-badges">
                     <div className="lp-section-title-row">
-                      <h3>{t('consultor_lp_service_lines')}</h3>
+                      <h3>Service Lines</h3>
                     </div>
 
                     <div className="lp-service-line-list">
@@ -284,7 +274,7 @@ function LearningPaths() {
 
                               <div className="lp-service-line-main">
                                 <p>{serviceLine.description}</p>
-                                <span className="lp-progress-label">{getProgressLabel(progress)}</span>
+                                <span className="lp-progress-label">{progress.label}</span>
 
                                 <div className="lp-progress-track" aria-hidden="true">
                                   <span
@@ -334,7 +324,7 @@ function LearningPaths() {
           </div>
         </article>
 
-        <section className="lp-area-shell" aria-label={t('consultor_lp_areas_of_service_line', { name: selectedServiceLine.name })}>
+        <section className="lp-area-shell" aria-label={`Areas da service line ${selectedServiceLine.name}`}>
           <div className="lp-area-list">
             {selectedServiceLine.areas.map((area) => {
               const isExpanded = expandedAreaIds.includes(area.id);
@@ -365,8 +355,8 @@ function LearningPaths() {
                   {isExpanded && (
                     <div id={`area-badges-${area.id}`} className="lp-area-badges">
                       <div className="lp-area-content-head">
-                        <h3>{t('consultor_lp_levels')}</h3>
-                        <span className="lp-progress-label">{getProgressLabel(progress)}</span>
+                        <h3>Niveis</h3>
+                        <span className="lp-progress-label">{progress.label}</span>
                       </div>
 
                       <div className="lp-level-list">
@@ -384,7 +374,7 @@ function LearningPaths() {
                               className={`lp-level-row lp-level-row-action ${hasBadge ? '' : 'is-disabled'}`}
                               onClick={() => openBadgeDetails(area, level)}
                               disabled={!hasBadge}
-                              aria-label={t('consultor_lp_view_badge', { title: level.title })}
+                              aria-label={`Ver badge ${level.title}`}
                             >
                               <div className="lp-level-copy">
                                 <strong>{level.title}</strong>
@@ -413,7 +403,7 @@ function LearningPaths() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message="A carregar Learning Paths..." />
       </Layout>
     );
   }
@@ -424,7 +414,7 @@ function LearningPaths() {
         <header className="lp-header">
           <div className="lp-header-left">
             {selectedServiceLine && (
-              <button type="button" className="lp-back-btn" onClick={handleGoBack} aria-label={t('consultor_lp_back')}>
+              <button type="button" className="lp-back-btn" onClick={handleGoBack} aria-label="Voltar">
                 <ArrowLeft size={20} />
               </button>
             )}

@@ -30,7 +30,7 @@ const resolveBadgeDbId = (routeBadgeId, badgeState) => {
       return numericRoute;
     }
 
-    const match = fromRoute.match(/^(?:badge|catalog)-(\d+)$/i);
+    const match = fromRoute.match(/^badge-(\d+)$/i);
     if (match) {
       const numericMatch = Number(match[1]);
       if (Number.isInteger(numericMatch) && numericMatch > 0) {
@@ -46,7 +46,7 @@ const resolveBadgeDbId = (routeBadgeId, badgeState) => {
       return numericStateId;
     }
 
-    const match = fromStateId.match(/^(?:badge|catalog)-(\d+)$/i);
+    const match = fromStateId.match(/^badge-(\d+)$/i);
     if (match) {
       const numericMatch = Number(match[1]);
       if (Number.isInteger(numericMatch) && numericMatch > 0) {
@@ -72,7 +72,7 @@ function BadgePublica() {
     }
 
     return defaultBadgeDetails;
-  }, [location.state]);
+  }, [location.state, badgeId]);
 
   const resolvedBadgeDbId = useMemo(
     () => resolveBadgeDbId(badgeId, badge),
@@ -103,7 +103,7 @@ function BadgePublica() {
             // ignore navigation errors
           }
         }
-      } catch {
+      } catch (e) {
         // ignore and keep fallback
       }
     };
@@ -127,7 +127,7 @@ function BadgePublica() {
         if (isMounted && Array.isArray(reqs)) {
           setDynamicRequirements(reqs);
         }
-      } catch {
+      } catch (e) {
         // ignore and keep static requirements
       }
     };
@@ -211,7 +211,7 @@ function BadgePublica() {
             </p>
 
             <section className="bp-requirements-card">
-              <h3>{t('requirements')}</h3>
+              <h3>Requisitos</h3>
               {requirements.length === 0 ? (
                 <p className="bp-requirements-empty">Sem requisitos definidos para este badge.</p>
               ) : (

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Check, Search, ShieldCheck, UserPlus2, X } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
@@ -17,27 +16,34 @@ import {
 const PAGE_SIZE = 8;
 
 const accountTypeOptions = [
-  { id: 'all', label: 'users_filter_all' },
-  { id: 'consultor', label: 'users_filter_consultors' },
-  { id: 'talent-manager', label: 'users_filter_tms' },
-  { id: 'service-line-leader', label: 'users_filter_slls' },
-  { id: 'admin-gestor', label: 'users_filter_admins' },
+  { id: 'all', label: 'Todos' },
+  { id: 'consultor', label: 'Consultores' },
+  { id: 'talent-manager', label: 'Talent Managers' },
+  { id: 'service-line-leader', label: 'Service Line Leaders' },
+  { id: 'admin-gestor', label: 'Administradores' },
 ];
 
 const roleLabels = {
-  consultor: 'users_role_consultor',
-  'talent-manager': 'users_role_tm',
-  'service-line-leader': 'users_role_sll',
-  'admin-gestor': 'users_role_admin',
+  consultor: 'Consultor',
+  'talent-manager': 'Talent Manager',
+  'service-line-leader': 'Service Line Lider',
+  'admin-gestor': 'Administrador',
 };
 
 const statusLabels = {
-  ativo: 'users_status_active',
-  inativo: 'users_status_inactive',
-  pendente: 'users_status_pending',
+  ativo: 'Ativo',
+  inativo: 'Inativo',
+  pendente: 'Pendente',
 };
 
+const toRoleLabel = (roles) => {
+  const list = Array.isArray(roles) ? roles : [];
+  if (list.length === 0) {
+    return roleLabels.consultor;
+  }
 
+  return list.map((role) => roleLabels[role] || role).join(' + ');
+};
 
 const toAvatar = (user) => {
   if (user?.avatar) return user.avatar;
@@ -115,16 +121,6 @@ const updateStoredLoginDataPermissions = ({ accountId, id, roles, serviceLines }
 };
 
 function UtilizadoresAG() {
-  const { t } = useTranslation();
-
-  const toRoleLabel = (roles) => {
-    const list = Array.isArray(roles) ? roles : [];
-    if (list.length === 0) {
-      return t(roleLabels.consultor);
-    }
-    return list.map((role) => t(roleLabels[role] || role)).join(' + ');
-  };
-
   const [activeTab, setActiveTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [accountType, setAccountType] = useState('all');
@@ -249,7 +245,7 @@ function UtilizadoresAG() {
         }
 
         setUsers([]);
-        setStatusMessage(error?.message || t('users_load_error'));
+        setStatusMessage(error?.message || 'Nao foi possivel carregar os utilizadores.');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -333,19 +329,19 @@ function UtilizadoresAG() {
       : [];
 
     if (!createForm.nome.trim() || !createForm.email.trim() || !createForm.senha.trim()) {
-      setCreateModalError(t('users_validation_name_email_password'));
+      setCreateModalError('Preencha nome, email e password.');
       return;
     }
 
     // Validation for Service Line Leader role - only one service line (priority check)
     if (normalizedCreateRoles.includes('service-line-leader') && createServiceLineIds.length > 1) {
-      setCreateModalError(t('users_validation_sll_one_sl'));
+      setCreateModalError('Service Line Leader só pode ser associado a uma Service Line.');
       return;
     }
 
     // Validation for Service Line Leader role - at least one service line
     if (normalizedCreateRoles.includes('service-line-leader') && createServiceLineIds.length === 0) {
-      setCreateModalError(t('users_validation_sll_min_one'));
+      setCreateModalError('Service Line Leader deve ter pelo menos uma Service Line atribuída.');
       return;
     }
 
@@ -354,7 +350,7 @@ function UtilizadoresAG() {
       user.email.toLowerCase() === createForm.email.toLowerCase().trim()
     );
     if (existingUser) {
-      setCreateModalError(t('users_validation_email_exists'));
+      setCreateModalError('Já existe um utilizador com este email.');
       return;
     }
 
@@ -371,7 +367,7 @@ function UtilizadoresAG() {
         );
         
         if (existingSLL) {
-          setCreateModalError(`${t('users_validation_sl_already_has_sll')}${existingSLL.nome}`);
+          setCreateModalError(`Esta Service Line já tem um Service Line Leader: ${existingSLL.nome}`);
           return;
         }
       }
@@ -397,9 +393,9 @@ function UtilizadoresAG() {
       });
 
       await refreshUsers();
-      setStatusMessage(t('users_success_created'));
+      setStatusMessage('Utilizador criado com sucesso.');
     } catch (error) {
-      setStatusMessage(error?.message || t('users_error_created'));
+      setStatusMessage(error?.message || 'Nao foi possivel criar utilizador.');
     } finally {
       setIsSaving(false);
     }
@@ -434,13 +430,13 @@ function UtilizadoresAG() {
 
     // Validation for Service Line Leader role - only one service line (priority check)
     if (normalizedPermissionRoles.includes('service-line-leader') && permissionServiceLineIds.length > 1) {
-      setPermissionsModalError(t('users_validation_sll_one_sl'));
+      setPermissionsModalError('Service Line Leader só pode ser associado a uma Service Line.');
       return;
     }
 
     // Validation for Service Line Leader role - at least one service line
     if (normalizedPermissionRoles.includes('service-line-leader') && permissionServiceLineIds.length === 0) {
-      setPermissionsModalError(t('users_validation_sll_min_one'));
+      setPermissionsModalError('Service Line Leader deve ter pelo menos uma Service Line atribuída.');
       return;
     }
 
@@ -458,7 +454,7 @@ function UtilizadoresAG() {
         );
         
         if (existingSLL) {
-          setPermissionsModalError(`${t('users_validation_sl_already_has_sll')}${existingSLL.nome}`);
+          setPermissionsModalError(`Esta Service Line já tem um Service Line Leader: ${existingSLL.nome}`);
           return;
         }
       }
@@ -476,9 +472,9 @@ function UtilizadoresAG() {
       await refreshUsers();
       setShowPermissionsModal(false);
       setSelectedUser(null);
-      setStatusMessage(t('users_success_permissions'));
+      setStatusMessage('Permissoes atualizadas com sucesso.');
     } catch (error) {
-      setStatusMessage(error?.message || t('users_error_permissions'));
+      setStatusMessage(error?.message || 'Nao foi possivel atualizar permissoes.');
     } finally {
       setIsSaving(false);
     }
@@ -498,10 +494,10 @@ function UtilizadoresAG() {
       const newStatus = isActive ? 'inativo' : 'ativo';
       await updateAdminUserStatus(user.id, { status: newStatus });
       await refreshUsers();
-      const message = isActive ? t('users_success_deactivate') : t('users_success_reactivate');
+      const message = isActive ? 'Conta desativada com sucesso.' : 'Conta reativada com sucesso.';
       setStatusMessage(message);
     } catch (error) {
-      const message = isActive ? t('users_error_toggle') : t('users_error_toggle_reactivate');
+      const message = isActive ? 'Nao foi possivel desativar a conta.' : 'Nao foi possivel reativar a conta.';
       setStatusMessage(error?.message || message);
     } finally {
       setIsSaving(false);
@@ -513,9 +509,9 @@ function UtilizadoresAG() {
       setIsSaving(true);
       await decidePendingUser(userId, { decision });
       await refreshUsers();
-      setStatusMessage(decision === 'approve' ? t('users_success_approve') : t('users_success_reject'));
+      setStatusMessage(decision === 'approve' ? 'Pedido aprovado.' : 'Pedido rejeitado.');
     } catch (error) {
-      setStatusMessage(error?.message || t('users_error_process'));
+      setStatusMessage(error?.message || 'Nao foi possivel processar o pedido.');
     } finally {
       setIsSaving(false);
     }
@@ -525,10 +521,10 @@ function UtilizadoresAG() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>{t('users_title')}</h1>
+          <h1>Utilizadores</h1>
         </header>
 
-        <div className="ag-users-tabs" role="tablist" aria-label={t('users_tabs')}>
+        <div className="ag-users-tabs" role="tablist" aria-label="Separadores de utilizadores">
           <button
             type="button"
             role="tab"
@@ -536,7 +532,7 @@ function UtilizadoresAG() {
             aria-selected={activeTab === 'users'}
             onClick={() => setActiveTab('users')}
           >
-            {t('users_tab_list')}
+            Utilizadores
           </button>
           <button
             type="button"
@@ -545,12 +541,12 @@ function UtilizadoresAG() {
             aria-selected={activeTab === 'pending'}
             onClick={() => setActiveTab('pending')}
           >
-            {t('users_tab_pending')}
+            Pedidos Pendentes
             {pendingCount > 0 && <span className="ag-users-tab-badge">{pendingCount}</span>}
           </button>
         </div>
 
-        <section className="shell ag-users-shell">
+        <section className="shell">
           <div className="toolbar ag-users-toolbar">
             <label className="search-wrap ag-users-search" htmlFor="ag-users-search-input">
               <Search size={18} />
@@ -559,7 +555,7 @@ function UtilizadoresAG() {
                 type="text"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder={activeTab === 'pending' ? t('users_search_request') : t('users_search_user')}
+                placeholder={activeTab === 'pending' ? 'Pesquisar pedido' : 'Pesquisar utilizador'}
               />
             </label>
 
@@ -572,7 +568,7 @@ function UtilizadoresAG() {
                 >
                   {accountTypeOptions.map((option) => (
                     <option key={option.id} value={option.id}>
-                      {t(option.label)}
+                      {option.label}
                     </option>
                   ))}
                 </select>
@@ -586,7 +582,7 @@ function UtilizadoresAG() {
                 }}
                 >
                   <UserPlus2 size={16} />
-                  {t('users_add')}
+                  Adicionar Utilizador
                 </button>
               </>
             )}
@@ -603,19 +599,19 @@ function UtilizadoresAG() {
               <thead>
                 {activeTab === 'users' ? (
                   <tr>
-                    <th>{t('users_th_name')}</th>
-                    <th>{t('users_th_entry')}</th>
-                    <th>{t('users_th_type')}</th>
-                    <th>{t('users_th_points')}</th>
-                    <th>{t('users_th_badges')}</th>
-                    <th>{t('users_th_status')}</th>
-                    <th>{t('users_th_actions')}</th>
+                    <th>Nome</th>
+                    <th>Entrada</th>
+                    <th>Tipo</th>
+                    <th>Pontos</th>
+                    <th>Badges</th>
+                    <th>Estado</th>
+                    <th>Acoes</th>
                   </tr>
                 ) : (
                   <tr>
-                    <th>{t('users_th_name')}</th>
-                    <th>{t('users_th_request_date')}</th>
-                    <th>{t('users_th_actions')}</th>
+                    <th>Nome</th>
+                    <th>Data do Pedido</th>
+                    <th>Acoes</th>
                   </tr>
                 )}
               </thead>
@@ -624,7 +620,7 @@ function UtilizadoresAG() {
                 {isLoading && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
-                      <LoadingSpinner message={t('loading')} />
+                      <LoadingSpinner message="A carregar..." />
                     </td>
                   </tr>
                 )}
@@ -632,7 +628,7 @@ function UtilizadoresAG() {
                 {!isLoading && pagedUsers.length === 0 && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
-                      {t('users_no_results')}
+                      Sem resultados.
                     </td>
                   </tr>
                 )}
@@ -656,7 +652,7 @@ function UtilizadoresAG() {
                         <td className="ag-users-number">{user.badges}</td>
                         <td>
                           <span className={`ag-user-status ${String(user.status).toLowerCase()}`}>
-                            {t(statusLabels[String(user.status).toLowerCase()] || user.status)}
+                            {statusLabels[String(user.status).toLowerCase()] || user.status}
                           </span>
                         </td>
                         <td>
@@ -667,7 +663,7 @@ function UtilizadoresAG() {
                               onClick={() => openPermissionsModal(user)}
                             >
                               <ShieldCheck size={14} />
-                              {t('users_edit_permissions')}
+                              Editar permissoes
                             </button>
                             <button
                               type="button"
@@ -675,7 +671,7 @@ function UtilizadoresAG() {
                               disabled={!['ativo', 'inativo'].includes(String(user.status).toLowerCase()) || isSaving}
                               onClick={() => handleDeactivateUser(user)}
                             >
-                              {String(user.status).toLowerCase() === 'inativo' ? t('users_reactivate') : t('users_deactivate')}
+                              {String(user.status).toLowerCase() === 'inativo' ? 'Reativar conta' : 'Desativar conta'}
                             </button>
                           </div>
                         </td>
@@ -700,14 +696,14 @@ function UtilizadoresAG() {
                               className="ag-users-reject-btn"
                               onClick={() => handlePendingDecision(user.id, 'reject')}
                             >
-                              {t('users_reject')}
+                              Rejeitar
                             </button>
                             <button
                               type="button"
                               className="ag-users-approve-btn"
                               onClick={() => handlePendingDecision(user.id, 'approve')}
                             >
-                              {t('users_approve')}
+                              Aprovar
                             </button>
                           </div>
                         </td>
@@ -725,7 +721,7 @@ function UtilizadoresAG() {
           <div className="ag-users-modal-overlay" role="dialog" aria-modal="true">
             <div className="ag-users-modal-card" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
               <div className="ag-users-modal-head">
-                <h2>{t('users_modal_add_title')}</h2>
+                <h2>Adicionar Utilizador</h2>
                 <button type="button" onClick={() => setShowCreateModal(false)}>
                   <X size={18} />
                 </button>
@@ -737,38 +733,38 @@ function UtilizadoresAG() {
                 </div>
               ) : (
                 <div className="ag-users-note">
-                  {t('users_modal_add_info')}
+                  Preencha os dados do novo utilizador. Para Service Line Leader, selecione uma Service Line.
                 </div>
               )}
 
-              <label htmlFor="ag-create-nome">{t('users_field_name')}</label>
+              <label htmlFor="ag-create-nome">Nome</label>
               <input
                 id="ag-create-nome"
                 value={createForm.nome}
                 onChange={(event) => setCreateForm((current) => ({ ...current, nome: event.target.value }))}
-                placeholder={t('users_placeholder_name')}
+                placeholder="Nome do utilizador"
               />
 
-              <label htmlFor="ag-create-email">{t('users_field_email')}</label>
+              <label htmlFor="ag-create-email">Email</label>
               <input
                 id="ag-create-email"
                 type="email"
                 value={createForm.email}
                 onChange={(event) => setCreateForm((current) => ({ ...current, email: event.target.value }))}
-                placeholder={t('users_placeholder_email')}
+                placeholder="utilizador@softinsa.pt"
               />
 
-              <label htmlFor="ag-create-password">{t('users_field_password')}</label>
+              <label htmlFor="ag-create-password">Password</label>
               <input
                 id="ag-create-password"
                 type="password"
                 value={createForm.senha}
                 onChange={(event) => setCreateForm((current) => ({ ...current, senha: event.target.value }))}
-                placeholder={t('users_placeholder_password')}
+                placeholder="Defina uma password"
               />
 
               <div className="ag-users-roles-box">
-                <strong>{t('users_field_account_types')}</strong>
+                <strong>Tipos de Conta</strong>
                 {Object.entries(roleLabels).map(([roleId, roleLabel]) => (
                   <label key={roleId} className="ag-users-check-row">
                     <input
@@ -776,14 +772,14 @@ function UtilizadoresAG() {
                       checked={createForm.roles.includes(roleId)}
                       onChange={() => toggleRole('create', roleId)}
                     />
-                    <span>{t(roleLabel)}</span>
+                    <span>{roleLabel}</span>
                   </label>
                 ))}
               </div>
 
               {createForm.roles.includes('service-line-leader') && (
                 <div className="ag-users-roles-box">
-                  <strong>{t('users_field_service_line')}</strong>
+                  <strong>Service Line</strong>
                   {serviceLines.map((line) => (
                     <label key={line.id} className="ag-users-check-row">
                       <input
@@ -800,11 +796,11 @@ function UtilizadoresAG() {
 
               <div className="ag-users-modal-actions">
                 <button type="button" onClick={() => setShowCreateModal(false)}>
-                  {t('cancel')}
+                  Cancelar
                 </button>
                 <button type="button" className="primary" onClick={handleCreateUser} disabled={isSaving}>
                   <Check size={16} />
-                  {t('users_btn_create')}
+                  Criar
                 </button>
               </div>
             </div>
@@ -816,7 +812,7 @@ function UtilizadoresAG() {
             <div className="ag-users-modal-card wide" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
               <div className="ag-users-modal-head">
                 <div>
-                  <h2>{t('users_modal_edit_title')}</h2>
+                  <h2>Editar Permissoes de Acesso</h2>
                   <p>{selectedUser.nome}</p>
                 </div>
                 <button
@@ -836,12 +832,12 @@ function UtilizadoresAG() {
                 </div>
               ) : (
                 <div className="ag-users-note">
-                  {t('users_modal_edit_info')}
+                  Selecione os tipos de conta. Para Service Line Lider, selecione tambem a Service Line.
                 </div>
               )}
 
               <div className="ag-users-roles-box">
-                <strong>{t('users_field_account_types')}</strong>
+                <strong>Tipos de Conta</strong>
                 {Object.entries(roleLabels).map(([roleId, roleLabel]) => (
                   <label key={roleId} className="ag-users-check-row">
                     <input
@@ -849,14 +845,14 @@ function UtilizadoresAG() {
                       checked={permissionsForm.roles.includes(roleId)}
                       onChange={() => toggleRole('permissions', roleId)}
                     />
-                    <span>{t(roleLabel)}</span>
+                    <span>{roleLabel}</span>
                   </label>
                 ))}
               </div>
 
               {permissionsForm.roles.includes('service-line-leader') && (
                 <div className="ag-users-roles-box">
-                  <strong>{t('users_field_service_line')}</strong>
+                  <strong>Service Line</strong>
                   {serviceLines.map((line) => (
                     <label key={line.id} className="ag-users-check-row">
                       <input
@@ -879,10 +875,10 @@ function UtilizadoresAG() {
                     setSelectedUser(null);
                   }}
                 >
-                  {t('cancel')}
+                  Cancelar
                 </button>
                 <button type="button" className="primary" onClick={handleSavePermissions} disabled={isSaving}>
-                  {t('users_btn_save')}
+                  Guardar Alteracoes
                 </button>
               </div>
             </div>

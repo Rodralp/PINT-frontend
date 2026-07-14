@@ -303,7 +303,7 @@
 .ag-order-badge-image {
   width: 170px;
   height: 150px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .ag-order-hero-content h2 {
@@ -462,7 +462,7 @@
 .ag-order-requirement-detail-image {
   width: 82px;
   height: 82px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .ag-order-requirement-detail p {

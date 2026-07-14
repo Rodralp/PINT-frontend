@@ -81,14 +81,10 @@
   overflow: hidden;
 }
 
-.historico-page .orders-table {
-  width: 100%;
-  min-width: 760px;
-  border-collapse: collapse;
-}
-
+.historico-page .orders-table,
 .modal-body .orders-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
@@ -186,7 +182,7 @@
   background: #ffffff;
   border-radius: 16px;
   width: 92%;
-  max-width: 960px;
+  max-width: 820px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -232,7 +228,6 @@
 .modal-body {
   padding: 20px;
   overflow-y: auto;
-  overflow-x: auto;
   flex: 1;
 }
 
@@ -287,49 +282,4 @@
   .historico-page .orders-table td {
     padding: 10px 10px;
   }
-}
-
-/* Candidacy history timeline */
-.candidacy-timeline {
-  position: relative;
-  padding-left: 28px;
-}
-
-.candidacy-timeline::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--color-primary, #0d6efd);
-  opacity: 0.3;
-}
-
-.candidacy-timeline-entry {
-  position: relative;
-  padding: var(--sp-3, 12px) 0;
-}
-
-.candidacy-timeline-entry + .candidacy-timeline-entry {
-  border-top: 1px solid var(--color-border, #e0e0e0);
-}
-
-.candidacy-timeline-dot {
-  position: absolute;
-  left: -24px;
-  top: 16px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--color-primary, #0d6efd);
-}
-
-.candidacy-timeline-content p {
-  margin: 0 0 var(--sp-1, 4px);
-  font-size: var(--fs-sm, 13px);
-}
-
-.candidacy-timeline-content p:last-child {
-  margin-bottom: 0;
 }

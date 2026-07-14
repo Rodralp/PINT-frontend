@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
@@ -42,9 +42,9 @@ const normalizeLevelId = (level) => {
 import '../css/Consultor/Dashboard_C.css';
 import '../css/profile.css';
 
-const _defaultTimelineValues = Array.from({ length: 12 }, () => 0);
+const defaultTimelineValues = Array.from({ length: 12 }, () => 0);
 
-const _calculateVisibleTimelinePoints = (containerWidth, totalPoints) => {
+const calculateVisibleTimelinePoints = (containerWidth, totalPoints) => {
   const minColumnWidth = 42;
   const maxPointsByWidth = Math.floor(containerWidth / minColumnWidth);
   return Math.max(4, Math.min(totalPoints, maxPointsByWidth));
@@ -85,13 +85,13 @@ const defaultActivityItems = [];
 
 function Profile() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [profileStats, setProfileStats] = useState(defaultProfileStats);
   const [skillsItems, setSkillsItems] = useState(defaultSkillsItems);
-  const [, setCertificationsItems] = useState(defaultCertificationsItems);
+  const [certificationsItems, setCertificationsItems] = useState(defaultCertificationsItems);
   const [activityItems, setActivityItems] = useState(defaultActivityItems);
   const [serviceLineStats, setServiceLineStats] = useState([]);
-  const [, setBadgeItems] = useState([]);
+  const [badgeItems, setBadgeItems] = useState([]);
   const [vitrineItems, setVitrineItems] = useState([]);
   const [profileLocation, setProfileLocation] = useState('Portugal');
   const [profileJoined, setProfileJoined] = useState('2023');
@@ -102,7 +102,7 @@ function Profile() {
   const userName = loginData?.nome || t('app_user_default');
   const userEmail = loginData?.email || 'user@example.com';
 
-  const _initialSeed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
+  const initialSeed = String(loginData?.email || loginData?.nome || userName || '').toLowerCase().replace('@', '.');
   const initialAvatar = loginData?.avatar || `/avatars/default-avatar.svg`;
 
   const [profileAvatar, setProfileAvatar] = useState(initialAvatar);
@@ -205,7 +205,7 @@ function Profile() {
               id: `vitrine-${v.nbadge}`,
               badgeDbId: v.nbadge,
               name: v.b_nome || 'Badge',
-              badgeImage: v.imagem,
+              badgeImage: v.imagem || '/badges/default.png',
               points: v.pontos || 0,
               isSpecial,
               levelKey: resolvedLevelId || undefined,

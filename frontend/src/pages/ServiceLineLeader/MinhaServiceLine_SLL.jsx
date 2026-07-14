@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
 import { fetchMyServiceLine } from '../../services/serviceLineLeaderService';
 import '../../css/Consultor/LearningPaths_C.css';
@@ -21,7 +20,6 @@ const getStoredLoginData = () => {
 };
 
 function MinhaServiceLineSLL() {
-  const { t } = useTranslation();
   const loginData = useMemo(() => getStoredLoginData(), []);
   const navigate = useNavigate();
   const [serviceLines, setServiceLines] = useState([]);
@@ -37,7 +35,7 @@ function MinhaServiceLineSLL() {
 
       if (!Number.isInteger(accountId) || accountId <= 0) {
         if (isMounted) {
-          setErrorMessage(t('minha_sl_user_error'));
+          setErrorMessage('Nao foi possivel identificar o utilizador autenticado.');
           setIsLoading(false);
         }
         return;
@@ -58,7 +56,7 @@ function MinhaServiceLineSLL() {
         }
       } catch (error) {
         if (isMounted) {
-          setErrorMessage(error?.message || t('error_generic'));
+          setErrorMessage(error?.message || 'Nao foi possivel carregar a Service Line.');
           setServiceLines([]);
         }
       } finally {
@@ -89,7 +87,7 @@ function MinhaServiceLineSLL() {
 
     return {
       totalLevels,
-      label: `${totalLevels} ${t('minha_sl_levels_available')}`,
+      label: `${totalLevels} niveis disponiveis`,
     };
   };
 
@@ -122,12 +120,12 @@ function MinhaServiceLineSLL() {
         <header className="page-header lp-header">
           <div className="lp-header-left">
             <div className="lp-header-copy">
-              <h1>{t('minha_sl_title')}</h1>
+              <h1>Minha Service Line</h1>
             </div>
           </div>
         </header>
 
-        {isLoading && <p className="lp-progress-label">{t('loading')}</p>}
+        {isLoading && <p className="lp-progress-label">A carregar Service Line...</p>}
 
         {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
@@ -149,7 +147,7 @@ function MinhaServiceLineSLL() {
                   </div>
                 </article>
 
-                <section className="lp-area-shell" aria-label={`${t('minha_sl_areas')} ${serviceLine.name}`}>
+                <section className="lp-area-shell" aria-label={`Areas da service line ${serviceLine.name}`}>
                   <div className="lp-area-list">
                     {serviceLine.areas.map((area) => {
                       const areaRowId = `${serviceLine.id}-${area.id}`;
@@ -180,8 +178,8 @@ function MinhaServiceLineSLL() {
                           {isExpanded && (
                             <div id={`area-badges-${areaRowId}`} className="lp-area-badges">
                               <div className="lp-area-content-head">
-                                <h3>{t('minha_sl_levels')}</h3>
-                                <span className="lp-progress-label">{(area.levels || []).length} {t('minha_sl_levels')}</span>
+                                <h3>Niveis</h3>
+                                <span className="lp-progress-label">{(area.levels || []).length} niveis</span>
                               </div>
 
                               <div className="lp-level-list">
@@ -192,7 +190,7 @@ function MinhaServiceLineSLL() {
                                     className={`lp-level-row lp-level-row-action ${level.badgeDbId ? '' : 'is-disabled'}`}
                                     onClick={() => openBadgeDetails(serviceLine, area, level)}
                                     disabled={!level.badgeDbId}
-                                    aria-label={`${t('minha_sl_view_badge')} ${level.title}`}
+                                    aria-label={`Ver badge ${level.title}`}
                                   >
                                     <div className="lp-level-copy">
                                       <strong>{level.title}</strong>

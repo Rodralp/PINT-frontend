@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   ArrowDown,
@@ -19,10 +18,22 @@ import { fetchManagedRequests } from '../../services/requestManagementService';
 
 const ITEMS_PER_PAGE = 10;
 
+const tableFilters = [
+  { id: 'aprovado', label: 'Aprovado' },
+  { id: 'pendente', label: 'Pendente' },
+  { id: 'rejeitado', label: 'Rejeitado' },
+];
+
 const tableStatusStyles = {
   aprovado: 'approved',
   pendente: 'pending',
   rejeitado: 'rejected',
+};
+
+const getTableLabel = (tableStatus) => {
+  if (tableStatus === 'aprovado') return 'Aprovado';
+  if (tableStatus === 'rejeitado') return 'Rejeitado';
+  return 'Pendente';
 };
 
 const statusConfig = {
@@ -41,25 +52,11 @@ const statusConfig = {
 };
 
 function GestaoPedidosTM() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-
-  const getTableLabel = (tableStatus) => {
-    if (tableStatus === 'aprovado') return t('pedidos_status_validated');
-    if (tableStatus === 'rejeitado') return t('badge_status_rejected');
-    return t('pedidos_status_pending');
-  };
-
-  const tableFilters = useMemo(() => [
-    { id: 'aprovado', label: t('pedidos_status_validated') },
-    { id: 'pendente', label: t('pedidos_status_pending') },
-    { id: 'rejeitado', label: t('badge_status_rejected') },
-  ], [t]);
-
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
-  const [activeFilters, setActiveFilters] = useState(['aprovado', 'pendente', 'rejeitado']);
+  const [activeFilters, setActiveFilters] = useState(tableFilters.map((filter) => filter.id));
   const [page, setPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
 
@@ -106,32 +103,32 @@ function GestaoPedidosTM() {
     {
       id: 'submitted',
       tone: 'gray',
-      label: t('pedidos_status_all'),
+      label: 'Todos',
       value: summaryCounts.submitted,
       icon: statusConfig.submetido.icon,
     },
     {
       id: 'inReview',
       tone: 'amber',
-      label: t('badge_status_in_review'),
+      label: 'Em Validação',
       value: summaryCounts.inReview,
       icon: statusConfig.validacao.icon,
     },
     {
       id: 'rejected',
       tone: 'red',
-      label: t('pedidos_status_rejected'),
+      label: 'Rejeitados',
       value: summaryCounts.rejected,
       icon: statusConfig.rejeitado.icon,
     },
     {
       id: 'approved',
       tone: 'green',
-      label: t('pedidos_status_approved'),
+      label: 'Aprovados',
       value: summaryCounts.approved,
       icon: statusConfig.aprovado.icon,
     },
-  ]), [summaryCounts, t]);
+  ]), [summaryCounts]);
 
   const filteredRequests = useMemo(() => {
     if (activeFilters.length === 0) {
@@ -173,7 +170,7 @@ function GestaoPedidosTM() {
         const compare = String(leftValue).localeCompare(String(rightValue), 'pt');
         return sortConfig.direction === 'asc' ? compare : -compare;
       });
-  }, [activeFilters, requests, sortConfig, getTableLabel]);
+  }, [activeFilters, requests, sortConfig]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRequests.length / ITEMS_PER_PAGE));
   const safePage = Math.min(page, totalPages);
@@ -212,7 +209,7 @@ function GestaoPedidosTM() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message="A carregar pedidos..." />
       </Layout>
     );
   }
@@ -222,7 +219,7 @@ function GestaoPedidosTM() {
       <div className="page">
         <header className="page-header">
           <div>
-            <h1>{t('pedidos_title')}</h1>
+            <h1>Gestão de Pedidos</h1>
           </div>
         </header>
 
@@ -249,9 +246,9 @@ function GestaoPedidosTM() {
 
           <div className="ag-orders-board-header">
             <div>
-              <h2>{t('pedidos_subtitle')}</h2>
+              <h2>Pedidos de Todos os Consultores</h2>
               <div className="ag-orders-filter-inline">
-                <p>{t('pedidos_filter_by')}</p>
+                <p>Filtrar por:</p>
                 <div className="ag-orders-filter-row">
                   {tableFilters.map((filter) => (
                     <button
@@ -274,28 +271,28 @@ function GestaoPedidosTM() {
               <thead>
                 <tr>
                   <th className="sortable" onClick={() => toggleSort('consultant')}>
-                    <span className="ag-orders-sort-head">{t('pedidos_th_consultant')} {renderSortIcon('consultant')}</span>
+                    <span className="ag-orders-sort-head">Nome do Consultor {renderSortIcon('consultant')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('badge')}>
-                    <span className="ag-orders-sort-head">{t('pedidos_th_badge')} {renderSortIcon('badge')}</span>
+                    <span className="ag-orders-sort-head">Badge Pedida {renderSortIcon('badge')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('level')}>
-                    <span className="ag-orders-sort-head">{t('pedidos_th_level')} {renderSortIcon('level')}</span>
+                    <span className="ag-orders-sort-head">Nível {renderSortIcon('level')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('date')}>
-                    <span className="ag-orders-sort-head">{t('pedidos_th_date')} {renderSortIcon('date')}</span>
+                    <span className="ag-orders-sort-head">Data do Pedido {renderSortIcon('date')}</span>
                   </th>
                   <th className="sortable" onClick={() => toggleSort('status')}>
-                    <span className="ag-orders-sort-head">{t('pedidos_th_status')} {renderSortIcon('status')}</span>
+                    <span className="ag-orders-sort-head">Estado do Pedido {renderSortIcon('status')}</span>
                   </th>
-                  <th>{t('pedidos_th_details')}</th>
+                  <th>Detalhes do Pedido</th>
                 </tr>
               </thead>
               <tbody>
                 {pagedRequests.length === 0 && (
                   <tr>
                     <td colSpan={6} className="empty-state ag-orders-empty-row">
-                      {t('pedidos_no_results')}
+                      Sem pedidos para os filtros escolhidos.
                     </td>
                   </tr>
                 )}
@@ -325,8 +322,8 @@ function GestaoPedidosTM() {
                           className="ag-view-btn"
                           onClick={() => navigate(`/talent-manager/pedidos/${request.id}`)}
                         >
-                           <Eye size={14} />
-                           {t('pedidos_btn_view')}
+                          <Eye size={14} />
+                          Ver
                         </button>
                       </td>
                     </tr>

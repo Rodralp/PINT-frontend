@@ -314,7 +314,7 @@
 .sll-order-badge-image {
   width: 170px;
   height: 150px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .sll-order-hero-content h2 {
@@ -473,7 +473,7 @@
 .sll-order-requirement-detail-image {
   width: 82px;
   height: 82px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .sll-order-requirement-detail p {

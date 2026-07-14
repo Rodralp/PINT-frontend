@@ -4,7 +4,6 @@
   overflow: hidden;
   line-height: 0;
   vertical-align: middle;
-  aspect-ratio: 1 / 1;
 }
 
 .badge-image-composite-stage {
@@ -24,13 +23,13 @@
 
 .badge-image-composite-frame {
   z-index: 2;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 
 .badge-image-composite-inner {
   z-index: 1;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 

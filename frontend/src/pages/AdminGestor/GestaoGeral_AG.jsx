@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import Layout from '../../components/Layout';
 import {
   fetchAdminGeneralManagement,
+  updateAdminGeneralSettings,
   updateAdminNotificationSettings,
   updateAdminRgpdTopics,
 } from '../../services/adminGeneralManagementService';
 import '../../css/AdminGestor/GestaoGeral_AG.css';
 
 const tabs = [
-  { id: 'notificacoes', labelKey: 'gestao_geral_tab_notifications' },
-  { id: 'rgpd', labelKey: 'gestao_geral_tab_rgpd' },
+  { id: 'notificacoes', label: 'Notificações' },
+  { id: 'rgpd', label: 'RGPD' },
+  { id: 'geral', label: 'Geral' },
 ];
 
 const initialNotificationRows = [
@@ -22,8 +23,7 @@ const initialNotificationRows = [
     sll: true,
     tl: false,
     consultor: false,
-    email: true,
-    hasEmail: true,
+    email: false,
     webApp: true,
   },
   {
@@ -34,7 +34,6 @@ const initialNotificationRows = [
     tl: true,
     consultor: true,
     email: true,
-    hasEmail: false,
     webApp: true,
   },
   {
@@ -45,7 +44,6 @@ const initialNotificationRows = [
     tl: false,
     consultor: true,
     email: true,
-    hasEmail: false,
     webApp: true,
   },
   {
@@ -56,7 +54,6 @@ const initialNotificationRows = [
     tl: true,
     consultor: false,
     email: true,
-    hasEmail: false,
     webApp: false,
   },
   {
@@ -67,7 +64,6 @@ const initialNotificationRows = [
     tl: true,
     consultor: true,
     email: true,
-    hasEmail: true,
     webApp: true,
   },
   {
@@ -78,7 +74,6 @@ const initialNotificationRows = [
     tl: true,
     consultor: true,
     email: true,
-    hasEmail: true,
     webApp: true,
   },
   {
@@ -88,8 +83,7 @@ const initialNotificationRows = [
     sll: false,
     tl: false,
     consultor: true,
-    email: false,
-    hasEmail: false,
+    email: true,
     webApp: true,
   },
   {
@@ -100,7 +94,6 @@ const initialNotificationRows = [
     tl: true,
     consultor: true,
     email: false,
-    hasEmail: false,
     webApp: true,
   },
 ];
@@ -138,12 +131,45 @@ const rgpdTopics = [
   },
 ];
 
+const generalSettings = [
+  {
+    id: 1,
+    key: 'Tema padrão',
+    value: 'Claro',
+    options: ['Claro', 'Escuro', 'Automático'],
+  },
+  {
+    id: 2,
+    key: 'Idioma padrão',
+    value: 'Português (PT)',
+    options: ['Português (PT)', 'English (EN)', 'Español (ES)'],
+  },
+  {
+    id: 3,
+    key: 'Notificações email',
+    value: 'Ativo',
+    options: ['Ativo', 'Inativo'],
+  },
+  {
+    id: 4,
+    key: 'Notificações in-app',
+    value: 'Ativo',
+    options: ['Ativo', 'Inativo'],
+  },
+  {
+    id: 5,
+    key: 'Resumo semanal',
+    value: 'Inativo',
+    options: ['Ativo', 'Inativo'],
+  },
+];
+
 function GestaoGeralAG() {
-  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('notificacoes');
   const [searchTerm, setSearchTerm] = useState('');
   const [notificationRows, setNotificationRows] = useState([]);
   const [rgpdRows, setRgpdRows] = useState([]);
+  const [generalRows, setGeneralRows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -169,6 +195,11 @@ function GestaoGeralAG() {
           ? data.rgpd
           : rgpdTopics,
       );
+      setGeneralRows(
+        Array.isArray(data?.settings) && data.settings.length > 0
+          ? data.settings
+          : generalSettings,
+      );
       setStatusMessage('');
       setErrorMessage('');
     } catch (error) {
@@ -178,13 +209,14 @@ function GestaoGeralAG() {
 
       setNotificationRows(initialNotificationRows);
       setRgpdRows(rgpdTopics);
-      setErrorMessage(error?.message || t('gestao_geral_load_error'));
+      setGeneralRows(generalSettings);
+      setErrorMessage(error?.message || 'Nao foi possivel carregar a configuracao geral.');
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);
       }
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -217,8 +249,20 @@ function GestaoGeralAG() {
     );
   }, [rgpdRows, searchTerm]);
 
+  const filteredGeneralSettings = useMemo(() => {
+    const normalizedTerm = searchTerm.trim().toLowerCase();
+
+    if (!normalizedTerm) {
+      return generalRows;
+    }
+
+    return generalRows.filter(
+      (item) => item.key.toLowerCase().includes(normalizedTerm) || item.value.toLowerCase().includes(normalizedTerm),
+    );
+  }, [generalRows, searchTerm]);
+
   const searchPlaceholder =
-    activeTab === 'rgpd' ? t('gestao_geral_search_topic') : t('gestao_geral_search_event');
+    activeTab === 'rgpd' ? 'Pesquisar tópico' : activeTab === 'geral' ? 'Pesquisar definição' : 'Pesquisar evento';
 
   const toggleNotificationColumn = (rowId, columnKey) => {
     setNotificationRows((current) =>
@@ -228,6 +272,10 @@ function GestaoGeralAG() {
 
   const updateRgpdField = (rowId, field, value) => {
     setRgpdRows((current) => current.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)));
+  };
+
+  const updateGeneralOption = (rowId, value) => {
+    setGeneralRows((current) => current.map((row) => (row.id === rowId ? { ...row, value } : row)));
   };
 
   const handleCancelChanges = () => {
@@ -252,11 +300,16 @@ function GestaoGeralAG() {
         if (Array.isArray(data?.rgpd)) {
           setRgpdRows(data.rgpd);
         }
+      } else {
+        const data = await updateAdminGeneralSettings(generalRows);
+        if (Array.isArray(data?.settings)) {
+          setGeneralRows(data.settings);
+        }
       }
 
-      setStatusMessage(t('gestao_geral_success'));
+      setStatusMessage('Alteracoes guardadas com sucesso.');
     } catch (error) {
-      setErrorMessage(error?.message || t('gestao_geral_error'));
+      setErrorMessage(error?.message || 'Nao foi possivel guardar as alteracoes.');
     } finally {
       setIsSaving(false);
     }
@@ -266,10 +319,10 @@ function GestaoGeralAG() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>{t('gestao_geral_title')}</h1>
+          <h1>Gestão Geral</h1>
         </header>
 
-        <div className="ag-general-tabs" role="tablist" aria-label={t('gestao_geral_tabs')}>
+        <div className="ag-general-tabs" role="tablist" aria-label="Separadores de gestão geral">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -284,12 +337,12 @@ function GestaoGeralAG() {
                 setErrorMessage('');
               }}
             >
-              {t(tab.labelKey)}
+              {tab.label}
             </button>
           ))}
         </div>
 
-        <section className="shell ag-general-shell">
+        <section className="shell">
 
           <div className="toolbar ag-general-toolbar">
             <label className="search-wrap ag-general-search" htmlFor="ag-general-search-input">
@@ -309,7 +362,7 @@ function GestaoGeralAG() {
               onClick={handleCancelChanges}
               disabled={isLoading || isSaving}
             >
-              {t('gestao_geral_cancel')}
+              Cancelar alterações
             </button>
 
             <button
@@ -319,13 +372,13 @@ function GestaoGeralAG() {
               disabled={isLoading || isSaving}
               aria-busy={isSaving}
             >
-              {isSaving ? t('gestao_geral_saving') : t('gestao_geral_apply')}
+              {isSaving ? 'A guardar...' : 'Aplicar alterações'}
             </button>
           </div>
 
           {isLoading && (
             <p className="ag-general-status" role="status">
-              {t('gestao_geral_loading')}
+              A carregar dados...
             </p>
           )}
 
@@ -340,16 +393,16 @@ function GestaoGeralAG() {
               <table className="table ag-general-table">
                 <thead>
                   <tr>
-                    <th rowSpan={2}>{t('gestao_geral_th_event')}</th>
-                    <th rowSpan={2}>{t('gestao_geral_th_admin')}</th>
-                    <th rowSpan={2}>{t('gestao_geral_th_sll')}</th>
-                    <th rowSpan={2}>{t('gestao_geral_th_tl')}</th>
-                    <th rowSpan={2}>{t('gestao_geral_th_consultor')}</th>
-                    <th colSpan={2}>{t('gestao_geral_th_where')}</th>
+                    <th rowSpan={2}>Evento</th>
+                    <th rowSpan={2}>Admin</th>
+                    <th rowSpan={2}>Quem Notificar S.L.L</th>
+                    <th rowSpan={2}>T.L.</th>
+                    <th rowSpan={2}>Consultor</th>
+                    <th colSpan={2}>Onde Notificar</th>
                   </tr>
                   <tr>
-                    <th>{t('gestao_geral_th_email')}</th>
-                    <th>{t('gestao_geral_th_web')}</th>
+                    <th>Email</th>
+                    <th>Web/App</th>
                   </tr>
                 </thead>
 
@@ -357,7 +410,7 @@ function GestaoGeralAG() {
                   {isLoading && (
                     <tr>
                       <td colSpan={7} className="empty-state ag-general-empty-row">
-                        {t('gestao_geral_loading')}
+                        A carregar...
                       </td>
                     </tr>
                   )}
@@ -365,7 +418,7 @@ function GestaoGeralAG() {
                   {!isLoading && filteredNotificationRows.length === 0 && (
                     <tr>
                       <td colSpan={7} className="empty-state ag-general-empty-row">
-                        {t('gestao_geral_no_events')}
+                        Sem eventos para os filtros escolhidos.
                       </td>
                     </tr>
                   )}
@@ -378,7 +431,7 @@ function GestaoGeralAG() {
                           type="checkbox"
                           checked={row.admin}
                           onChange={() => toggleNotificationColumn(row.id, 'admin')}
-                          aria-label={t('gestao_geral_aria_admin', { name: row.event })}
+                          aria-label={`Admin para ${row.event}`}
                         />
                       </td>
                       <td>
@@ -386,7 +439,7 @@ function GestaoGeralAG() {
                           type="checkbox"
                           checked={row.sll}
                           onChange={() => toggleNotificationColumn(row.id, 'sll')}
-                          aria-label={t('gestao_geral_aria_sll', { name: row.event })}
+                          aria-label={`SLL para ${row.event}`}
                         />
                       </td>
                       <td>
@@ -394,7 +447,7 @@ function GestaoGeralAG() {
                           type="checkbox"
                           checked={row.tl}
                           onChange={() => toggleNotificationColumn(row.id, 'tl')}
-                          aria-label={t('gestao_geral_aria_tl', { name: row.event })}
+                          aria-label={`TL para ${row.event}`}
                         />
                       </td>
                       <td>
@@ -402,25 +455,23 @@ function GestaoGeralAG() {
                           type="checkbox"
                           checked={row.consultor}
                           onChange={() => toggleNotificationColumn(row.id, 'consultor')}
-                          aria-label={t('gestao_geral_aria_consultor', { name: row.event })}
+                          aria-label={`Consultor para ${row.event}`}
                         />
                       </td>
                       <td>
-                        {row.hasEmail ? (
-                          <input
-                            type="checkbox"
-                            checked={row.email}
-                            onChange={() => toggleNotificationColumn(row.id, 'email')}
-                            aria-label={t('gestao_geral_aria_email', { name: row.event })}
-                          />
-                        ) : null}
+                        <input
+                          type="checkbox"
+                          checked={row.email}
+                          onChange={() => toggleNotificationColumn(row.id, 'email')}
+                          aria-label={`Email para ${row.event}`}
+                        />
                       </td>
                       <td>
                         <input
                           type="checkbox"
                           checked={row.webApp}
                           onChange={() => toggleNotificationColumn(row.id, 'webApp')}
-                          aria-label={t('gestao_geral_aria_web', { name: row.event })}
+                          aria-label={`Web app para ${row.event}`}
                         />
                       </td>
                     </tr>
@@ -431,18 +482,18 @@ function GestaoGeralAG() {
           )}
 
           {activeTab === 'rgpd' && (
-            <div className="ag-rgpd-wrap" role="table" aria-label={t('gestao_geral_rgpd_table')}>
+            <div className="ag-rgpd-wrap" role="table" aria-label="Tabela de tópicos RGPD">
               <div className="ag-rgpd-header" role="row">
-                <span className="ag-rgpd-col-num" role="columnheader">{t('gestao_geral_th_num')}</span>
-                <span className="ag-rgpd-col-topic" role="columnheader">{t('gestao_geral_th_topic')}</span>
+                <span className="ag-rgpd-col-num" role="columnheader">Num.</span>
+                <span className="ag-rgpd-col-topic" role="columnheader">Tópico</span>
               </div>
 
                   {isLoading && (
-                    <p className="ag-rgpd-empty">{t('gestao_geral_loading')}</p>
+                    <p className="ag-rgpd-empty">A carregar...</p>
                   )}
 
                   {!isLoading && filteredRgpdTopics.length === 0 && (
-                <p className="ag-rgpd-empty">{t('gestao_geral_no_topics')}</p>
+                <p className="ag-rgpd-empty">Sem tópicos para os filtros escolhidos.</p>
               )}
 
                   {!isLoading && filteredRgpdTopics.map((item) => (
@@ -455,9 +506,39 @@ function GestaoGeralAG() {
                     className="ag-rgpd-body"
                     value={item.body}
                     onChange={(event) => updateRgpdField(item.id, 'body', event.target.value)}
-                    aria-label={t('gestao_geral_aria_rgpd', { id: item.id })}
+                    aria-label={`Conteúdo RGPD ${item.id}`}
                     rows={5}
                   />
+                </article>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'geral' && (
+            <div className="ag-settings-wrap">
+              {isLoading && (
+                <p className="ag-rgpd-empty">A carregar...</p>
+              )}
+
+              {!isLoading && filteredGeneralSettings.length === 0 && (
+                <p className="ag-rgpd-empty">Sem definições para os filtros escolhidos.</p>
+              )}
+
+              {!isLoading && filteredGeneralSettings.map((item) => (
+                <article key={item.id} className="ag-setting-row">
+                  <span className="ag-setting-key-label">{item.key}</span>
+                  <select
+                    className="ag-setting-value-input"
+                    value={item.value}
+                    onChange={(event) => updateGeneralOption(item.id, event.target.value)}
+                    aria-label={`Valor da definição ${item.id}`}
+                  >
+                    {(Array.isArray(item.options) ? item.options : []).map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                 </article>
               ))}
             </div>

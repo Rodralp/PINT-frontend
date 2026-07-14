@@ -65,7 +65,7 @@ function PerfilPublico() {
 			}
 
 			return defaultConsultor;
-		}, [location.state, remoteConsultor]);
+		}, [consultorId, location.state, remoteConsultor]);
 
 		useEffect(() => {
 			let isMounted = true;
@@ -76,17 +76,17 @@ function PerfilPublico() {
 					const data = await fetchPublicProfile(decodedId);
 					if (!isMounted || !data) return;
 
-				// Map server profile structure to expected consultor shape used in this page
-				const mapped = {
-					id: data.user?.id ?? data.id ?? decodedId,
-					name: data.user?.name ?? data.nome ?? data.user?.nome ?? '',
-					email: data.user?.email ?? data.email ?? '',
-					serviceLine: data.serviceLine ?? data.user?.serviceLine ?? '',
-					points: data.points ?? 0,
-					badges: data.badges ?? 0,
-					avatar: data.avatar ?? data.user?.avatar ?? null,
-					streakDays: data.streakDays ?? 0,
-					ranking: data.ranking ?? 0,
+					// Map server profile structure to expected consultor shape used in this page
+					const mapped = {
+						id: data.user?.id || data.id || decodedId,
+						name: data.user?.name || data.nome || data.user?.nome || 'Consultor',
+						email: data.user?.email || data.email || '',
+						serviceLine: data.serviceLine || (data.user?.serviceLine) || 'Service Line',
+						points: data.points || 0,
+						badges: data.badges || 0,
+						avatar: data.avatar || data.user?.avatar || '',
+					streakDays: data.streakDays || 0,
+						ranking: data.ranking || 0,
 					serviceLineStats: Array.isArray(data.serviceLineStats) ? (() => {
 						const merged = {};
 						(data.serviceLineStats || []).forEach((s) => {
@@ -104,20 +104,20 @@ function PerfilPublico() {
 						return Object.values(merged);
 					})() : [],
 					activityItems: Array.isArray(data.activityItems) ? data.activityItems.map((item) => ({
-						id: item.id ?? `activity-${Math.random()}`,
-						description: item.description ?? '',
-						date: item.date ?? '',
+						id: item.id || `activity-${Math.random()}`,
+						description: item.description || 'Nova atividade',
+						date: item.date || 'Recentemente',
 						icon: Award,
-					})) : [],
-					location: data.location ?? '',
-					joined: data.joined ?? data.user?.joined ?? '',
-					certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
-						.map((item) => ({
-							title: item.title ?? item.name ?? '',
-							levelKey: item.levelKey ?? item.subtitleKey ?? '',
-						}))
-						.filter((it) => it.title) : [],
-				};
+						})) : [],
+						location: data.location || 'Portugal',
+						joined: data.joined || data.user?.joined || '',
+							certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
+								.map((item) => ({
+									title: item.title || item.name || '',
+									levelKey: item.levelKey || item.subtitleKey || '',
+								}))
+								.filter((it) => it.title) : [],
+					};
 
 					setRemoteConsultor(mapped);
 
@@ -149,10 +149,10 @@ function PerfilPublico() {
 						}
 					} catch { /* no vitrine */ }
 
-			if (isMounted) setIsLoading(false);
-			} catch {
-				if (isMounted) setIsLoading(false);
-			}
+					if (isMounted) setIsLoading(false);
+				} catch (e) {
+					if (isMounted) setIsLoading(false);
+				}
 			};
 
 			loadPublicProfile();
@@ -173,6 +173,18 @@ function PerfilPublico() {
 
 	const hasServiceLineStats = Array.isArray(consultor.serviceLineStats)
 		&& consultor.serviceLineStats.length > 0;
+
+	const activityItems = useMemo(() => {
+		if (Array.isArray(consultor.activityItems) && consultor.activityItems.length > 0) {
+			return consultor.activityItems;
+		}
+
+		return [
+			{ id: 'a1', description: `Subiu para ${consultor.badges} badges concluidas`, date: '5 dias atras', icon: Award },
+			{ id: 'a2', description: `Alcancou ${consultor.points} pontos`, date: '1 semana atras', icon: Zap },
+			{ id: 'a3', description: `Nova skill em ${consultor.serviceLine}`, date: '2 semanas atras', icon: Star },
+		];
+	}, [consultor.activityItems, consultor.badges, consultor.points, consultor.serviceLine]);
 
 	const handleGoBack = () => {
 		navigate('/galeria-publica');
@@ -216,8 +228,8 @@ function PerfilPublico() {
 
 								<div className="pp-profile-meta">
 									<span><Mail size={16} /> {consultor.email}</span>
-									{consultor.location && <span><MapPin size={16} /> {consultor.location}</span>}
-									{consultor.joined && <span><Calendar size={16} /> Joined {consultor.joined}</span>}
+									<span><MapPin size={16} /> {consultor.location || 'Portugal'}</span>
+									<span><Calendar size={16} /> Joined {consultor.joined || '2023'}</span>
 								</div>
 							</div>
 						</section>
@@ -293,33 +305,20 @@ function PerfilPublico() {
 									<h3>Vitrine</h3>
 								</div>
 								<div className="pp-vitrine-grid">
-								{vitrineItems.map((badge) => (
-									<div
-										key={badge.id}
-										className="pp-vitrine-item"
-										title={badge.name}
-										role="button"
-										tabIndex={0}
-										onClick={() => navigate(`/galeria-publica/badge/${encodeURIComponent(badge.badgeDbId)}`, { state: { badge } })}
-										onKeyDown={(e) => {
-											if (e.key === 'Enter' || e.key === ' ') {
-												e.preventDefault();
-												navigate(`/galeria-publica/badge/${encodeURIComponent(badge.badgeDbId)}`, { state: { badge } });
-											}
-										}}
-									>
-										<div className="pp-vitrine-badge-img">
-											<BadgeImage
-												src={badge.badgeImage}
-												alt={badge.name || 'Badge'}
-												levelKey={badge.levelKey}
-												typeId={badge.typeId}
-												levelLabel={badge.levelLabel}
-											/>
+									{vitrineItems.map((badge) => (
+										<div key={badge.id} className="pp-vitrine-item" title={badge.name}>
+											<div className="pp-vitrine-badge-img">
+												<BadgeImage
+													src={badge.badgeImage}
+													alt={badge.name || 'Badge'}
+													levelKey={badge.levelKey}
+													typeId={badge.typeId}
+													levelLabel={badge.levelLabel}
+												/>
+											</div>
+											<span className="pp-vitrine-badge-name">{badge.name}</span>
 										</div>
-										<span className="pp-vitrine-badge-name">{badge.name}</span>
-									</div>
-								))}
+									))}
 								</div>
 							</section>
 						)}

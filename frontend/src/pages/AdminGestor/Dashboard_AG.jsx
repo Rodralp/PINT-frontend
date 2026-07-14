@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trophy, Award, Users, FileCheck2, FileText, CheckCircle2, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
 import SeeMore_PopUp from '../../components/SeeMore_PopUp';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -59,13 +58,12 @@ const buildChartScale = (data) => {
 };
 
 function DashboardAG() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const badgesChartRef = useRef(null);
   const novosConsultoresChartRef = useRef(null);
   const [badgesTimelineValues, setBadgesTimelineValues] = useState(defaultBadgesTimelineValues);
   const [novosConsultoresValues, setNovosConsultoresValues] = useState(defaultNovosConsultoresValues);
-  const [utilizadoresCount, setUtilizadoresCount] = useState(0);
+  const [onlineUsers, setOnlineUsers] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [topConsultores, setTopConsultores] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
@@ -106,7 +104,7 @@ function DashboardAG() {
             : defaultNovosConsultoresValues,
         );
 
-        setUtilizadoresCount(Number(data.consultoresCount) || 0);
+        setOnlineUsers(Number(data.onlineUsers) || 0);
         setPendingRequests(Number(data.pendingRequests) || 0);
         setTopConsultores(Array.isArray(data.topConsultores) ? data.topConsultores : []);
         setRecentActivities(Array.isArray(data.recentActivities) ? data.recentActivities : []);
@@ -115,7 +113,7 @@ function DashboardAG() {
         setIsLoading(false);
       } catch {
         if (isMounted) {
-          setDashboardStatusMessage(t('dashboard_load_error'));
+          setDashboardStatusMessage('Não foi possível carregar o dashboard. Tente novamente em alguns segundos.');
           setIsLoading(false);
         }
       }
@@ -186,7 +184,7 @@ function DashboardAG() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading_dashboard')} />
+        <LoadingSpinner fullPage message="A carregar dashboard..." />
       </Layout>
     );
   }
@@ -195,7 +193,7 @@ function DashboardAG() {
     <Layout>
       <div className="page dashboard-tm dashboard-ag-theme">
         <header className="page-header dashboard-tm-header">
-          <h1>{t('dashboard_ag_title')}</h1>
+          <h1>Dashboard Admin / Gestor</h1>
         </header>
 
         <div className="dashboard-tm-content">
@@ -208,7 +206,7 @@ function DashboardAG() {
           <div className="row g-3 align-items-stretch metrics-container">
             <div className="col-12 col-lg-6 col-xl-5 d-flex tm-top-chart-col">
               <section className="metric-card metric-card-large h-100 w-100">
-                <div className="metric-card-title">{t('dashboard_total_badge_requests')}</div>
+                <div className="metric-card-title">Numero de Pedidos de Badges</div>
                 <div className="tm-chart-shell">
                   <div className="tm-chart-axis" aria-hidden="true">
                     {badgesScale.yAxisTicks.slice().reverse().map((tick) => (
@@ -261,17 +259,17 @@ function DashboardAG() {
             <div className="col-12 col-lg-6 col-xl-2 d-flex tm-top-grid-col">
               <div className="tm-stats-grid w-100">
                 <section className="metric-card metric-card-stat">
-                  <div className="metric-card-title">{t('users_title')}</div>
+                  <div className="metric-card-title">Utilizadores Online</div>
                   <div className="metric-stat-body">
                     <span className="metric-stat-icon">
                       <Users size={36} strokeWidth={2} />
                     </span>
-                    <strong>{utilizadoresCount}</strong>
+                    <strong>{onlineUsers}</strong>
                   </div>
                 </section>
 
                 <section className="metric-card metric-card-stat">
-                  <div className="metric-card-title">{t('dashboard_pending_review')}</div>
+                  <div className="metric-card-title">Pedidos a Verificar</div>
                   <div className="metric-stat-body">
                     <span className="metric-stat-icon">
                       <FileCheck2 size={36} strokeWidth={2} />
@@ -284,7 +282,7 @@ function DashboardAG() {
 
             <div className="col-12 col-lg-12 col-xl-5 d-flex tm-top-chart-col">
               <section className="metric-card metric-card-large h-100 w-100">
-                <div className="metric-card-title">{t('dashboard_new_consultors')}</div>
+                <div className="metric-card-title">Novos Consultores</div>
                 <div className="tm-chart-shell">
                   <div className="tm-chart-axis" aria-hidden="true">
                     {novosConsultoresScale.yAxisTicks.slice().reverse().map((tick) => (
@@ -328,7 +326,7 @@ function DashboardAG() {
             <div className="col-12 col-lg-6 d-flex">
               <section className="consultores-section h-100 w-100">
                 <div className="section-header">
-                  <h2>{t('dashboard_top_consultors')}</h2>
+                  <h2>Top Consultores</h2>
                   <a
                     href="#consultores"
                     onClick={(e) => {
@@ -336,7 +334,7 @@ function DashboardAG() {
                       navigate('/admin-gestor/utilizadores');
                     }}
                   >
-                    {t('dashboard_view_all')}
+                    Ver todos
                   </a>
                 </div>
                 <div className="consultores-grid">
@@ -361,15 +359,15 @@ function DashboardAG() {
                         </div>
                         <div className="consultor-stats">
                           <div className="stat">
-                            <span className="stat-label">{t('dashboard_rank')}</span>
+                            <span className="stat-label">Rank</span>
                             <span className="stat-value">#{consultor.rank}</span>
                           </div>
                           <div className="stat">
-                            <span className="stat-label">{t('dashboard_points_short')}</span>
+                            <span className="stat-label">Pontos</span>
                             <span className="stat-value">{consultor.points}</span>
                           </div>
                           <div className="stat">
-                            <span className="stat-label">{t('dashboard_badges_short')}</span>
+                            <span className="stat-label">Badges</span>
                             <span className="stat-value">{consultor.badges}</span>
                           </div>
                         </div>
@@ -377,7 +375,7 @@ function DashboardAG() {
                     );
                   })}
                   {topConsultores.length === 0 && (
-                    <div className="text-muted">{t('dashboard_no_consultor_data')}</div>
+                    <div className="text-muted">Sem dados de consultores para apresentar.</div>
                   )}
                 </div>
               </section>
@@ -386,7 +384,7 @@ function DashboardAG() {
             <div className="col-12 col-lg-6 d-flex">
               <section className="activities-section h-100 w-100">
                 <div className="section-header">
-                  <h2>{t('dashboard_activities_title_ag')}</h2>
+                  <h2>Atividades Recentes (Administrador / Gestor)</h2>
                   <a
                     href="#atividades"
                     onClick={(e) => {
@@ -394,7 +392,7 @@ function DashboardAG() {
                       setIsActivitiesModalOpen(true);
                     }}
                   >
-                    {t('dashboard_view_all')}
+                    Ver todos
                   </a>
                 </div>
                 <div className="activities-list">
@@ -414,7 +412,7 @@ function DashboardAG() {
                     );
                   })}
                   {recentActivities.length === 0 && (
-                    <div className="text-muted">{t('dashboard_no_activities')}</div>
+                    <div className="text-muted">Sem atividades recentes para apresentar.</div>
                   )}
                 </div>
               </section>
@@ -425,7 +423,7 @@ function DashboardAG() {
         <SeeMore_PopUp
           isOpen={isActivitiesModalOpen}
           onClose={() => setIsActivitiesModalOpen(false)}
-          title={t('dashboard_activities_title_ag')}
+          title="Atividades Recentes (Administrador / Gestor)"
           items={recentActivities}
           renderItem={(activity) => {
             const IconComponent = iconByKey[activity.iconKey] || FileText;
@@ -443,7 +441,7 @@ function DashboardAG() {
               </div>
             );
           }}
-          emptyMessage={t('dashboard_no_activities')}
+          emptyMessage="Sem atividades recentes para apresentar."
         />
       </div>
     </Layout>

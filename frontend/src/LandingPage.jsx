@@ -3,7 +3,7 @@ import './css/LandingPage.css';
 import { useTranslation } from 'react-i18next';
 
 function LandingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
 
   return (

@@ -24,12 +24,5 @@
   "legal_agree_prefix": "Ao clicar em continuar, você concorda com os nossos",
   "legal_terms": "Termos de Serviço",
   "legal_and": "e com a",
-  "legal_privacy": "Política de Privacidade",
-
-  "register_rgpd_consent_label": "Li e aceito a Política de Privacidade e o tratamento de dados pessoais",
-  "rgpd_consent_title": "Política de Privacidade e Proteção de Dados",
-  "rgpd_consent_loading": "A carregar termos...",
-  "rgpd_consent_no_topics": "Nenhum tópico disponível.",
-  "rgpd_consent_accept": "Aceitar",
-  "rgpd_consent_decline": "Recusar"
+  "legal_privacy": "Política de Privacidade"
 }

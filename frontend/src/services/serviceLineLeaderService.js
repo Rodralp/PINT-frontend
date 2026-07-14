@@ -56,8 +56,3 @@ export async function fetchHistoricoPorEstado(accountId, type, estado, entityId)
   const response = await apiClient.get(`${endpoint}?accountId=${encodeURIComponent(accountId)}${id}&estado=${encodeURIComponent(estado)}`);
   return response.data;
 }
-
-export async function fetchHistoricoCandidaturaSLL(pedidoId) {
-  const response = await apiClient.get(`/service-line-leader/historico/candidatura?pedidoId=${encodeURIComponent(pedidoId)}`);
-  return response.data;
-}

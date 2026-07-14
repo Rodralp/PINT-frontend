@@ -215,7 +215,6 @@ function Sidebar() {
 
     sessionStorage.setItem(LAST_SIDEBAR_SECTION_KEY, matchedSectionTitle);
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setExpandedSections((current) => {
       const visibleTitles = new Set(visibleSidebarSections.map((section) => section.title));
       const nextState = { ...current, [matchedSectionTitle]: true };
@@ -299,7 +298,7 @@ function Sidebar() {
       <div className="sidebar-profile">
         <img
           src={sidebarAvatar || loginData?.avatar || `/avatars/default-avatar.svg`}
-          alt={t('app_user_default')}
+          alt="Usuário"
           className="sidebar-avatar"
           onError={(event) => {
             event.currentTarget.src = `/avatars/default-avatar.svg`;

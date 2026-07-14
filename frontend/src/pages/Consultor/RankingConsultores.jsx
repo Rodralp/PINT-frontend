@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Search,
   Filter,
@@ -20,7 +19,6 @@ const buildAvatarUrl = (consultant) =>
   || `/avatars/default-avatar.svg`;
 
 function RankingConsultores() {
-  const { t } = useTranslation();
   const [consultants, setConsultants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
@@ -49,7 +47,7 @@ function RankingConsultores() {
       } catch {
         if (isMounted) {
           setConsultants([]);
-          setStatusMessage(t('ranking_consultores_load_error'));
+          setStatusMessage('Não foi possível carregar o ranking. Tente novamente em alguns segundos.');
           setIsLoading(false);
         }
       }
@@ -68,22 +66,22 @@ function RankingConsultores() {
   );
 
   const sortOptions = useMemo(() => [
-    { id: 'points_desc', label: `${t('dashboard_points_short')} (Maior para Menor)` },
-    { id: 'points_asc', label: `${t('dashboard_points_short')} (Menor para Maior)` },
-    { id: 'badges_desc', label: `${t('dashboard_badges_short')} (Maior para Menor)` },
-    { id: 'badges_asc', label: `${t('dashboard_badges_short')} (Menor para Maior)` },
-    { id: 'name_asc', label: `${t('name')} (A-Z)` },
-    { id: 'name_desc', label: `${t('name')} (Z-A)` },
-  ], [t]);
+    { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
+    { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
+    { id: 'badges_desc', label: 'Badges (Maior para Menor)' },
+    { id: 'badges_asc', label: 'Badges (Menor para Maior)' },
+    { id: 'name_asc', label: 'Nome (A-Z)' },
+    { id: 'name_desc', label: 'Nome (Z-A)' },
+  ], []);
 
   const sortButtonLabels = useMemo(() => ({
-    points_desc: `${t('dashboard_points_short')} ↓`,
-    points_asc: `${t('dashboard_points_short')} ↑`,
-    badges_desc: `${t('dashboard_badges_short')} ↓`,
-    badges_asc: `${t('dashboard_badges_short')} ↑`,
-    name_asc: `${t('name')} A-Z`,
-    name_desc: `${t('name')} Z-A`,
-  }), [t]);
+    points_desc: 'Pontos ↓',
+    points_asc: 'Pontos ↑',
+    badges_desc: 'Badges ↓',
+    badges_asc: 'Badges ↑',
+    name_asc: 'Nome A-Z',
+    name_desc: 'Nome Z-A',
+  }), []);
 
   const filteredConsultants = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -172,7 +170,7 @@ function RankingConsultores() {
     }));
   }, [sortedConsultants, page, rankingByConsultantId]);
 
-  const activeFilterLabel = activeServiceLine === 'all' ? t('all_service_lines') : activeServiceLine;
+  const activeFilterLabel = activeServiceLine === 'all' ? 'Todas as Service Lines' : activeServiceLine;
   const activeSortLabel = sortButtonLabels[sortBy] || 'Pontos ↓';
   const hasActiveFilter = activeServiceLine !== 'all';
   const hasActiveSort = sortBy !== defaultSort;
@@ -215,7 +213,7 @@ function RankingConsultores() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message="A carregar ranking..." />
       </Layout>
     );
   }
@@ -224,7 +222,7 @@ function RankingConsultores() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>{t('ranking_consultores_title')}</h1>
+          <h1>Ranking de Consultores</h1>
         </header>
 
         <section className="shell">
@@ -238,8 +236,8 @@ function RankingConsultores() {
               <Search size={20} />
               <input
                 type="text"
-                placeholder={t('search_consultants')}
-                aria-label={t('search_consultants')}
+                placeholder="Pesquisar consultores"
+                aria-label="Pesquisar consultores"
                 value={searchTerm}
                 onChange={onSearchChange}
               />
@@ -255,11 +253,11 @@ function RankingConsultores() {
                 }}
               >
                 <Filter size={20} />
-                <span className="catalog-action-btn-label">{`${t('filter_search')}: ${activeFilterLabel}`}</span>
+                <span className="catalog-action-btn-label">{`Filtrar pesquisa: ${activeFilterLabel}`}</span>
               </button>
 
               {showFilterDropdown && (
-                <div className="dropdown-menu" role="menu" aria-label={t('filter_by_service_line')}>
+                <div className="dropdown-menu" role="menu" aria-label="Filtrar por service line">
                   {serviceLineOptions.map((option) => (
                     <button
                       key={option}
@@ -267,7 +265,7 @@ function RankingConsultores() {
                       className={`dropdown-item ${activeServiceLine === option ? 'active' : ''}`}
                       onClick={() => onFilterSelect(option)}
                     >
-                      {option === 'all' ? t('all_service_lines') : option}
+                      {option === 'all' ? 'Todas as Service Lines' : option}
                     </button>
                   ))}
                 </div>
@@ -284,11 +282,11 @@ function RankingConsultores() {
                 }}
               >
                 <SlidersHorizontal size={20} />
-                <span className="catalog-action-btn-label">{`${t('sort')}: ${activeSortLabel}`}</span>
+                <span className="catalog-action-btn-label">{`Ordenar: ${activeSortLabel}`}</span>
               </button>
 
               {showSortDropdown && (
-                <div className="dropdown-menu" role="menu" aria-label={t('sort_ranking')}>
+                <div className="dropdown-menu" role="menu" aria-label="Ordenar ranking">
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
@@ -305,7 +303,7 @@ function RankingConsultores() {
           </div>
 
           <div className="ranking-current-state">
-            {sortedConsultants.length} {t('consultants')} · {activeFilterLabel} · {activeSortLabel}
+            {sortedConsultants.length} consultor(es) · {activeFilterLabel} · {activeSortLabel}
           </div>
 
           <div className="ranking-grid">
@@ -333,11 +331,11 @@ function RankingConsultores() {
 
                     <div className="ranking-metrics">
                       <div>
-                        <small>{t('dashboard_points_short')}</small>
+                        <small>Pontos</small>
                         <p>{consultant.points}</p>
                       </div>
                       <div>
-                        <small>{t('dashboard_badges_short')}</small>
+                        <small>Badges</small>
                         <p>
                           <Award size={13} />
                           {consultant.badges}
@@ -351,7 +349,7 @@ function RankingConsultores() {
           </div>
 
           {sortedConsultants.length === 0 && (
-            <div className="empty-state ranking-empty-state">{t('no_items')}</div>
+            <div className="empty-state ranking-empty-state">Nao ha consultores para os filtros escolhidos.</div>
           )}
 
           <Pagination page={page} totalPages={totalPages} setPage={setPage} />

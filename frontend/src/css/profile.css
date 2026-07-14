@@ -177,7 +177,7 @@
 .vitrine-badge-image {
   width: 56px;
   height: 56px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .vitrine-badge-name {

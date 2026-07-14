@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { ChevronLeft, Plus, Save, Trash2, XCircle } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../../components/Layout';
@@ -11,7 +10,6 @@ import '../../css/AdminGestor/BadgeAdmin.css';
 const SPECIAL_BADGE_TYPE = 'special';
 const STANDARD_BADGE_TYPE = 'standard';
 const MAX_BADGE_IMAGE_SIZE_BYTES = 1_500_000;
-const BADGE_PLACEHOLDER = '/badges/badge-not-found.svg';
 
 const badgeLevels = [
   { levelKey: 'badge_level_junior', label: 'Júnior', points: 100, badgeImage: '/badges/J%C3%BAnior.png' },
@@ -143,7 +141,7 @@ const buildFormState = (badge, isCreate) => {
       ? 0
       : levelMeta.points;
 
-  const badgeImage = badge?.badgeImage || BADGE_PLACEHOLDER;
+  const badgeImage = badge?.badgeImage || (isSpecial ? '/badges/Especial.png' : levelMeta.badgeImage);
 
   const specialRequirements = Array.isArray(badge?.specialRequirements) && badge.specialRequirements.length > 0
     ? badge.specialRequirements.map((req) => buildRequirement(req))
@@ -173,12 +171,11 @@ const buildFormState = (badge, isCreate) => {
 const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.onload = () => resolve(String(reader.result || ''));
-  reader.onerror = () => reject(new Error());
+  reader.onerror = () => reject(new Error('Nao foi possivel ler o ficheiro de imagem.'));
   reader.readAsDataURL(file);
 });
 
 function BadgeAdmin() {
-  const { t } = useTranslation();
   const { badgeId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -218,7 +215,7 @@ function BadgeAdmin() {
         setLevelOptions(buildLevelOptions(data));
       } catch {
         if (isMounted) {
-          setStatusMessage(t('badge_admin_levels_error'));
+          setStatusMessage('Falha ao carregar os níveis.');
         }
       } finally {
         if (isMounted) {
@@ -260,7 +257,7 @@ function BadgeAdmin() {
         }
       } catch {
         if (isMounted) {
-          setStatusMessage(t('badge_admin_not_found'));
+          setStatusMessage('Badge não encontrada.');
         }
       }
     };
@@ -279,7 +276,7 @@ function BadgeAdmin() {
 
   useEffect(() => {
     if (!initialBadge && !isCreate) {
-      setStatusMessage(t('badge_admin_not_found'));
+      setStatusMessage('Badge não encontrada.');
     }
   }, [initialBadge, isCreate]);
 
@@ -323,9 +320,9 @@ function BadgeAdmin() {
           levelId: null,
           badgeTypeId: '',
           points: '0',
-          badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/') && current.badgeImage !== BADGE_PLACEHOLDER
+          badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/')
             ? current.badgeImage
-            : BADGE_PLACEHOLDER,
+            : '/badges/default.png',
           specialRequirements: current.specialRequirements.length > 0
             ? current.specialRequirements
             : [buildRequirement()],
@@ -344,9 +341,9 @@ function BadgeAdmin() {
         levelId: nextLevelId,
         badgeTypeId: badgeTypeMeta.levelKey,
         points: String(badgeTypeMeta.points),
-        badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/') && current.badgeImage !== BADGE_PLACEHOLDER
+        badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/')
           ? current.badgeImage
-          : BADGE_PLACEHOLDER,
+          : badgeTypeMeta.badgeImage,
         requirements: current.requirements && current.requirements.length > 0
           ? current.requirements
           : [buildStandardRequirement()],
@@ -362,9 +359,9 @@ function BadgeAdmin() {
       ...current,
       badgeTypeId: selectedMeta.levelKey,
       points: String(selectedMeta.points),
-      badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/') && current.badgeImage !== BADGE_PLACEHOLDER
+      badgeImage: current.badgeImage && !current.badgeImage.startsWith('/badges/')
         ? current.badgeImage
-        : BADGE_PLACEHOLDER,
+        : selectedMeta.badgeImage,
     }));
   };
 
@@ -385,12 +382,12 @@ function BadgeAdmin() {
     }
 
     if (!String(selectedFile.type || '').startsWith('image/')) {
-      setStatusMessage(t('badge_admin_image_valid'));
+      setStatusMessage('Escolha um ficheiro de imagem válido.');
       return;
     }
 
     if (selectedFile.size > MAX_BADGE_IMAGE_SIZE_BYTES) {
-      setStatusMessage(t('badge_admin_image_size'));
+      setStatusMessage('A imagem é demasiado grande (máximo 1.5MB).');
       return;
     }
 
@@ -402,14 +399,14 @@ function BadgeAdmin() {
       }));
       setStatusMessage('');
     } catch (error) {
-      setStatusMessage(error?.message || t('badge_admin_image_load'));
+      setStatusMessage(error?.message || 'Não foi possível carregar a imagem.');
     }
   };
 
   const clearCustomImage = () => {
     setForm((current) => ({
       ...current,
-      badgeImage: BADGE_PLACEHOLDER,
+      badgeImage: isSpecial ? '/badges/Especial.png' : selectedBadgeTypeMeta.badgeImage,
     }));
   };
 
@@ -453,13 +450,13 @@ function BadgeAdmin() {
     }
 
     if (!String(selectedFile.type || '').startsWith('image/')) {
-      setStatusMessage(t('badge_admin_image_valid'));
+      setStatusMessage('Escolha um ficheiro de imagem valido.');
       input.value = '';
       return;
     }
 
     if (selectedFile.size > MAX_BADGE_IMAGE_SIZE_BYTES) {
-      setStatusMessage(t('badge_admin_image_size'));
+      setStatusMessage('A imagem e demasiado grande (maximo 1.5MB).');
       input.value = '';
       return;
     }
@@ -469,7 +466,7 @@ function BadgeAdmin() {
       updateStandardRequirement(id, { image: dataUrl });
       setStatusMessage('');
     } catch (error) {
-      setStatusMessage(error?.message || t('badge_admin_image_load'));
+      setStatusMessage(error?.message || 'Nao foi possivel carregar a imagem.');
     } finally {
       input.value = '';
     }
@@ -500,25 +497,25 @@ function BadgeAdmin() {
     const nextErrors = {};
 
     if (!form.name.trim()) {
-      nextErrors.name = t('badge_admin_name_required');
+      nextErrors.name = 'Indique o nome do badge.';
     }
 
     if (!isSpecial && !form.badgeTypeId) {
-      nextErrors.badgeTypeId = t('badge_admin_level_required');
+      nextErrors.badgeTypeId = 'Selecione o nível do badge.';
     }
 
     if (!isSpecial && !form.levelId) {
-      nextErrors.levelId = t('badge_admin_level_invalid');
+      nextErrors.levelId = 'Selecione um nível associado válido.';
     }
 
     if (!isSpecial && selectableLevelOptions.length === 0 && isCreate) {
-      nextErrors.levelId = t('badge_admin_no_levels');
+      nextErrors.levelId = 'Não existem níveis disponíveis sem badge associada.';
     }
 
     if (isSpecial) {
       const validSpecial = form.specialRequirements.filter((req) => Number(req.value) > 0);
       if (validSpecial.length === 0) {
-        nextErrors.specialRequirements = t('badge_admin_trigger_required');
+        nextErrors.specialRequirements = 'Defina pelo menos um trigger com valor.';
       }
     }
 
@@ -527,13 +524,13 @@ function BadgeAdmin() {
         (req) => String(req.title || '').trim() && String(req.description || '').trim(),
       );
       if (validRequirements.length === 0) {
-        nextErrors.requirements = t('badge_admin_req_required');
+        nextErrors.requirements = 'Adicione pelo menos um requisito válido.';
       }
     }
 
     const numericPoints = Number(form.points);
     if (!Number.isFinite(numericPoints) || numericPoints < 0) {
-      nextErrors.points = t('badge_admin_points_negative');
+      nextErrors.points = 'Os pontos não podem ser negativos.';
     }
 
     if (form.validade) {
@@ -541,7 +538,7 @@ function BadgeAdmin() {
       minDate.setDate(minDate.getDate() + 7);
       const validadeDate = new Date(form.validade);
       if (validadeDate < minDate) {
-        nextErrors.validade = t('badge_admin_expiry_min');
+        nextErrors.validade = 'A data de expiração deve ser pelo menos 7 dias no futuro.';
       }
     }
 
@@ -551,7 +548,7 @@ function BadgeAdmin() {
 
   const handleSave = async () => {
     if (!validateForm()) {
-      setStatusMessage(t('badge_admin_fields_invalid'));
+      setStatusMessage('Existem campos inválidos. Verifique os erros no formulário.');
       return;
     }
 
@@ -591,7 +588,7 @@ function BadgeAdmin() {
       levelId: isSpecial ? null : form.levelId,
       isSpecial,
       typeId: isSpecial ? SPECIAL_BADGE_TYPE : form.badgeTypeId,
-      badgeImage: form.badgeImage && form.badgeImage !== BADGE_PLACEHOLDER ? form.badgeImage : null,
+      badgeImage: form.badgeImage || null,
       specialRequirements: specialRequirementsPayload,
       requirements: requirementsPayload,
       validade: form.validade || null,
@@ -603,7 +600,7 @@ function BadgeAdmin() {
       } else {
         const targetBadgeId = form.badgeDbId || parseNumericId(badgeId);
         if (!targetBadgeId) {
-          setStatusMessage(t('badge_admin_update_error'));
+          setStatusMessage('Não foi possível identificar o badge para atualizar.');
           setIsSaving(false);
           return;
         }
@@ -615,7 +612,7 @@ function BadgeAdmin() {
         state: { refreshCatalog: Date.now() },
       });
     } catch (error) {
-      setStatusMessage(error?.message || t('badge_admin_save_error'));
+      setStatusMessage(error?.message || 'Erro ao guardar badge.');
     } finally {
       setIsSaving(false);
     }
@@ -630,16 +627,16 @@ function BadgeAdmin() {
           </button>
 
           <div>
-            <h1>{isCreate ? t('badge_admin_criar') : t('badge_admin_editar')}</h1>
+            <h1>{isCreate ? 'Criar badge' : 'Editar badge'}</h1>
           </div>
 
           <div className="badge-admin-actions">
             <button type="button" className="badge-admin-btn ghost" onClick={handleBack}>
-              {t('cancel')}
+              Cancelar
             </button>
             <button type="button" className="badge-admin-btn primary" onClick={handleSave} disabled={isSaving}>
               <Save size={16} />
-              {isSaving ? t('badge_admin_saving') : t('badge_admin_btn_save')}
+              {isSaving ? 'A guardar...' : 'Guardar'}
             </button>
           </div>
         </header>
@@ -651,41 +648,41 @@ function BadgeAdmin() {
         <section className="badge-admin-card">
           <div className="badge-admin-grid">
             <label className="badge-admin-field">
-              <span>{t('badge_admin_field_name')}</span>
+              <span>Nome do badge</span>
               <input
                 type="text"
                 value={form.name}
                 onChange={handleFieldChange('name')}
-                placeholder={t('badge_admin_placeholder_name')}
+                placeholder="Ex: MVP de Badges"
               />
               {formErrors.name && <span className="badge-admin-error">{formErrors.name}</span>}
             </label>
 
             <label className="badge-admin-field">
-              <span>{t('badge_admin_field_description')}</span>
+              <span>Descrição</span>
               <textarea
                 rows={3}
                 value={form.description}
                 onChange={handleFieldChange('description')}
-                placeholder={t('badge_admin_placeholder_description')}
+                placeholder="Resumo do badge"
               />
             </label>
 
             <label className="badge-admin-field">
-              <span>{t('badge_admin_field_type')}</span>
+              <span>Tipo</span>
               <select value={form.type} onChange={handleTypeChange}>
-                <option value={STANDARD_BADGE_TYPE}>{t('badge_admin_type_level')}</option>
-                <option value={SPECIAL_BADGE_TYPE}>{t('badge_admin_type_special')}</option>
+                <option value={STANDARD_BADGE_TYPE}>Nível (com candidatura)</option>
+                <option value={SPECIAL_BADGE_TYPE}>Especial (sem candidatura)</option>
               </select>
             </label>
 
             {!isSpecial && (
               <label className="badge-admin-field">
-                <span>{t('badge_admin_field_level')}</span>
+                <span>Nível do badge</span>
                 <select value={form.badgeTypeId || ''} onChange={handleBadgeTypeChange}>
                   {badgeLevels.map((option) => (
                     <option key={option.levelKey} value={option.levelKey}>
-                      {t(`badge_admin_level_${option.levelKey.replace('badge_level_', '')}`)}
+                      {option.label}
                     </option>
                   ))}
                 </select>
@@ -695,9 +692,9 @@ function BadgeAdmin() {
 
             {!isSpecial && (
               <label className="badge-admin-field">
-                <span>{t('badge_admin_field_linked_level')}</span>
+                <span>Nível associado</span>
                 <select value={form.levelId || ''} onChange={handleLevelChange} disabled={isLoadingLevels}>
-                  <option value="">{t('badge_admin_select_level')}</option>
+                  <option value="">Selecionar nível</option>
                   {selectableLevelOptions.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.label}
@@ -709,7 +706,7 @@ function BadgeAdmin() {
             )}
 
             <label className="badge-admin-field">
-              <span>{t('badge_admin_field_points')}</span>
+              <span>Pontos</span>
               <input
                 type="number"
                 min="0"
@@ -720,7 +717,7 @@ function BadgeAdmin() {
             </label>
 
             <label className="badge-admin-field">
-              <span>{t('badge_admin_field_expiry')}</span>
+              <span>Data de expiração (opcional)</span>
               <input
                 type="date"
                 value={form.validade || ''}
@@ -728,12 +725,12 @@ function BadgeAdmin() {
               />
               {formErrors.validade && <span className="badge-admin-error">{formErrors.validade}</span>}
               <span className="badge-admin-help-text">
-                {t('badge_admin_expiry_help')}
+                Se definida, a badge irá expirar nesta data. Deixe vazio para badge sem expiração.
               </span>
             </label>
 
             <div className="badge-admin-field">
-              <span>{t('badge_admin_field_image')}</span>
+              <span>Imagem do badge (ficheiro)</span>
               <input type="file" accept="image/*" onChange={handleImageFileChange} />
               <div className="badge-admin-image-preview-wrap">
                 <BadgeImage
@@ -746,21 +743,21 @@ function BadgeAdmin() {
                 />
                 <button type="button" className="badge-admin-btn ghost" onClick={clearCustomImage}>
                   <XCircle size={16} />
-                  {t('badge_admin_reset_image')}
+                  Repor imagem padrão
                 </button>
               </div>
               <span className="badge-admin-help-text">
-                {t('badge_admin_image_formats')}
+                Formatos suportados: png, jpg, svg, etc. (máximo 1.5MB).
               </span>
             </div>
           </div>
         </section>
 
         <section className="badge-admin-card">
-          <div className="badge-admin-section-title">{t('badge_admin_section_triggers')}</div>
+          <div className="badge-admin-section-title">Triggers especiais</div>
           {!isSpecial && (
             <p className="badge-admin-muted">
-              {t('badge_admin_triggers_muted')}
+              Este badge segue o fluxo normal de candidatura e validação.
             </p>
           )}
           {isSpecial && (
@@ -777,7 +774,7 @@ function BadgeAdmin() {
                         value={option.id}
                         disabled={isRequirementTypeDisabled(option.id, req.id)}
                       >
-                        {t(`badge_admin_req_${option.id === 'badge_count' ? 'badges_count' : option.id === 'ranking_position' ? 'ranking' : 'streak'}`)}
+                        {option.label}
                       </option>
                     ))}
                   </select>
@@ -796,7 +793,7 @@ function BadgeAdmin() {
                       const safeValue = Number.isFinite(parsed) ? String(Math.max(0, parsed)) : '0';
                       updateRequirement(req.id, { value: safeValue });
                     }}
-                    placeholder={t('badge_admin_placeholder_value')}
+                    placeholder="Valor"
                   />
                   <button
                     type="button"
@@ -811,7 +808,7 @@ function BadgeAdmin() {
 
               <button type="button" className="badge-admin-btn ghost" onClick={addRequirement}>
                 <Plus size={16} />
-                {t('badge_admin_btn_add_trigger')}
+                Adicionar trigger
               </button>
 
               {formErrors.specialRequirements && (
@@ -822,10 +819,10 @@ function BadgeAdmin() {
         </section>
 
         <section className="badge-admin-card">
-          <div className="badge-admin-section-title">{t('badge_admin_section_requirements')}</div>
+          <div className="badge-admin-section-title">Requisitos do badge</div>
           {isSpecial ? (
             <p className="badge-admin-muted">
-              {t('badge_admin_requirements_muted')}
+              Este badge especial não utiliza requisitos de candidatura.
             </p>
           ) : (
             <div className="badge-admin-reqs">
@@ -835,13 +832,13 @@ function BadgeAdmin() {
                     type="text"
                     value={req.title}
                     onChange={(event) => updateStandardRequirement(req.id, { title: event.target.value })}
-                    placeholder={t('badge_admin_placeholder_req_title')}
+                    placeholder="Título do requisito"
                   />
                   <textarea
                     rows={2}
                     value={req.description}
                     onChange={(event) => updateStandardRequirement(req.id, { description: event.target.value })}
-                    placeholder={t('badge_admin_placeholder_req_desc')}
+                    placeholder="Descrição do requisito"
                   />
                   <div className="badge-admin-req-image-field">
                     <input
@@ -863,11 +860,11 @@ function BadgeAdmin() {
                           onClick={() => clearStandardRequirementImage(req.id)}
                         >
                           <XCircle size={16} />
-                          {t('remove')}
+                          Remover
                         </button>
                       </div>
                     ) : (
-                      <span className="badge-admin-help-text">{t('badge_admin_image_optional')}</span>
+                      <span className="badge-admin-help-text">Imagem opcional</span>
                     )}
                   </div>
                   <button
@@ -883,7 +880,7 @@ function BadgeAdmin() {
 
               <button type="button" className="badge-admin-btn ghost" onClick={addStandardRequirement}>
                 <Plus size={16} />
-                {t('badge_admin_btn_add_req')}
+                Adicionar requisito
               </button>
 
               {formErrors.requirements && (

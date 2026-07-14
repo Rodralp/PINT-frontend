@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import TermsModal from './components/TermsModal';
 import PrivacyModal from './components/PrivacyModal';
-import RgpdConsentModal from './components/RgpdConsentModal';
 import { registerAccount } from './services/authService';
 import './css/LoginAccount.css';
 
@@ -24,7 +23,6 @@ function CriarConta() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const [showRgpdModal, setShowRgpdModal] = useState(false);
   const [apiError, setApiError] = useState('');
 
   const handleChange = (e) => {
@@ -81,19 +79,6 @@ function CriarConta() {
       return;
     }
 
-    setShowRgpdModal(true);
-  };
-
-  const handleRgpdAccept = () => {
-    setShowRgpdModal(false);
-    submitRegistration();
-  };
-
-  const handleRgpdDecline = () => {
-    setShowRgpdModal(false);
-  };
-
-  const submitRegistration = async () => {
     try {
       await registerAccount({
         nome: formData.nome,
@@ -129,13 +114,6 @@ function CriarConta() {
 
       {/* PRIVACY MODAL */}
       <PrivacyModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
-
-      {/* RGPD CONSENT MODAL */}
-      <RgpdConsentModal
-        isOpen={showRgpdModal}
-        onAccept={handleRgpdAccept}
-        onDecline={handleRgpdDecline}
-      />
 
       {/* SUCCESS MODAL */}
       {showSuccess && (

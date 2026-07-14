@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Trophy, Award, Users, FileCheck2, FileText, CheckCircle2 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import SeeMore_PopUp from '../../components/SeeMore_PopUp';
@@ -56,12 +55,11 @@ const buildChartScale = (data) => {
 };
 
 function DashboardTM() {
-  const { t } = useTranslation();
   const badgesChartRef = useRef(null);
   const novosConsultoresChartRef = useRef(null);
   const [badgesTimelineValues, setBadgesTimelineValues] = useState(defaultBadgesTimelineValues);
   const [novosConsultoresValues, setNovosConsultoresValues] = useState(defaultNovosConsultoresValues);
-  const [consultoresCount, setConsultoresCount] = useState(0);
+  const [onlineUsers, setOnlineUsers] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [topConsultores, setTopConsultores] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
@@ -102,7 +100,7 @@ function DashboardTM() {
             : defaultNovosConsultoresValues,
         );
 
-        setConsultoresCount(Number(data.consultoresCount) || 0);
+        setOnlineUsers(Number(data.onlineUsers) || 0);
         setPendingRequests(Number(data.pendingRequests) || 0);
         setTopConsultores(Array.isArray(data.topConsultores) ? data.topConsultores : []);
         setRecentActivities(Array.isArray(data.recentActivities) ? data.recentActivities : []);
@@ -111,7 +109,7 @@ function DashboardTM() {
         setIsLoading(false);
       } catch {
         if (isMounted) {
-          setDashboardStatusMessage(t('dashboard_load_error'));
+          setDashboardStatusMessage('Não foi possível carregar o dashboard. Tente novamente em alguns segundos.');
           setIsLoading(false);
         }
       }
@@ -182,7 +180,7 @@ function DashboardTM() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading_dashboard')} />
+        <LoadingSpinner fullPage message="A carregar dashboard..." />
       </Layout>
     );
   }
@@ -191,7 +189,7 @@ function DashboardTM() {
     <Layout>
       <div className="page dashboard-tm">
         <header className="page-header dashboard-tm-header">
-          <h1>{t('dashboard_tm_title')}</h1>
+          <h1>Dashboard Talent Manager</h1>
         </header>
 
         <div className="dashboard-tm-content">
@@ -204,7 +202,7 @@ function DashboardTM() {
           <div className="row g-3 align-items-stretch metrics-container">
             <div className="col-12 col-lg-6 col-xl-5 d-flex tm-top-chart-col">
               <section className="metric-card metric-card-large h-100 w-100">
-                <div className="metric-card-title">{t('dashboard_total_badge_requests')}</div>
+                <div className="metric-card-title">Numero de Pedidos de Badges</div>
                 <div className="tm-chart-shell">
                   <div className="tm-chart-axis" aria-hidden="true">
                     {badgesScale.yAxisTicks.slice().reverse().map((tick) => (
@@ -257,17 +255,17 @@ function DashboardTM() {
             <div className="col-12 col-lg-6 col-xl-2 d-flex tm-top-grid-col">
               <div className="tm-stats-grid w-100">
                 <section className="metric-card metric-card-stat">
-                  <div className="metric-card-title">{t('total_consultors')}</div>
+                  <div className="metric-card-title">Utilizadores Online</div>
                   <div className="metric-stat-body">
                     <span className="metric-stat-icon">
                       <Users size={36} strokeWidth={2} />
                     </span>
-                    <strong>{consultoresCount}</strong>
+                    <strong>{onlineUsers}</strong>
                   </div>
                 </section>
 
                 <section className="metric-card metric-card-stat">
-                  <div className="metric-card-title">{t('dashboard_pending_review')}</div>
+                  <div className="metric-card-title">Pedidos a Verificar</div>
                   <div className="metric-stat-body">
                     <span className="metric-stat-icon">
                       <FileCheck2 size={36} strokeWidth={2} />
@@ -280,7 +278,7 @@ function DashboardTM() {
 
             <div className="col-12 col-lg-12 col-xl-5 d-flex tm-top-chart-col">
               <section className="metric-card metric-card-large h-100 w-100">
-                <div className="metric-card-title">{t('dashboard_new_consultors')}</div>
+                <div className="metric-card-title">Novos Consultores</div>
                 <div className="tm-chart-shell">
                   <div className="tm-chart-axis" aria-hidden="true">
                     {novosConsultoresScale.yAxisTicks.slice().reverse().map((tick) => (
@@ -324,7 +322,7 @@ function DashboardTM() {
             <div className="col-12 col-lg-6 d-flex">
               <section className="consultores-section h-100 w-100">
                 <div className="section-header">
-                  <h2>{t('dashboard_top_consultors')}</h2>
+                  <h2>Top Consultores</h2>
                 </div>
                 <div className="consultores-grid">
                   {topConsultores.map((consultor) => {
@@ -348,15 +346,15 @@ function DashboardTM() {
                         </div>
                         <div className="consultor-stats">
                           <div className="stat">
-                            <span className="stat-label">{t('dashboard_rank')}</span>
+                            <span className="stat-label">Rank</span>
                             <span className="stat-value">#{consultor.rank}</span>
                           </div>
                           <div className="stat">
-                            <span className="stat-label">{t('dashboard_points_short')}</span>
+                            <span className="stat-label">Pontos</span>
                             <span className="stat-value">{consultor.points}</span>
                           </div>
                           <div className="stat">
-                            <span className="stat-label">{t('dashboard_badges_short')}</span>
+                            <span className="stat-label">Badges</span>
                             <span className="stat-value">{consultor.badges}</span>
                           </div>
                         </div>
@@ -364,7 +362,7 @@ function DashboardTM() {
                     );
                   })}
                   {topConsultores.length === 0 && (
-                    <div className="text-muted">{t('dashboard_no_consultor_data')}</div>
+                    <div className="text-muted">Sem dados de consultores para apresentar.</div>
                   )}
                 </div>
               </section>
@@ -373,7 +371,7 @@ function DashboardTM() {
             <div className="col-12 col-lg-6 d-flex">
               <section className="activities-section h-100 w-100">
                 <div className="section-header">
-                  <h2>{t('dashboard_activities_title_tm')}</h2>
+                  <h2>Atividades Recentes (Talent Manager)</h2>
                   <a
                     href="#atividades"
                     onClick={(e) => {
@@ -381,7 +379,7 @@ function DashboardTM() {
                       setIsActivitiesModalOpen(true);
                     }}
                   >
-                    {t('dashboard_view_all')}
+                    Ver todos
                   </a>
                 </div>
                 <div className="activities-list">
@@ -401,7 +399,7 @@ function DashboardTM() {
                     );
                   })}
                   {recentActivities.length === 0 && (
-                    <div className="text-muted">{t('dashboard_no_activities')}</div>
+                    <div className="text-muted">Sem atividades recentes para apresentar.</div>
                   )}
                 </div>
               </section>
@@ -412,7 +410,7 @@ function DashboardTM() {
         <SeeMore_PopUp
           isOpen={isActivitiesModalOpen}
           onClose={() => setIsActivitiesModalOpen(false)}
-          title={t('dashboard_activities_title_tm')}
+          title="Atividades Recentes (Talent Manager)"
           items={recentActivities}
           renderItem={(activity) => {
             const IconComponent = iconByKey[activity.iconKey] || FileText;
@@ -430,7 +428,7 @@ function DashboardTM() {
               </div>
             );
           }}
-          emptyMessage={t('dashboard_no_activities')}
+          emptyMessage="Sem atividades recentes para apresentar."
         />
       </div>
     </Layout>

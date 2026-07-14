@@ -8,7 +8,6 @@ import Pagination from '../../components/Pagination';
 import { fetchCatalogBadges } from '../../services/consultorService';
 import '../../css/Consultor/Exportacoes_C.css';
 import '../../css/Consultor/CatalogoBadges_C.css';
-import { downloadHtmlAsPdf, resolveImageUrl, renderMaskedBadge } from '../../utils/pdfExport.js';
 
 const SPECIAL_BADGE_TYPE = 'special';
 
@@ -84,59 +83,71 @@ const generateBadgesCSV = (badges) => {
 
 const translateLevel = (levelKey) => {
   const levelMap = {
-    'badge_level_junior': 'Júnior',
-    'badge_level_intermediate': 'Intermédio',
-    'badge_level_senior': 'Sénior',
-    'badge_level_specialist': 'Especialista',
-    'badge_level_knowledge_lead': 'Líder de Conhecimento',
+    'badge_level_junior': 'Nível Júnior',
+    'badge_level_intermediate': 'Nível Intermédio',
+    'badge_level_senior': 'Nível Sénior',
+    'badge_level_specialist': 'Nível Especialista',
+    'badge_level_knowledge_lead': 'Nível Líder de Conhecimento',
     'special': 'Especial',
   };
-  return levelMap[levelKey] || levelKey || '';
+  return levelMap[levelKey] || levelKey || 'Nível';
 };
 
-const generateBadgePagesPDF = async (badges, userName) => {
-  const renderedBadges = await Promise.all(
-    badges.map((badge) =>
-      renderMaskedBadge(resolveImageUrl(badge.badgeImage), badge.typeId || badge.levelKey, 120)
-    )
-  );
-
+const generateBadgePagesPDF = (badges, userName) => {
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
-      <title>Badges Export</title>
+      <title>Badges - Detalhes</title>
+      <style>
+        @page { size: A4; margin: 15mm; }
+        body { font-family: Arial, sans-serif; color: #111; }
+        .page { page-break-after: always; }
+        .badge-header { font-size: 18px; font-weight: bold; color: #1d8cf8; margin-bottom: 10px; }
+        .badge-img { width: 120px; height: 120px; object-fit: contain; }
+        .detail-row { margin-bottom: 8px; }
+        .detail-label { font-weight: bold; }
+        .text-light { color: #666; font-size: 13px; }
+        .user-name { font-size: 16px; font-weight: bold; margin-top: 5px; }
+        .date { color: #666; font-size: 13px; }
+        .page-break { page-break-after: always; }
+      </style>
     </head>
-    <body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;">
-      ${badges.map((badge, index) => {
-        const badgeDataUrl = renderedBadges[index];
-        return `
-        <div style="background:white;border-radius:24px;padding:60px 80px;max-width:600px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,102,255,0.15);border:4px solid #0066ff;position:relative;margin-bottom:40px;overflow:hidden;${index < badges.length - 1 ? 'page-break-after:always;' : ''}">
-          <div style="font-size:18px;font-weight:700;color:#0066ff;letter-spacing:2px;margin-bottom:30px;text-transform:uppercase;">SOFTINSA</div>
-          <div style="margin:0 auto 40px auto;display:flex;justify-content:center;align-items:center;width:120px;height:120px;">
-            <img src="${badgeDataUrl}" alt="Badge" style="width:120px;height:120px;object-fit:contain;" />
+    <body>
+      ${badges.map((badge, index) => `
+        <div class="page">
+          <div class="badge-header">${badge.name || badge.area}</div>
+          <img class="badge-img" src="${badge.badgeImage}" alt="Badge" />
+
+          <div class="detail-row">
+            <span class="detail-label">Área:</span>
+            <span class="detail-value">${badge.area}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
-            <span style="font-weight:600;color:#495057;">Área</span>
-            <span style="font-weight:700;color:#0066ff;">${badge.area || ''}</span>
+
+          <div class="detail-row">
+            <span class="detail-label">Nível:</span>
+            <span class="detail-value">${translateLevel(badge.typeId || badge.levelKey)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
-            <span style="font-weight:600;color:#495057;">Nível</span>
-            <span style="font-weight:700;color:#0066ff;">${translateLevel(badge.typeId || badge.levelKey)}</span>
+          <div class="detail-row">
+            <span class="detail-label">Pontos:</span>
+            <span class="detail-value">${badge.points}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
-            <span style="font-weight:600;color:#495057;">Pontos</span>
-            <span style="font-weight:700;color:#0066ff;">${badge.points || ''}</span>
+          <div class="detail-row">
+            <span class="detail-label">Data:</span>
+            <span class="detail-value">${badge.date}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
-            <span style="font-weight:600;color:#495057;">Data</span>
-            <span style="font-weight:700;color:#0066ff;">${badge.date || ''}</span>
+          <div class="detail-row">
+            <span class="detail-label">ID:</span>
+            <span class="detail-value">${badge.id}</span>
           </div>
-          <div style="font-size:16px;color:#868e96;margin:12px 0;">Dados da Badge</div>
-          <div style="font-size:22px;font-weight:700;color:#343a40;margin:8px 0;">${userName}</div>
-        </div>`;
-      }).join('')}
+
+          <div class="text-light" style="margin-top: 30px;">Dados da Badge</div>
+          <div class="user-name">${userName}</div>
+          <div class="date">${badge.date || new Date().toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+        </div>
+        ${index < badges.length - 1 ? '<div class="page-break"></div>' : ''}
+      `).join('')}
     </body>
     </html>
   `;
@@ -144,36 +155,40 @@ const generateBadgePagesPDF = async (badges, userName) => {
   return html;
 };
 
-const generateProfessionalCertificatePDF = async (badge, userName) => {
-  const badgeDataUrl = await renderMaskedBadge(resolveImageUrl(badge.badgeImage), badge.typeId || badge.levelKey, 150);
+const generateProfessionalCertificatePDF = (badge, userName) => {
   const html = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
       <title>Certificado - ${userName}</title>
+      <style>
+        @page { size: A4 landscape; margin: 0; }
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        .certificate { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .cert-inner { text-align: center; padding: 40px; border: 3px solid #1d8cf8; border-radius: 12px; max-width: 700px; }
+        .brand { font-size: 28px; font-weight: bold; color: #1d8cf8; margin-bottom: 20px; }
+        h3 { font-size: 22px; color: #333; }
+        .badge-img { width: 150px; height: 150px; object-fit: contain; margin: 20px auto; display: block; }
+        .copy { color: #666; font-size: 14px; margin: 10px 0; }
+        .name { font-size: 18px; font-weight: bold; color: #111; }
+        .area { font-size: 16px; font-weight: bold; color: #1d8cf8; }
+        .level { display: block; font-size: 14px; color: #555; margin-top: 5px; }
+        .date { display: block; font-size: 13px; color: #999; margin-top: 5px; }
+      </style>
     </head>
-    <body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;">
-      <div style="background:white;border-radius:24px;padding:60px 80px;max-width:600px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,102,255,0.15);border:4px solid #0066ff;position:relative;overflow:hidden;">
-        <div style="font-size:18px;font-weight:700;color:#0066ff;letter-spacing:2px;margin-bottom:20px;text-transform:uppercase;">SOFTINSA</div>
-        <h3 style="font-size:22px;font-weight:700;color:#495057;margin-bottom:30px;">Certificado de Conquista</h3>
-        <div style="margin:0 auto 40px auto;display:flex;justify-content:center;align-items:center;width:150px;height:150px;">
-          <img style="width:150px;height:150px;object-fit:contain;" src="${badgeDataUrl}" alt="Badge" />
-        </div>
-        <p style="color:#868e96;font-size:16px;margin:12px 0;">Concedemos o presente certificado a</p>
-        <div style="font-size:22px;font-weight:700;color:#343a40;margin:8px 0;">${userName}</div>
-        <p style="color:#868e96;font-size:16px;margin:12px 0;">pela conquista da badge</p>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
-          <span style="font-weight:600;color:#495057;">Badge</span>
-          <span style="font-weight:700;color:#0066ff;">${badge.area || ''}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e9ecef;font-size:16px;">
-          <span style="font-weight:600;color:#495057;">Nível</span>
-          <span style="font-weight:700;color:#0066ff;">${translateLevel(badge.typeId || badge.levelKey)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:16px;">
-          <span style="font-weight:600;color:#495057;">Data</span>
-          <span style="font-weight:700;color:#0066ff;">${badge.date || new Date().toLocaleDateString('pt-PT')}</span>
+    <body>
+      <div class="certificate">
+        <div class="cert-inner">
+          <div class="brand">SOFTINSA</div>
+          <h3>Certificado de Conquista</h3>
+          <img class="badge-img" src="${badge.badgeImage}" alt="Badge" />
+          <p class="copy">Concedemos o presente certificado a</p>
+          <strong class="name">${userName}</strong>
+          <p class="copy">pela conquista da badge</p>
+          <strong class="area">${badge.area}</strong>
+          <span class="level">${translateLevel(badge.typeId || badge.levelKey)}</span>
+          <span class="date">${badge.date || new Date().toLocaleDateString('pt-PT')}</span>
         </div>
       </div>
     </body>
@@ -222,8 +237,7 @@ function Exportacoes() {
         }
         
         if (Array.isArray(data) && data.length > 0) {
-          const obtainedBadges = data.filter((item) => item.status === 'obtido');
-          setBadgeItems(obtainedBadges.map(normalizeBadgeItem));
+          setBadgeItems(data.map(normalizeBadgeItem));
         } else {
           setBadgeItems([]);
         }
@@ -412,9 +426,13 @@ function Exportacoes() {
     }
 
     try {
-      const htmlContent = await generateBadgePagesPDF(selectedBadges, userName);
-      const date = new Date().toISOString().split('T')[0];
-      downloadHtmlAsPdf(htmlContent, `badges-${date}.pdf`);
+      const htmlContent = generateBadgePagesPDF(selectedBadges, userName);
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
     } catch (error) {
       console.error('Error generating badge pages:', error);
       alert('Erro ao gerar páginas das badges. Por favor, tente novamente.');
@@ -452,9 +470,13 @@ function Exportacoes() {
     }
 
     try {
-      const htmlContent = await generateProfessionalCertificatePDF(selectedCertificate, userName);
-      const date = new Date().toISOString().split('T')[0];
-      downloadHtmlAsPdf(htmlContent, `certificado-${date}.pdf`);
+      const htmlContent = generateProfessionalCertificatePDF(selectedCertificate, userName);
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
     } catch (error) {
       console.error('Error generating certificate:', error);
       alert('Erro ao gerar certificado. Por favor, tente novamente.');
@@ -503,7 +525,7 @@ function Exportacoes() {
           </button>
         </div>
 
-        <section className={`shell exports-shell${activeTab === 'badges' ? ' no-top-left-radius' : ''}`}>
+        <section className="shell exports-shell">
 
           <div className="toolbar catalog-controls">
             <div className="search-wrap catalog-search-wrap">
@@ -587,7 +609,7 @@ function Exportacoes() {
               <div className="exports-section-head">
                 <h2>{t('exports_badges_section_title')}</h2>
                 <div className="exports-section-actions">
-                  <button type="button" className="exports-link-button" onClick={toggleSelectAll}>
+                  <button type="button" className="btn-ghost exports-link-button" onClick={toggleSelectAll}>
                     {allVisibleSelected ? t('exports_deselect_all') : t('exports_select_all')}
                   </button>
                   <span className="exports-selected-count">{t('exports_selected_count', { count: selectedCount })}</span>

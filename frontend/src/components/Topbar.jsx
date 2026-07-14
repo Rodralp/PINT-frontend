@@ -57,7 +57,7 @@ function Topbar({ onToggleSidebar }) {
       return null;
     }
   })();
-  const _userName = loginData?.nome || t('app_user_default');
+  const userName = loginData?.nome || t('app_user_default');
 
   const languages = [
     { code: 'pt', label: t('lang_portuguese'), flag: '/flags/pt.svg' },
