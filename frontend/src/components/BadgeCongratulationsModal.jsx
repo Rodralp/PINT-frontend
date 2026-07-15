@@ -36,6 +36,11 @@ function BadgeCongratulationsModal({ isOpen, onClose, badge }) {
         </div>
 
         <h3 className="badge-congrats-name">{badge.name}</h3>
+        {badge.description && (
+          <p style={{ fontSize: '13px', color: '#94a3b8', margin: '4px 0 0' }}>
+            {badge.description}
+          </p>
+        )}
         <p className="badge-congrats-type">{badge.tipo || t('badge_congrats_special_badge', 'Badge Especial')}</p>
 
         {badge.points > 0 && (

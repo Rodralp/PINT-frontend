@@ -84,7 +84,8 @@ export default function ProfileEdit() {
             return found || {
               badgeDbId: v.nbadge,
               name: v.b_nome || 'Badge',
-              badgeImage: v.imagem || '/badges/default.png',
+              description: v.b_descricao || '',
+              badgeImage: v.imagem,
               points: v.pontos || 0,
               levelKey: v.tipo === 'Especial' ? 'special' : (normalizeLevelId(v.nivel) || undefined),
               typeId: v.tipo === 'Especial' ? 'special' : (normalizeLevelId(v.nivel) ? `badge_level_${normalizeLevelId(v.nivel)}` : undefined),
@@ -349,6 +350,11 @@ export default function ProfileEdit() {
                   <div className="vitrine-edit-card-name">
                     {badge.name || badge.area || 'Badge'}
                   </div>
+                  {badge.description && (
+                    <div style={{ fontSize: '11px', color: '#94a3b8', padding: '0 8px', textAlign: 'center' }}>
+                      {badge.description}
+                    </div>
+                  )}
                   <div className="vitrine-edit-card-controls">
                     <button
                       type="button"
@@ -401,6 +407,11 @@ export default function ProfileEdit() {
                       />
                     </div>
                     <span className="vitrine-available-name">{badge.name || badge.area}</span>
+                    {badge.description && (
+                      <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block' }}>
+                        {badge.description}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>

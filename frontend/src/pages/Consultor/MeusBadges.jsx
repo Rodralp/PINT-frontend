@@ -9,59 +9,6 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchMyBadges } from '../../services/consultorService';
 import '../../css/Consultor/CatalogoBadges_C.css';
 
-const badgeStates = [
-  {
-    id: 'aprovado',
-    label: 'Aprovado',
-    tint: 'rgba(34, 197, 94, 0.18)',
-    border: 'rgba(21, 128, 61, 0.48)',
-    buttonBg: '#dcfce7',
-    buttonBorder: '#16a34a',
-    buttonColor: '#15803d',
-    Icon: CheckCircle2,
-  },
-  {
-    id: 'pendente-tm',
-    label: 'Em Validação',
-    tint: 'rgba(250, 204, 21, 0.14)',
-    border: 'rgba(234, 179, 8, 0.36)',
-    buttonBg: '#fef3c7',
-    buttonBorder: '#eab308',
-    buttonColor: '#b45309',
-    Icon: SearchCheck,
-  },
-  {
-    id: 'pendente-sll',
-    label: 'Em Validação',
-    tint: 'rgba(250, 204, 21, 0.14)',
-    border: 'rgba(234, 179, 8, 0.36)',
-    buttonBg: '#fef3c7',
-    buttonBorder: '#eab308',
-    buttonColor: '#b45309',
-    Icon: SearchCheck,
-  },
-  {
-    id: 'candidatura_em_progresso',
-    label: 'Candidatura em Progresso',
-    tint: 'rgba(59, 130, 246, 0.12)',
-    border: 'rgba(37, 99, 235, 0.34)',
-    buttonBg: '#dbeafe',
-    buttonBorder: '#2563eb',
-    buttonColor: '#1d4ed8',
-    Icon: TimerReset,
-  },
-  {
-    id: 'rejeitado',
-    label: 'Rejeitado',
-    tint: 'rgba(248, 113, 113, 0.12)',
-    border: 'rgba(239, 68, 68, 0.34)',
-    buttonBg: '#fee2e2',
-    buttonBorder: '#ef4444',
-    buttonColor: '#dc2626',
-    Icon: AlertTriangle,
-  },
-];
-
 const getColumnsCount = () => {
   const width = window.innerWidth;
   if (width > 1400) return 5;
@@ -70,19 +17,28 @@ const getColumnsCount = () => {
   return 2;
 };
 
-const getExpirationStatus = (validade) => {
-  if (!validade) return null;
-  const today = new Date();
-  const expDate = new Date(validade);
-  const daysUntil = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-  if (daysUntil <= 0) return { status: 'expired', label: 'Expirada', days: daysUntil };
-  if (daysUntil <= 30) return { status: 'expiring', label: `Expira em ${daysUntil} dias`, days: daysUntil };
-  return null;
-};
-
 function MeusBadges() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const badgeStates = useMemo(() => [
+    { id: 'aprovado', label: t('approved'), tint: 'rgba(34, 197, 94, 0.18)', border: 'rgba(21, 128, 61, 0.48)', buttonBg: '#dcfce7', buttonBorder: '#16a34a', buttonColor: '#15803d', Icon: CheckCircle2 },
+    { id: 'pendente-tm', label: t('pedidos_status_in_review'), tint: 'rgba(250, 204, 21, 0.14)', border: 'rgba(234, 179, 8, 0.36)', buttonBg: '#fef3c7', buttonBorder: '#eab308', buttonColor: '#b45309', Icon: SearchCheck },
+    { id: 'pendente-sll', label: t('pedidos_status_in_review'), tint: 'rgba(250, 204, 21, 0.14)', border: 'rgba(234, 179, 8, 0.36)', buttonBg: '#fef3c7', buttonBorder: '#eab308', buttonColor: '#b45309', Icon: SearchCheck },
+    { id: 'candidatura_em_progresso', label: t('my_badges_application_in_progress'), tint: 'rgba(59, 130, 246, 0.12)', border: 'rgba(37, 99, 235, 0.34)', buttonBg: '#dbeafe', buttonBorder: '#2563eb', buttonColor: '#1d4ed8', Icon: TimerReset },
+    { id: 'rejeitado', label: t('rejected'), tint: 'rgba(248, 113, 113, 0.12)', border: 'rgba(239, 68, 68, 0.34)', buttonBg: '#fee2e2', buttonBorder: '#ef4444', buttonColor: '#dc2626', Icon: AlertTriangle },
+  ], [t]);
+
+  const getExpirationStatus = (validade) => {
+    if (!validade) return null;
+    const today = new Date();
+    const expDate = new Date(validade);
+    const daysUntil = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+    if (daysUntil <= 0) return { status: 'expired', label: t('expired'), days: daysUntil };
+    if (daysUntil <= 30) return { status: 'expiring', label: t('expires_in', { count: daysUntil }), days: daysUntil };
+    return null;
+  };
+
   const defaultSort = 'points_desc';
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
@@ -110,7 +66,7 @@ function MeusBadges() {
 
   const badgeStateMap = useMemo(
     () => badgeStates.reduce((acc, item) => ({ ...acc, [item.id]: item }), {}),
-    [],
+    [badgeStates],
   );
 
   useEffect(() => {
@@ -127,7 +83,7 @@ function MeusBadges() {
       } catch {
         if (isMounted) {
           setBadgeItems([]);
-          setStatusMessage('Não foi possível carregar os badges. Tente novamente em alguns segundos.');
+          setStatusMessage(t('my_badges_load_error'));
           setIsLoading(false);
         }
       }
@@ -138,37 +94,37 @@ function MeusBadges() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [t]);
 
   const filters = useMemo(() => [
-    { id: 'todos', label: 'Todos' },
-    { id: 'special', label: 'Especial' },
-    { id: 'aprovado', label: 'Aprovado' },
-    { id: 'pendente', label: 'Em Validação' },
-    { id: 'candidatura_em_progresso', label: 'Candidatura em Progresso' },
-    { id: 'rejeitado', label: 'Rejeitado' },
-  ], []);
+    { id: 'todos', label: t('all') },
+    { id: 'special', label: t('special') },
+    { id: 'aprovado', label: t('approved') },
+    { id: 'pendente', label: t('pedidos_status_in_review') },
+    { id: 'candidatura_em_progresso', label: t('my_badges_application_in_progress') },
+    { id: 'rejeitado', label: t('rejected') },
+  ], [t]);
 
   const sortOptions = useMemo(() => [
-    { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
-    { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
-    { id: 'area_asc', label: 'Area (A-Z)' },
-    { id: 'area_desc', label: 'Area (Z-A)' },
-  ], []);
+    { id: 'points_desc', label: t('sort_points_desc') },
+    { id: 'points_asc', label: t('sort_points_asc') },
+    { id: 'area_asc', label: t('sort_area_az') },
+    { id: 'area_desc', label: t('exports_sort_area_desc') },
+  ], [t]);
 
   const sortButtonLabels = useMemo(() => ({
-    points_desc: 'Pontos ↓',
-    points_asc: 'Pontos ↑',
-    area_asc: 'Area A-Z',
-    area_desc: 'Area Z-A',
-  }), []);
+    points_desc: t('sort_points_desc_short'),
+    points_asc: t('sort_points_asc_short'),
+    area_asc: t('sort_area_az_short'),
+    area_desc: t('sort_area_za_short'),
+  }), [t]);
 
   const activeFilterLabel = useMemo(() => {
     const selected = filters.find((filter) => filter.id === activeFilter);
-    return selected ? selected.label : 'Todos';
-  }, [filters, activeFilter]);
+    return selected ? selected.label : t('all');
+  }, [filters, activeFilter, t]);
 
-  const activeSortLabel = sortButtonLabels[sortBy] || 'Pontos ↓';
+  const activeSortLabel = sortButtonLabels[sortBy] || t('sort_points_desc_short');
   const hasActiveFilter = activeFilter !== 'todos';
   const hasActiveSort = sortBy !== defaultSort;
 
@@ -177,7 +133,7 @@ function MeusBadges() {
 
     return badgeItems.filter((item) => {
       const isSpecial = Boolean(item?.isSpecial) || item?.typeId === 'special' || !item?.levelKey;
-      const translatedLevel = isSpecial ? 'Especial' : t(item.levelKey || '');
+      const translatedLevel = isSpecial ? t('special') : t(item.levelKey || '');
       const stateLabel = badgeStateMap[item.stateId]?.label || '';
       const badgeTitle = String(item.name || item.area || '').toLowerCase();
       const filterMatch = activeFilter === 'todos'
@@ -290,7 +246,7 @@ function MeusBadges() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar badges..." />
+        <LoadingSpinner fullPage message={t('loading_badges')} />
       </Layout>
     );
   }
@@ -332,7 +288,7 @@ function MeusBadges() {
               </button>
 
               {showFilterDropdown && (
-                <div className="dropdown-menu" role="menu" aria-label="Filtros de badges">
+                <div className="dropdown-menu" role="menu" aria-label={t('my_badges_filter_aria')}>
                   {filters.map((filter) => (
                     <button
                       key={filter.id}
@@ -358,7 +314,7 @@ function MeusBadges() {
               </button>
 
               {showSortDropdown && (
-                <div className="dropdown-menu" role="menu" aria-label="Ordenacao de badges">
+                <div className="dropdown-menu" role="menu" aria-label={t('my_badges_sort_aria')}>
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
@@ -377,7 +333,7 @@ function MeusBadges() {
           <div className="catalog-grid">
             {pagedBadges.map((item) => {
               const isSpecial = Boolean(item?.isSpecial) || item?.typeId === 'special' || !item.levelKey;
-              const levelLabel = isSpecial ? 'Especial' : t(item.levelKey || '');
+              const levelLabel = isSpecial ? t('special') : t(item.levelKey || '');
               const currentState = badgeStateMap[item.stateId] || badgeStateMap.aprovado;
               const { Icon } = currentState;
               const expirationInfo = getExpirationStatus(item.validade);
@@ -427,7 +383,12 @@ function MeusBadges() {
                     />
                   </div>
 
-                  <div className="catalog-card-title">{item.name || item.area || 'Badge'}</div>
+                  <div className="catalog-card-title">{item.name || item.area || t('badge')}</div>
+                  {item.description && (
+                    <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '4px', lineHeight: '1.4' }}>
+                      {item.description}
+                    </div>
+                  )}
                   <div className="catalog-card-level">{levelLabel}</div>
 
                   <div className="catalog-card-meta">
@@ -438,19 +399,19 @@ function MeusBadges() {
                     {item.status === 'obtido' && (
                       <div className="catalog-meta-row">
                         <CheckCircle2 size={14} />
-                        <span>Obtida: {item.date}</span>
+                        <span>{t('my_badges_obtained_date')} {item.date}</span>
                       </div>
                     )}
                     {item.status === 'rejeitado' && (
                       <div className="catalog-meta-row">
                         <AlertTriangle size={14} />
-                        <span>Rejeitado: {item.date}</span>
+                        <span>{t('my_badges_rejected_date')} {item.date}</span>
                       </div>
                     )}
                     {item.status !== 'obtido' && item.status !== 'rejeitado' && (
                       <div className="catalog-meta-row">
                         <TimerReset size={14} />
-                        <span>Pedido: {item.date}</span>
+                        <span>{t('my_badges_request_date')} {item.date}</span>
                       </div>
                     )}
                     {item.validade && (
@@ -458,8 +419,8 @@ function MeusBadges() {
                         <Clock3 size={14} />
                         <span>
                           {expirationInfo?.status === 'expired'
-                            ? 'Expirada'
-                            : `Expira: ${new Date(item.validade).toLocaleDateString('pt-PT')}`
+                            ? t('expired')
+                            : `${t('export_expires')} ${new Date(item.validade).toLocaleDateString('pt-PT')}`
                           }
                         </span>
                       </div>
@@ -500,7 +461,7 @@ function MeusBadges() {
           </div>
 
           {filteredBadges.length === 0 && (
-            <div className="empty-state catalog-empty-state">Nenhum badge encontrado com os filtros escolhidos.</div>
+            <div className="empty-state catalog-empty-state">{t('my_badges_no_results_filtered')}</div>
           )}
 
           <Pagination page={page} totalPages={totalPages} setPage={setPage} />

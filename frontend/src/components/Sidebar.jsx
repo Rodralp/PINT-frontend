@@ -298,7 +298,7 @@ function Sidebar() {
       <div className="sidebar-profile">
         <img
           src={sidebarAvatar || loginData?.avatar || `/avatars/default-avatar.svg`}
-          alt="Usuário"
+          alt={t('app_user_default')}
           className="sidebar-avatar"
           onError={(event) => {
             event.currentTarget.src = `/avatars/default-avatar.svg`;

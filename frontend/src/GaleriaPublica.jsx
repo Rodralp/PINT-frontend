@@ -46,6 +46,7 @@ const normalizeBadges = (items) => {
     return {
       id: item.id || `${item.area || 'badge'}-${index}`,
       name: item.name || item.title || item.area || 'Badge',
+      description: item.description || '',
       area: item.area || 'Area Tecnica',
       levelKey,
       levelLabel,
@@ -288,6 +289,11 @@ function GaleriaPublica() {
                     </div>
 
                     <div className="catalog-card-title">{item.name || item.area || 'Badge'}</div>
+                    {item.description && (
+                      <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '4px', lineHeight: '1.4' }}>
+                        {item.description}
+                      </div>
+                    )}
                     <div className="catalog-card-level">{item.levelKey ? t(item.levelKey) : item.levelLabel}</div>
 
                     <div className="catalog-card-meta">

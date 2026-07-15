@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Search,
   SlidersHorizontal,
@@ -10,24 +11,6 @@ import Pagination from '../../components/Pagination';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchRankingConsultoresSLL } from '../../services/serviceLineLeaderService';
 import '../../css/Consultor/Ranking_C.css';
-
-const sortOptions = [
-  { id: 'points_desc', label: 'Pontos (Maior para Menor)' },
-  { id: 'points_asc', label: 'Pontos (Menor para Maior)' },
-  { id: 'badges_desc', label: 'Badges (Maior para Menor)' },
-  { id: 'badges_asc', label: 'Badges (Menor para Maior)' },
-  { id: 'name_asc', label: 'Nome (A-Z)' },
-  { id: 'name_desc', label: 'Nome (Z-A)' },
-];
-
-const sortButtonLabels = {
-  points_desc: 'Pontos ↓',
-  points_asc: 'Pontos ↑',
-  badges_desc: 'Badges ↓',
-  badges_asc: 'Badges ↑',
-  name_asc: 'Nome A-Z',
-  name_desc: 'Nome Z-A',
-};
 
 const ITEMS_PER_PAGE = 12;
 
@@ -126,6 +109,26 @@ const resolveServiceLineStats = (consultant, currentServiceLine) => {
 };
 
 function RankingSLL() {
+  const { t } = useTranslation();
+
+  const sortOptions = useMemo(() => [
+    { id: 'points_desc', label: t('ranking_sll_sort_points_desc') },
+    { id: 'points_asc', label: t('ranking_sll_sort_points_asc') },
+    { id: 'badges_desc', label: t('ranking_sll_sort_badges_desc') },
+    { id: 'badges_asc', label: t('ranking_sll_sort_badges_asc') },
+    { id: 'name_asc', label: t('ranking_sll_sort_name_az') },
+    { id: 'name_desc', label: t('ranking_sll_sort_name_za') },
+  ], [t]);
+
+  const sortButtonLabels = useMemo(() => ({
+    points_desc: t('dashboard_points_short') + ' ↓',
+    points_asc: t('dashboard_points_short') + ' ↑',
+    badges_desc: t('dashboard_badges_short') + ' ↓',
+    badges_asc: t('dashboard_badges_short') + ' ↑',
+    name_asc: t('name') + ' A-Z',
+    name_desc: t('name') + ' Z-A',
+  }), [t]);
+
   const loginData = useMemo(() => getStoredLoginData(), []);
   const [consultants, setConsultants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -156,7 +159,7 @@ function RankingSLL() {
       } catch {
         if (isMounted) {
           setConsultants([]);
-          setStatusMessage('Não foi possível carregar o ranking. Tente novamente em alguns segundos.');
+          setStatusMessage(t('error_generic'));
           setIsLoading(false);
         }
       }
@@ -278,7 +281,7 @@ function RankingSLL() {
     }));
   }, [sortedConsultants, safePage, rankingByConsultantId]);
 
-  const activeSortLabel = sortButtonLabels[sortBy] || 'Pontos ↓';
+  const activeSortLabel = sortButtonLabels[sortBy] || (t('dashboard_points_short') + ' ↓');
   const hasActiveSort = sortBy !== defaultSort;
 
   useEffect(() => {
@@ -309,7 +312,7 @@ function RankingSLL() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar ranking..." />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }
@@ -318,7 +321,7 @@ function RankingSLL() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>Ranking da Service Line</h1>
+          <h1>{t('ranking_sll_title')}</h1>
         </header>
 
         <section className="shell">
@@ -332,8 +335,8 @@ function RankingSLL() {
               <Search size={20} />
               <input
                 type="text"
-                placeholder="Pesquisar consultores"
-                aria-label="Pesquisar consultores"
+                placeholder={t('search_placeholder')}
+                aria-label={t('search_placeholder')}
                 value={searchTerm}
                 onChange={onSearchChange}
               />
@@ -346,11 +349,11 @@ function RankingSLL() {
                 onClick={() => setShowSortDropdown((current) => !current)}
               >
                 <SlidersHorizontal size={20} />
-                <span className="catalog-action-btn-label">{`Ordenar: ${activeSortLabel}`}</span>
+                <span className="catalog-action-btn-label">{`${t('sort')}: ${activeSortLabel}`}</span>
               </button>
 
               {showSortDropdown && (
-                <div className="dropdown-menu" role="menu" aria-label="Ordenar ranking">
+                <div className="dropdown-menu" role="menu" aria-label={t('sort')}>
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
@@ -367,7 +370,7 @@ function RankingSLL() {
           </div>
 
           <div className="ranking-current-state">
-            {sortedConsultants.length} consultor(es) da Service Line {currentServiceLine} · {activeSortLabel}
+            {t('ranking_sll_consultants_count', { count: sortedConsultants.length, serviceLine: currentServiceLine })} · {activeSortLabel}
           </div>
 
           <div className="ranking-grid">
@@ -395,11 +398,11 @@ function RankingSLL() {
 
                     <div className="ranking-metrics">
                       <div>
-                        <small>Pontos</small>
+                        <small>{t('dashboard_points_short')}</small>
                         <p>{consultant.points}</p>
                       </div>
                       <div>
-                        <small>Badges</small>
+                        <small>{t('dashboard_badges_short')}</small>
                         <p>
                           <Award size={13} />
                           {consultant.badges}
@@ -414,7 +417,7 @@ function RankingSLL() {
 
           {sortedConsultants.length === 0 && (
             <div className="empty-state ranking-empty-state">
-              Nao ha consultores para os filtros escolhidos nesta service line.
+              {t('ranking_sll_empty_state')}
             </div>
           )}
 

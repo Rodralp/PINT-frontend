@@ -271,12 +271,12 @@ PÁGINA PRINCIPAL - LAYOUT E COMPONENTES COMPARTILHADOS
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 92px;
   height: 26px;
   border-radius: var(--radius-pill);
-  padding: 0 var(--sp-3);
+  padding: 0 10px;
   font-size: var(--fs-xs);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .status-badge.success {
@@ -423,4 +423,151 @@ PÁGINA PRINCIPAL - LAYOUT E COMPONENTES COMPARTILHADOS
   text-align: center;
   padding: var(--sp-3);
   background: var(--surface-empty);
+}
+
+
+/* -- Report Charts -------------------------------------------- */
+.report-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.report-chart-card {
+  background: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.report-chart-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2f3747;
+  margin: 0 0 12px;
+}
+
+.report-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 160px;
+  padding-left: 32px;
+  position: relative;
+}
+
+.report-bar-chart-y-axis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.report-bar-chart-y-tick {
+  font-size: 10px;
+  color: #8892a4;
+  line-height: 1;
+  text-align: right;
+}
+
+.report-bar-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.report-bar-track {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.report-bar {
+  width: 70%;
+  max-width: 40px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s ease;
+}
+
+.report-bar-label {
+  font-size: 10px;
+  color: #64748b;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.report-bar-value {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2f3747;
+  text-align: center;
+}
+
+.report-pie-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+}
+
+.report-pie {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.report-pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.report-pie-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.report-pie-legend-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.report-pie-legend-pct {
+  font-weight: 700;
+  color: #2f3747;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .report-chart-grid {
+    grid-template-columns: 1fr;
+  }
 }

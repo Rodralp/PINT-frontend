@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ChevronDown, ChevronRight, Eye, EyeOff, FileText, Folder, FolderOpen, Pencil, Plus, X } from 'lucide-react';
 import Layout from '../../components/Layout';
 import {
@@ -19,11 +20,14 @@ import {
 import '../../css/Consultor/LearningPaths_C.css';
 import '../../css/AdminGestor/LearningPaths_AG.css';
 
-const entityLabels = {
-  learningPath: 'Learning Path',
-  serviceLine: 'Service Line',
-  area: 'Area',
-  level: 'Nivel',
+const getEntityLabel = (type, t) => {
+  const labels = {
+    learningPath: t('learning_paths_entity_lp'),
+    serviceLine: t('learning_paths_entity_sl'),
+    area: t('learning_paths_entity_area'),
+    level: t('learning_paths_entity_level'),
+  };
+  return labels[type] || type;
 };
 
 const SIDEBAR_WIDTH_STORAGE_KEY = 'lp-admin-explorer-sidebar-width';
@@ -46,7 +50,7 @@ const getNumericId = (value) => {
 
 const buildEntityId = (prefix, numericId) => `${prefix}-${numericId}`;
 
-const getStatusLabel = (isActive) => (isActive ? 'Ativo' : 'Inativo');
+const getStatusLabel = (isActive, t) => (isActive ? t('learning_paths_status_active') : t('learning_paths_status_inactive'));
 
 const buildEditorForm = (type, entity) => {
   switch (type) {
@@ -78,7 +82,7 @@ const buildEditorForm = (type, entity) => {
 const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.onload = () => resolve(String(reader.result || ''));
-  reader.onerror = () => reject(new Error('Nao foi possivel ler o ficheiro de imagem.'));
+  reader.onerror = () => reject(new Error());
   reader.readAsDataURL(file);
 });
 
@@ -110,6 +114,7 @@ const getEditorEntity = (paths, editor) => {
 };
 
 function LearningPathsAG() {
+  const { t } = useTranslation();
   const [learningPathsData, setLearningPathsData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -150,7 +155,7 @@ function LearningPathsAG() {
     return selectedPath.serviceLines.find((item) => item.id === selectedServiceLineId) || null;
   }, [selectedPath, selectedServiceLineId]);
 
-  const pageTitle = selectedServiceLine ? 'Service Line' : 'Learning Paths';
+  const pageTitle = selectedServiceLine ? t('learning_paths_entity_sl') : 'Learning Paths';
 
   const loadLearningPaths = async (options = {}) => {
     setIsLoading(true);
@@ -180,12 +185,12 @@ function LearningPathsAG() {
         }
       } else {
         setLearningPathsData([]);
-        setErrorMessage('Nao existem Learning Paths disponiveis.');
+        setErrorMessage(t('learning_paths_no_available'));
       }
     } catch (error) {
       console.error('Failed to load learning paths:', error);
       setLearningPathsData([]);
-      setErrorMessage('Nao foi possivel carregar os Learning Paths da base de dados.');
+      setErrorMessage(t('learning_paths_load_error'));
     } finally {
       setIsLoading(false);
     }
@@ -302,28 +307,28 @@ function LearningPathsAG() {
       if (payload.type === 'learningPath') {
         const learningPathId = getNumericId(payload.pathId);
         if (!learningPathId) {
-          throw new Error('Learning Path invalido.');
+          throw new Error(t('learning_paths_invalid_lp'));
         }
 
         await updateAdminLearningPathStatus(learningPathId, nextIsActive);
       } else if (payload.type === 'serviceLine') {
         const serviceLineId = getNumericId(payload.serviceLineId);
         if (!serviceLineId) {
-          throw new Error('Service Line invalida.');
+          throw new Error(t('learning_paths_invalid_sl'));
         }
 
         await updateAdminServiceLineStatus(serviceLineId, nextIsActive);
       } else if (payload.type === 'area') {
         const areaId = getNumericId(payload.areaId);
         if (!areaId) {
-          throw new Error('Area invalida.');
+          throw new Error(t('learning_paths_invalid_area'));
         }
 
         await updateAdminAreaStatus(areaId, nextIsActive);
       } else if (payload.type === 'level') {
         const levelId = getNumericId(payload.levelId);
         if (!levelId) {
-          throw new Error('Nivel invalido.');
+          throw new Error(t('learning_paths_invalid_level'));
         }
 
         await updateAdminLevelStatus(levelId, nextIsActive);
@@ -336,7 +341,7 @@ function LearningPathsAG() {
         expandedAreaIds,
       });
     } catch (error) {
-      setStatusActionError(error?.message || 'Nao foi possivel atualizar o estado.');
+      setStatusActionError(error?.message || t('learning_paths_toggle_error'));
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -393,7 +398,7 @@ function LearningPathsAG() {
     }
 
     if (selectedFile.size > MAX_EDITOR_IMAGE_SIZE_BYTES) {
-      setEditorError('A imagem e demasiado grande (maximo 1.5MB).');
+      setEditorError(t('learning_paths_image_too_large'));
       input.value = '';
       return;
     }
@@ -406,7 +411,7 @@ function LearningPathsAG() {
       }));
       setEditorError('');
     } catch (error) {
-      setEditorError(error?.message || 'Nao foi possivel carregar a imagem.');
+      setEditorError(error?.message || t('learning_paths_image_error'));
     } finally {
       input.value = '';
     }
@@ -430,12 +435,12 @@ function LearningPathsAG() {
     const trimmedTitle = normalizeText(editorForm.title);
 
     if (type !== 'level' && !trimmedName) {
-      setEditorError('Indique um nome.');
+      setEditorError(t('learning_paths_name_required'));
       return;
     }
 
     if (type === 'level' && !trimmedTitle) {
-      setEditorError('Indique um titulo.');
+      setEditorError(t('learning_paths_title_required'));
       return;
     }
 
@@ -463,7 +468,7 @@ function LearningPathsAG() {
 
         const pathId = getNumericId(editor.pathId);
         if (!pathId) {
-          setEditorError('Learning Path invalido.');
+          setEditorError(t('learning_paths_invalid_lp'));
           return;
         }
 
@@ -479,13 +484,13 @@ function LearningPathsAG() {
       if (type === 'serviceLine') {
         const pathId = editor.pathId || selectedPath?.id;
         if (!pathId) {
-          setEditorError('Selecione um Learning Path.');
+          setEditorError(t('learning_paths_select_lp'));
           return;
         }
 
         const numericPathId = getNumericId(pathId);
         if (!numericPathId) {
-          setEditorError('Learning Path invalido.');
+          setEditorError(t('learning_paths_invalid_lp'));
           return;
         }
 
@@ -509,7 +514,7 @@ function LearningPathsAG() {
 
         const serviceLineId = getNumericId(editor.serviceLineId);
         if (!serviceLineId) {
-          setEditorError('Service Line invalida.');
+          setEditorError(t('learning_paths_invalid_sl'));
           return;
         }
 
@@ -528,13 +533,13 @@ function LearningPathsAG() {
         const serviceLineId = editor.serviceLineId || selectedServiceLine?.id;
 
         if (!pathId || !serviceLineId) {
-          setEditorError('Selecione uma Service Line.');
+          setEditorError(t('learning_paths_select_sl'));
           return;
         }
 
         const numericServiceLineId = getNumericId(serviceLineId);
         if (!numericServiceLineId) {
-          setEditorError('Service Line invalida.');
+          setEditorError(t('learning_paths_invalid_sl'));
           return;
         }
 
@@ -559,7 +564,7 @@ function LearningPathsAG() {
 
         const areaId = getNumericId(editor.areaId);
         if (!areaId) {
-          setEditorError('Area invalida.');
+          setEditorError(t('learning_paths_invalid_area'));
           return;
         }
 
@@ -578,13 +583,13 @@ function LearningPathsAG() {
         const areaId = editor.areaId;
 
         if (!pathId || !serviceLineId || !areaId) {
-          setEditorError('Selecione uma area.');
+          setEditorError(t('learning_paths_select_area'));
           return;
         }
 
         const numericAreaId = getNumericId(areaId);
         if (!numericAreaId) {
-          setEditorError('Area invalida.');
+          setEditorError(t('learning_paths_invalid_area'));
           return;
         }
 
@@ -606,7 +611,7 @@ function LearningPathsAG() {
 
         const levelId = getNumericId(editor.levelId);
         if (!levelId) {
-          setEditorError('Nivel invalido.');
+          setEditorError(t('learning_paths_invalid_level'));
           return;
         }
 
@@ -620,7 +625,7 @@ function LearningPathsAG() {
         closeEditor();
       }
     } catch (error) {
-      setEditorError(error?.message || 'Nao foi possivel guardar.');
+      setEditorError(error?.message || t('learning_paths_save_error'));
     } finally {
       setIsSaving(false);
     }
@@ -634,8 +639,8 @@ function LearningPathsAG() {
     return (
       <aside className="lp-admin-explorer-sidebar" aria-label="Estrutura de Learning Paths">
         <header className="lp-admin-pane-head">
-          <p className="lp-admin-pane-title">Estrutura</p>
-          <span className="lp-admin-pane-hint">{learningPathsData.length} pastas</span>
+          <p className="lp-admin-pane-title">{t('learning_paths_structure')}</p>
+          <span className="lp-admin-pane-hint">{learningPathsData.length} {t('learning_paths_folders')}</span>
         </header>
 
         <div className="lp-admin-tree-list">
@@ -688,7 +693,7 @@ function LearningPathsAG() {
 
                 {isExpanded && (
                   <div id={`learning-path-tree-${path.id}`} className="lp-admin-tree-children">
-                    {pathServiceLines.length === 0 && <p className="lp-admin-tree-empty">Sem Service Lines</p>}
+                    {pathServiceLines.length === 0 && <p className="lp-admin-tree-empty">{t('learning_paths_no_sl')}</p>}
 
                     {pathServiceLines.map((serviceLine) => {
                       const isSelectedServiceLine =
@@ -730,7 +735,7 @@ function LearningPathsAG() {
                       onClick={() => openEditor({ type: 'serviceLine', mode: 'create', pathId: path.id })}
                     >
                       <Plus size={14} />
-                      Nova Service Line
+                      {t('learning_paths_new_sl')}
                     </button>
                   </div>
                 )}
@@ -753,11 +758,11 @@ function LearningPathsAG() {
       <section className="lp-admin-explorer-content">
         <header className="lp-admin-content-head">
           <div>
-            <p className="lp-admin-breadcrumb">Diretorio Atual</p>
+            <p className="lp-admin-breadcrumb">{t('learning_paths_current_dir')}</p>
             <h2>{selectedPath.name}</h2>
-            <p className="lp-admin-content-meta">{serviceLines.length} service lines</p>
+            <p className="lp-admin-content-meta">{serviceLines.length} {t('learning_paths_sl_count')}</p>
             <span className={`lp-admin-status-chip ${selectedPath.isActive ? 'is-active' : 'is-inactive'}`}>
-              {getStatusLabel(selectedPath.isActive)}
+              {getStatusLabel(selectedPath.isActive, t)}
             </span>
           </div>
 
@@ -768,7 +773,7 @@ function LearningPathsAG() {
               onClick={() => openEditor({ type: 'learningPath', mode: 'edit', pathId: selectedPath.id })}
             >
               <Pencil size={16} />
-              Editar Learning Path
+              {t('learning_paths_edit_lp')}
             </button>
             <button
               type="button"
@@ -776,7 +781,7 @@ function LearningPathsAG() {
               onClick={() => openEditor({ type: 'serviceLine', mode: 'create', pathId: selectedPath.id })}
             >
               <Plus size={16} />
-              Nova Service Line
+              {t('learning_paths_new_sl')}
             </button>
             <button
               type="button"
@@ -791,22 +796,22 @@ function LearningPathsAG() {
               disabled={isUpdatingStatus}
             >
               {selectedPath.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
-              {selectedPath.isActive ? 'Desativar' : 'Ativar'}
+              {selectedPath.isActive ? t('learning_paths_deactivate') : t('learning_paths_activate')}
             </button>
           </div>
         </header>
 
-        <p className="lp-admin-content-description">{selectedPath.description || 'Sem descricao.'}</p>
+        <p className="lp-admin-content-description">{selectedPath.description || t('learning_paths_no_description')}</p>
 
         <div className="lp-admin-file-table">
           <div className="lp-admin-file-table-head">
-            <span>Nome</span>
-            <span>Areas</span>
-            <span>Acoes</span>
+            <span>{t('learning_paths_th_name')}</span>
+            <span>{t('learning_paths_th_areas')}</span>
+            <span>{t('learning_paths_th_actions')}</span>
           </div>
 
           {serviceLines.length === 0 && (
-            <p className="lp-admin-empty-panel">Este Learning Path ainda nao tem Service Lines.</p>
+            <p className="lp-admin-empty-panel">{t('learning_paths_no_sl_yet')}</p>
           )}
 
           {serviceLines.map((serviceLine) => (
@@ -827,9 +832,9 @@ function LearningPathsAG() {
                 <FileText size={16} aria-hidden="true" />
                 <div>
                   <strong className="lp-admin-file-name">{serviceLine.name}</strong>
-                  <span className="lp-admin-file-subtitle">{serviceLine.description || 'Sem descricao.'}</span>
+                  <span className="lp-admin-file-subtitle">{serviceLine.description || t('learning_paths_no_description')}</span>
                   <span className={`lp-admin-inline-status ${serviceLine.isActive ? 'is-active' : 'is-inactive'}`}>
-                    {getStatusLabel(serviceLine.isActive)}
+                    {getStatusLabel(serviceLine.isActive, t)}
                   </span>
                 </div>
               </div>
@@ -852,7 +857,7 @@ function LearningPathsAG() {
                   disabled={isUpdatingStatus}
                 >
                   {serviceLine.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
-                  {serviceLine.isActive ? 'Desativar' : 'Ativar'}
+                  {serviceLine.isActive ? t('learning_paths_deactivate') : t('learning_paths_activate')}
                 </button>
                 <button
                   type="button"
@@ -868,7 +873,7 @@ function LearningPathsAG() {
                   }}
                 >
                   <Pencil size={16} />
-                  Editar
+                  {t('learning_paths_modal_edit')}
                 </button>
                 <ChevronRight size={18} className="lp-go-icon" aria-hidden="true" />
               </div>
@@ -888,11 +893,11 @@ function LearningPathsAG() {
       <section className="lp-admin-explorer-content">
         <header className="lp-admin-content-head">
           <div>
-            <p className="lp-admin-breadcrumb">{selectedPath.name} / Service Line</p>
+            <p className="lp-admin-breadcrumb">{selectedPath.name} / {t('learning_paths_entity_sl')}</p>
             <h2>{selectedServiceLine.name}</h2>
-            <p className="lp-admin-content-meta">{(selectedServiceLine.areas || []).length} areas</p>
+            <p className="lp-admin-content-meta">{(selectedServiceLine.areas || []).length} {t('learning_paths_areas_count')}</p>
             <span className={`lp-admin-status-chip ${selectedServiceLine.isActive ? 'is-active' : 'is-inactive'}`}>
-              {getStatusLabel(selectedServiceLine.isActive)}
+              {getStatusLabel(selectedServiceLine.isActive, t)}
             </span>
           </div>
 
@@ -910,7 +915,7 @@ function LearningPathsAG() {
               }
             >
               <Pencil size={16} />
-              Editar
+              {t('learning_paths_modal_edit')}
             </button>
             <button
               type="button"
@@ -925,7 +930,7 @@ function LearningPathsAG() {
               }
             >
               <Plus size={16} />
-              Nova Area
+              {t('learning_paths_new_area')}
             </button>
             <button
               type="button"
@@ -941,7 +946,7 @@ function LearningPathsAG() {
               disabled={isUpdatingStatus}
             >
               {selectedServiceLine.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
-              {selectedServiceLine.isActive ? 'Desativar' : 'Ativar'}
+              {selectedServiceLine.isActive ? t('learning_paths_deactivate') : t('learning_paths_activate')}
             </button>
           </div>
         </header>
@@ -952,12 +957,12 @@ function LearningPathsAG() {
             alt={selectedServiceLine.name}
             className="lp-service-line-hero-image"
           />
-          <p>{selectedServiceLine.description || 'Sem descricao.'}</p>
+          <p>{selectedServiceLine.description || t('learning_paths_no_description')}</p>
         </article>
 
         <section className="lp-area-shell lp-admin-area-shell" aria-label={`Areas da service line ${selectedServiceLine.name}`}>
           <div className="lp-admin-section-row">
-            <h3 className="lp-admin-section-title">Areas</h3>
+            <h3 className="lp-admin-section-title">{t('learning_paths_areas_title')}</h3>
           </div>
 
           <div className="lp-area-list">
@@ -977,12 +982,12 @@ function LearningPathsAG() {
                     <div className="lp-area-banner lp-admin-area-banner">
                       <div className="lp-admin-area-banner-main">
                         <strong>{area.name}</strong>
-                        <span>{(area.levels || []).length} niveis</span>
+                        <span>{(area.levels || []).length} {t('learning_paths_levels_count')}</span>
                       </div>
 
                       <div className="lp-area-banner-actions">
                         <span className={`lp-admin-inline-status ${area.isActive ? 'is-active' : 'is-inactive'}`}>
-                          {getStatusLabel(area.isActive)}
+                          {getStatusLabel(area.isActive, t)}
                         </span>
                         <ChevronDown
                           size={20}
@@ -997,8 +1002,8 @@ function LearningPathsAG() {
                     <div id={`area-badges-${areaRowId}`} className="lp-area-badges lp-admin-area-body">
                       <div className="lp-area-content-head lp-admin-area-head">
                         <div className="lp-admin-area-head-copy">
-                          <h3>Niveis</h3>
-                          <span className="lp-progress-label">{(area.levels || []).length} niveis</span>
+                          <h3>{t('learning_paths_levels_title')}</h3>
+                          <span className="lp-progress-label">{(area.levels || []).length} {t('learning_paths_levels_count')}</span>
                         </div>
                         <div className="lp-admin-inline-actions">
                           <button
@@ -1015,7 +1020,7 @@ function LearningPathsAG() {
                             }
                           >
                             <Pencil size={16} />
-                            Editar area
+                            {t('learning_paths_edit_area')}
                           </button>
                           <button
                             type="button"
@@ -1032,7 +1037,7 @@ function LearningPathsAG() {
                             disabled={isUpdatingStatus}
                           >
                             {area.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
-                            {area.isActive ? 'Desativar area' : 'Ativar area'}
+                            {area.isActive ? t('learning_paths_deactivate_area') : t('learning_paths_activate_area')}
                           </button>
                           <button
                             type="button"
@@ -1048,14 +1053,14 @@ function LearningPathsAG() {
                             }
                           >
                             <Plus size={16} />
-                            Novo nivel
+                            {t('learning_paths_new_level')}
                           </button>
                         </div>
                       </div>
 
                       <div className="lp-level-list">
                         {(area.levels || []).length === 0 && (
-                          <p className="lp-admin-empty">Sem niveis registados.</p>
+                          <p className="lp-admin-empty">{t('learning_paths_no_levels')}</p>
                         )}
                         {(area.levels || []).map((level) => (
                           <div key={`${area.id}-${level.id}`} className={`lp-level-row lp-admin-level-row ${!level.isActive ? 'is-inactive' : ''}`}>
@@ -1063,7 +1068,7 @@ function LearningPathsAG() {
                               <strong>{level.title}</strong>
                               <span>{level.subtitle}</span>
                               <span className={`lp-admin-inline-status ${level.isActive ? 'is-active' : 'is-inactive'}`}>
-                                {getStatusLabel(level.isActive)}
+                                {getStatusLabel(level.isActive, t)}
                               </span>
                             </div>
                             <div className="lp-admin-row-actions">
@@ -1083,7 +1088,7 @@ function LearningPathsAG() {
                                 disabled={isUpdatingStatus}
                               >
                                 {level.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
-                                {level.isActive ? 'Desativar' : 'Ativar'}
+                                {level.isActive ? t('learning_paths_deactivate') : t('learning_paths_activate')}
                               </button>
                               <button
                                 type="button"
@@ -1100,7 +1105,7 @@ function LearningPathsAG() {
                                 }
                               >
                                 <Pencil size={16} />
-                                Editar
+                                {t('learning_paths_modal_edit')}
                               </button>
                             </div>
                           </div>
@@ -1118,7 +1123,7 @@ function LearningPathsAG() {
   };
 
   const editorTitle = editor
-    ? `${editor.mode === 'create' ? 'Novo' : 'Editar'} ${entityLabels[editor.type]}`
+    ? `${editor.mode === 'create' ? t('learning_paths_modal_new') : t('learning_paths_modal_edit')} ${getEntityLabel(editor.type, t)}`
     : '';
 
   return (
@@ -1144,13 +1149,13 @@ function LearningPathsAG() {
               onClick={() => openEditor({ type: 'learningPath', mode: 'create' })}
             >
               <Plus size={16} />
-              Novo Learning Path
+              {t('learning_paths_btn_new_lp')}
             </button>
           </div>
         </header>
 
 
-        {isLoading && <p className="lp-progress-label">A carregar Learning Paths...</p>}
+        {isLoading && <p className="lp-progress-label">{t('learning_paths_loading')}</p>}
         {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
         {!isLoading && !errorMessage && statusActionError && (
           <p className="lp-progress-label lp-admin-status-error">{statusActionError}</p>
@@ -1197,7 +1202,7 @@ function LearningPathsAG() {
                 <div className="lp-admin-modal-form">
                   {(editor.type === 'learningPath' || editor.type === 'serviceLine' || editor.type === 'area') && (
                     <label>
-                      Nome
+                      {t('learning_paths_field_name')}
                       <input
                         type="text"
                         value={editorForm?.name || ''}
@@ -1210,7 +1215,7 @@ function LearningPathsAG() {
 
                   {(editor.type === 'learningPath' || editor.type === 'serviceLine' || editor.type === 'area') && (
                     <label>
-                      Descricao
+                      {t('learning_paths_field_description')}
                       <textarea
                         rows={4}
                         value={editorForm?.description || ''}
@@ -1223,7 +1228,7 @@ function LearningPathsAG() {
 
                   {editor.type === 'serviceLine' && (
                     <div className="lp-admin-modal-image-field">
-                      <span>Imagem da Service Line</span>
+                      <span>{t('learning_paths_field_image')}</span>
                       <input type="file" accept="image/*" onChange={handleEditorImageFileChange} />
                       <div className="lp-admin-modal-image-preview-row">
                         <img
@@ -1232,16 +1237,16 @@ function LearningPathsAG() {
                           className="lp-admin-modal-image-preview"
                         />
                         <button type="button" className="lp-admin-btn ghost" onClick={clearEditorImage}>
-                          Repor imagem padrao
+                          {t('learning_paths_reset_image')}
                         </button>
                       </div>
-                      <small>Formatos suportados: png, jpg, svg, etc. (maximo 1.5MB).</small>
+                      <small>{t('learning_paths_image_formats')}</small>
                     </div>
                   )}
 
                   {editor.type === 'level' && (
                     <label>
-                      Titulo
+                      {t('learning_paths_field_title')}
                       <input
                         type="text"
                         value={editorForm?.title || ''}
@@ -1257,10 +1262,10 @@ function LearningPathsAG() {
 
                 <footer className="lp-admin-modal-actions">
                   <button type="button" className="lp-admin-btn secondary" onClick={closeEditor}>
-                    Cancelar
+                    {t('cancel')}
                   </button>
                   <button type="button" className="lp-admin-btn" onClick={handleSaveEditor} disabled={isSaving}>
-                    Guardar
+                    {t('save')}
                   </button>
                 </footer>
               </div>

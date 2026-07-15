@@ -205,7 +205,8 @@ function Profile() {
               id: `vitrine-${v.nbadge}`,
               badgeDbId: v.nbadge,
               name: v.b_nome || 'Badge',
-              badgeImage: v.imagem || '/badges/default.png',
+              description: v.b_descricao || '',
+              badgeImage: v.imagem,
               points: v.pontos || 0,
               isSpecial,
               levelKey: resolvedLevelId || undefined,
@@ -406,6 +407,11 @@ function Profile() {
                     levelLabel={badge.levelLabel}
                   />
                   <span className="vitrine-badge-name">{badge.name || badge.area}</span>
+                  {badge.description && (
+                    <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', textAlign: 'center', marginTop: '2px' }}>
+                      {badge.description}
+                    </span>
+                  )}
                 </div>
               ))}
               {vitrineItems.length === 0 && (
@@ -502,6 +508,11 @@ function Profile() {
             </div>
             <div>
               <strong>{badge.name || badge.area || 'Badge'}</strong>
+              {badge.description && (
+                <span style={{ display: 'block', fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+                  {badge.description}
+                </span>
+              )}
               <span style={{ display: 'block', fontSize: 13, color: '#6b7280' }}>
                 {badge.points} pts
               </span>

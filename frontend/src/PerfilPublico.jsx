@@ -76,17 +76,17 @@ function PerfilPublico() {
 					const data = await fetchPublicProfile(decodedId);
 					if (!isMounted || !data) return;
 
-					// Map server profile structure to expected consultor shape used in this page
-					const mapped = {
-						id: data.user?.id || data.id || decodedId,
-						name: data.user?.name || data.nome || data.user?.nome || 'Consultor',
-						email: data.user?.email || data.email || '',
-						serviceLine: data.serviceLine || (data.user?.serviceLine) || 'Service Line',
-						points: data.points || 0,
-						badges: data.badges || 0,
-						avatar: data.avatar || data.user?.avatar || '',
-					streakDays: data.streakDays || 0,
-						ranking: data.ranking || 0,
+				// Map server profile structure to expected consultor shape used in this page
+				const mapped = {
+					id: data.user?.id ?? data.id ?? decodedId,
+					name: data.user?.name ?? data.nome ?? data.user?.nome ?? '',
+					email: data.user?.email ?? data.email ?? '',
+					serviceLine: data.serviceLine ?? data.user?.serviceLine ?? '',
+					points: data.points ?? 0,
+					badges: data.badges ?? 0,
+					avatar: data.avatar ?? data.user?.avatar ?? null,
+					streakDays: data.streakDays ?? 0,
+					ranking: data.ranking ?? 0,
 					serviceLineStats: Array.isArray(data.serviceLineStats) ? (() => {
 						const merged = {};
 						(data.serviceLineStats || []).forEach((s) => {
@@ -104,20 +104,20 @@ function PerfilPublico() {
 						return Object.values(merged);
 					})() : [],
 					activityItems: Array.isArray(data.activityItems) ? data.activityItems.map((item) => ({
-						id: item.id || `activity-${Math.random()}`,
-						description: item.description || 'Nova atividade',
-						date: item.date || 'Recentemente',
+						id: item.id ?? `activity-${Math.random()}`,
+						description: item.description ?? '',
+						date: item.date ?? '',
 						icon: Award,
-						})) : [],
-						location: data.location || 'Portugal',
-						joined: data.joined || data.user?.joined || '',
-							certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
-								.map((item) => ({
-									title: item.title || item.name || '',
-									levelKey: item.levelKey || item.subtitleKey || '',
-								}))
-								.filter((it) => it.title) : [],
-					};
+					})) : [],
+					location: data.location ?? '',
+					joined: data.joined ?? data.user?.joined ?? '',
+					certificationsItems: Array.isArray(data.certificationsItems) ? data.certificationsItems
+						.map((item) => ({
+							title: item.title ?? item.name ?? '',
+							levelKey: item.levelKey ?? item.subtitleKey ?? '',
+						}))
+						.filter((it) => it.title) : [],
+				};
 
 					setRemoteConsultor(mapped);
 
@@ -132,12 +132,13 @@ function PerfilPublico() {
 									const typeId = resolvedLevelId
 										? (resolvedLevelId === 'special' ? 'special' : `badge_level_${resolvedLevelId}`)
 										: undefined;
-									return {
-										id: `vitrine-${v.nbadge}`,
-										badgeDbId: v.nbadge,
-										name: v.b_nome || 'Badge',
-										badgeImage: v.imagem || null,
-										points: v.pontos || 0,
+								return {
+									id: `vitrine-${v.nbadge}`,
+									badgeDbId: v.nbadge,
+									name: v.b_nome || 'Badge',
+									description: v.b_descricao || '',
+									badgeImage: v.imagem || null,
+									points: v.pontos || 0,
 										isSpecial,
 										levelKey: resolvedLevelId || undefined,
 										typeId,
@@ -228,8 +229,8 @@ function PerfilPublico() {
 
 								<div className="pp-profile-meta">
 									<span><Mail size={16} /> {consultor.email}</span>
-									<span><MapPin size={16} /> {consultor.location || 'Portugal'}</span>
-									<span><Calendar size={16} /> Joined {consultor.joined || '2023'}</span>
+									{consultor.location && <span><MapPin size={16} /> {consultor.location}</span>}
+									{consultor.joined && <span><Calendar size={16} /> Joined {consultor.joined}</span>}
 								</div>
 							</div>
 						</section>
@@ -305,20 +306,38 @@ function PerfilPublico() {
 									<h3>Vitrine</h3>
 								</div>
 								<div className="pp-vitrine-grid">
-									{vitrineItems.map((badge) => (
-										<div key={badge.id} className="pp-vitrine-item" title={badge.name}>
-											<div className="pp-vitrine-badge-img">
-												<BadgeImage
-													src={badge.badgeImage}
-													alt={badge.name || 'Badge'}
-													levelKey={badge.levelKey}
-													typeId={badge.typeId}
-													levelLabel={badge.levelLabel}
-												/>
-											</div>
-											<span className="pp-vitrine-badge-name">{badge.name}</span>
+								{vitrineItems.map((badge) => (
+									<div
+										key={badge.id}
+										className="pp-vitrine-item"
+										title={badge.name}
+										role="button"
+										tabIndex={0}
+										onClick={() => navigate(`/galeria-publica/badge/${encodeURIComponent(badge.badgeDbId)}`, { state: { badge } })}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												navigate(`/galeria-publica/badge/${encodeURIComponent(badge.badgeDbId)}`, { state: { badge } });
+											}
+										}}
+									>
+										<div className="pp-vitrine-badge-img">
+											<BadgeImage
+												src={badge.badgeImage}
+												alt={badge.name || 'Badge'}
+												levelKey={badge.levelKey}
+												typeId={badge.typeId}
+												levelLabel={badge.levelLabel}
+											/>
 										</div>
-									))}
+										<span className="pp-vitrine-badge-name">{badge.name}</span>
+										{badge.description && (
+											<span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', textAlign: 'center', marginTop: '2px' }}>
+												{badge.description}
+											</span>
+										)}
+									</div>
+								))}
 								</div>
 							</section>
 						)}

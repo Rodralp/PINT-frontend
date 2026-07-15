@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -26,33 +27,34 @@ import {
   submitManagedRequestDecision,
 } from '../../services/requestManagementService';
 
-const statusMeta = {
-  validacao: {
-    label: 'Em Validação',
-    className: 'validacao',
-    icon: SearchCheck,
-  },
-  rejeitado: {
-    label: 'Rejeitado',
-    className: 'rejeitado',
-    icon: AlertTriangle,
-  },
-  aprovado: {
-    label: 'Aprovado',
-    className: 'aprovado',
-    icon: CheckCircle2,
-  },
-};
-
-const verdictOptions = [
-  { id: 'aprovar', label: 'Aprovar' },
-  { id: 'rejeitar', label: 'Rejeitar' },
-  { id: 'devolver_consultor', label: 'Devolver ao consultor' },
-];
-
 function PedidoAG() {
+  const { t } = useTranslation();
   const { pedidoId } = useParams();
   const navigate = useNavigate();
+
+  const statusMeta = {
+    validacao: {
+      label: t('badge_status_in_review'),
+      className: 'validacao',
+      icon: SearchCheck,
+    },
+    rejeitado: {
+      label: t('badge_status_rejected'),
+      className: 'rejeitado',
+      icon: AlertTriangle,
+    },
+    aprovado: {
+      label: t('badge_status_validated'),
+      className: 'aprovado',
+      icon: CheckCircle2,
+    },
+  };
+
+  const verdictOptions = [
+    { id: 'aprovar', label: t('request_detail_verdict_options_ag') },
+    { id: 'rejeitar', label: t('request_detail_verdict_reject') },
+    { id: 'devolver_consultor', label: t('request_detail_verdict_return') },
+  ];
   const [openRequirementId, setOpenRequirementId] = useState(null);
   const [selectedVerdict, setSelectedVerdict] = useState(null);
   const [comment, setComment] = useState('');
@@ -79,7 +81,7 @@ function PedidoAG() {
         }
 
         setRequest(null);
-        setStatusMessage(error?.message || 'Nao foi possivel carregar o pedido.');
+        setStatusMessage(error?.message || t('request_detail_error_load'));
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -108,11 +110,11 @@ function PedidoAG() {
       <Layout>
         <div className="page ag-order-detail-page">
           <header className="page-header ag-order-detail-header">
-            <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+            <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
               <ArrowLeft size={22} />
             </button>
             <div>
-              <h1>A carregar pedido...</h1>
+              <h1>{t('request_detail_loading')}</h1>
             </div>
           </header>
         </div>
@@ -125,12 +127,12 @@ function PedidoAG() {
       <Layout>
         <div className="page ag-order-detail-page">
           <header className="page-header ag-order-detail-header">
-            <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+            <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
               <ArrowLeft size={22} />
             </button>
             <div>
-              <h1>Pedido não encontrado</h1>
-              <p>{statusMessage || 'O pedido não existe ou foi removido.'}</p>
+              <h1>{t('request_detail_not_found')}</h1>
+              <p>{statusMessage || t('request_detail_not_found_msg')}</p>
             </div>
           </header>
         </div>
@@ -151,14 +153,14 @@ function PedidoAG() {
     const filesCount = Number(item?.files);
 
     if (Number.isInteger(filesCount) && filesCount > 1) {
-      return `${String(filesCount).padStart(2, '0')} arquivos carregados`;
+      return t('request_detail_files_loaded', { count: filesCount });
     }
 
     if (filesCount === 1) {
-      return '01 arquivo carregado';
+      return t('request_detail_files_loaded', { count: 1 });
     }
 
-    return 'XX arquivos carregados';
+    return t('request_detail_files_loaded', { count: 0 });
   };
 
   const handleSubmitVerdict = async () => {
@@ -173,11 +175,11 @@ function PedidoAG() {
         comment,
       });
       setRequest(updated || request);
-      setStatusMessage('Decisão submetida com sucesso.');
+      setStatusMessage(t('request_detail_success'));
       setSelectedVerdict(null);
       setComment('');
     } catch (error) {
-      setStatusMessage(error?.message || 'Nao foi possivel submeter a decisão.');
+      setStatusMessage(error?.message || t('request_detail_error_submit'));
     } finally {
       setIsSubmittingVerdict(false);
     }
@@ -185,7 +187,7 @@ function PedidoAG() {
 
   const handleDownloadAttachment = async (attachment) => {
     if (!attachment?.evidenceId) {
-      setStatusMessage('Nao foi possivel identificar o ficheiro para download.');
+      setStatusMessage(t('request_detail_error_file_id'));
       return;
     }
 
@@ -193,7 +195,7 @@ function PedidoAG() {
       const url = await getManagedEvidenceDownloadUrl('admin-gestor', pedidoId, attachment.evidenceId);
       window.open(url, '_blank', 'noopener,noreferrer');
     } catch (error) {
-      setStatusMessage(error?.message || 'Nao foi possivel descarregar o ficheiro.');
+      setStatusMessage(error?.message || t('request_detail_error_download'));
     }
   };
 
@@ -201,11 +203,11 @@ function PedidoAG() {
     <Layout>
       <div className="page ag-order-detail-page">
         <header className="page-header ag-order-detail-header">
-          <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+          <button type="button" className="ag-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
             <ArrowLeft size={22} />
           </button>
           <div>
-            <h1>Candidatura</h1>
+            <h1>{t('request_detail_title')}</h1>
           </div>
         </header>
 
@@ -230,18 +232,24 @@ function PedidoAG() {
                 <div className="ag-order-hero-meta">
                   <span>
                     <Clock3 size={16} />
-                    <strong>Expira</strong>
+                    <strong>{t('request_detail_expires')}</strong>
                     {request.expiresAt || '12 Jan 2026'}
                   </span>
                   <span>
                     <Trophy size={16} />
-                    {request.points} pontos
+                    {request.points} {t('points')}
                   </span>
                   <span>
                     <FileText size={16} />
-                    {request.evidence.length} requisitos
+                    {request.evidence.length} {t('request_detail_requirements')}
                   </span>
                 </div>
+
+                {request.badgeDescription && (
+                  <p style={{ marginTop: '12px', color: '#64748B', fontSize: '14px', lineHeight: '1.5' }}>
+                    {request.badgeDescription}
+                  </p>
+                )}
 
                 <div className={`ag-order-status-banner ${currentStatus.className}`}>
                   <StatusIcon size={18} />
@@ -255,7 +263,7 @@ function PedidoAG() {
             </p>
 
             <section className="ag-order-requirements-card">
-              <h3>Requisitos</h3>
+              <h3>{t('request_detail_requirements_title')}</h3>
 
               <div className="ag-order-requirements-list">
                 {request.evidence.map((item) => (
@@ -271,7 +279,7 @@ function PedidoAG() {
                       <button
                         type="button"
                         className="ag-order-requirement-view-btn"
-                        aria-label={openRequirementId === item.id ? `Ocultar ${item.title}` : `Ver ${item.title}`}
+                        aria-label={openRequirementId === item.id ? `${t('request_detail_hide')} ${item.title}` : `${t('request_detail_show')} ${item.title}`}
                         aria-expanded={openRequirementId === item.id}
                         onClick={() => toggleRequirement(item.id)}
                       >
@@ -306,7 +314,7 @@ function PedidoAG() {
                                   onClick={() => handleDownloadAttachment(attachment)}
                                 >
                                   <Download size={16} />
-                                  Download
+                                  {t('request_detail_download')}
                                 </button>
                               </li>
                             ))}
@@ -322,7 +330,7 @@ function PedidoAG() {
 
           <aside className="ag-order-sidebar">
             <div className="ag-order-submission-card">
-              <h3>Submissão por:</h3>
+              <h3>{t('request_detail_submitted_by')}</h3>
               <div className="ag-order-person-card">
                 <img
                   src={request.submittedByAvatar}
@@ -341,7 +349,7 @@ function PedidoAG() {
 
             {showVerdictForm ? (
               <div className="ag-order-verdict-card">
-                <h3>Veredito da Candidatura:</h3>
+                <h3>{t('request_detail_verdict')}</h3>
 
                 {verdictOptions.map((option) => (
                   <button
@@ -357,7 +365,7 @@ function PedidoAG() {
 
                 <textarea
                   className="ag-order-comment"
-                  placeholder="Adicionar motivo para esta decisao..."
+                  placeholder={t('request_detail_add_reason')}
                   value={comment}
                   onChange={(event) => setComment(event.target.value)}
                 />
@@ -369,7 +377,7 @@ function PedidoAG() {
                   onClick={handleSubmitVerdict}
                 >
                   <SendHorizontal size={18} />
-                  {isSubmittingVerdict ? 'A submeter...' : 'Submeter'}
+                  {isSubmittingVerdict ? t('request_detail_submitting') : t('request_detail_submit')}
                 </button>
 
                 {statusMessage && (
@@ -378,7 +386,7 @@ function PedidoAG() {
 
                 {requestMotives.length > 0 && (
                   <div className="ag-order-motives">
-                    <h4>Motivos registados</h4>
+                    <h4>{t('request_detail_registered_reasons')}</h4>
                     <ul className="ag-order-motives-list">
                       {requestMotives.map((item, index) => (
                         <li key={`${item.authorName}-${index}`}>
@@ -393,7 +401,7 @@ function PedidoAG() {
               </div>
             ) : (
               <div className="ag-order-reviewed-card">
-                <h3>Veredito por:</h3>
+                <h3>{t('request_detail_verdict_by')}</h3>
                 <div className="ag-order-person-card compact">
                   <img
                     src={request.reviewerAvatar}
@@ -418,7 +426,7 @@ function PedidoAG() {
 
                 {requestMotives.length > 0 && (
                   <div className="ag-order-motives">
-                    <h4>Motivos registados</h4>
+                    <h4>{t('request_detail_registered_reasons')}</h4>
                     <ul className="ag-order-motives-list">
                       {requestMotives.map((item, index) => (
                         <li key={`${item.authorName}-${index}`}>

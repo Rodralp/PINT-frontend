@@ -26,32 +26,34 @@ import {
   getManagedEvidenceDownloadUrl,
   submitManagedRequestDecision,
 } from '../../services/requestManagementService';
-
-const statusMeta = {
-  validacao: {
-    label: 'Em Validação',
-    className: 'validacao',
-    icon: SearchCheck,
-  },
-  rejeitado: {
-    label: 'Rejeitado',
-    className: 'rejeitado',
-    icon: AlertTriangle,
-  },
-  aprovado: {
-    label: 'Aprovado',
-    className: 'aprovado',
-    icon: CheckCircle2,
-  },
-};
-
-const verdictOptions = [
-  { id: 'aprovar', label: 'Aprovar' },
-  { id: 'rejeitar', label: 'Rejeitar' },
-  { id: 'devolver_consultor', label: 'Devolver ao consultor' },
-];
+import { useTranslation } from 'react-i18next';
 
 function PedidoSLL() {
+  const { t } = useTranslation();
+  const statusMeta = {
+    validacao: {
+      label: t('badge_status_in_review'),
+      className: 'validacao',
+      icon: SearchCheck,
+    },
+    rejeitado: {
+      label: t('badge_status_rejected'),
+      className: 'rejeitado',
+      icon: AlertTriangle,
+    },
+    aprovado: {
+      label: t('badge_status_validated'),
+      className: 'aprovado',
+      icon: CheckCircle2,
+    },
+  };
+
+  const verdictOptions = [
+    { id: 'aprovar', label: t('request_detail_verdict_options_ag') },
+    { id: 'rejeitar', label: t('request_detail_verdict_reject') },
+    { id: 'devolver_consultor', label: t('request_detail_verdict_return') },
+  ];
+
   const { pedidoId } = useParams();
   const navigate = useNavigate();
   const [openRequirementId, setOpenRequirementId] = useState(null);
@@ -80,7 +82,7 @@ function PedidoSLL() {
         }
 
         setRequest(null);
-        setStatusMessage(error?.message || 'Nao foi possivel carregar o pedido.');
+        setStatusMessage(error?.message || t('request_detail_error_load'));
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -109,11 +111,11 @@ function PedidoSLL() {
       <Layout>
         <div className="page sll-order-detail-page">
           <header className="page-header sll-order-detail-header">
-            <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+            <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
               <ArrowLeft size={22} />
             </button>
             <div>
-              <h1>A carregar pedido...</h1>
+              <h1>{t('request_detail_loading')}</h1>
             </div>
           </header>
         </div>
@@ -126,12 +128,12 @@ function PedidoSLL() {
       <Layout>
         <div className="page sll-order-detail-page">
           <header className="page-header sll-order-detail-header">
-            <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+            <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
               <ArrowLeft size={22} />
             </button>
             <div>
-              <h1>Pedido não encontrado</h1>
-              <p>{statusMessage || 'O pedido não existe ou foi removido.'}</p>
+              <h1>{t('request_detail_not_found')}</h1>
+              <p>{statusMessage || t('request_detail_not_found_msg')}</p>
             </div>
           </header>
         </div>
@@ -175,11 +177,11 @@ function PedidoSLL() {
         comment,
       });
       setRequest(updated || request);
-      setStatusMessage('Decisao submetida com sucesso.');
+      setStatusMessage(t('request_detail_success'));
       setSelectedVerdict(null);
       setComment('');
     } catch (error) {
-      setStatusMessage(error?.message || 'Nao foi possivel submeter a decisao.');
+      setStatusMessage(error?.message || t('request_detail_error_submit'));
     } finally {
       setIsSubmittingVerdict(false);
     }
@@ -203,11 +205,11 @@ function PedidoSLL() {
     <Layout>
       <div className="page sll-order-detail-page">
         <header className="page-header sll-order-detail-header">
-          <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label="Voltar">
+          <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
             <ArrowLeft size={22} />
           </button>
           <div>
-            <h1>Candidatura</h1>
+            <h1>{t('request_detail_title')}</h1>
           </div>
         </header>
 
@@ -232,18 +234,24 @@ function PedidoSLL() {
                 <div className="sll-order-hero-meta">
                   <span>
                     <Clock3 size={16} />
-                    <strong>Expira</strong>
+                    <strong>{t('request_detail_expires')}</strong>
                     {request.expiresAt || '12 Jan 2026'}
                   </span>
                   <span>
                     <Trophy size={16} />
-                    {request.points} pontos
+                    {request.points} {t('points')}
                   </span>
                   <span>
                     <FileText size={16} />
-                    {request.evidence.length} requisitos
+                    {request.evidence.length} {t('request_detail_requirements')}
                   </span>
                 </div>
+
+                {request.badgeDescription && (
+                  <p style={{ marginTop: '12px', color: '#64748B', fontSize: '14px', lineHeight: '1.5' }}>
+                    {request.badgeDescription}
+                  </p>
+                )}
 
                 <div className={`sll-order-status-banner ${currentStatus.className}`}>
                   <StatusIcon size={18} />
@@ -257,7 +265,7 @@ function PedidoSLL() {
             </p>
 
             <section className="sll-order-requirements-card">
-              <h3>Requisitos</h3>
+              <h3>{t('request_detail_requirements_title')}</h3>
 
               <div className="sll-order-requirements-list">
                 {request.evidence.map((item) => {
@@ -274,7 +282,7 @@ function PedidoSLL() {
                         <button
                           type="button"
                           className="sll-order-requirement-view-btn"
-                          aria-label={openRequirementId === item.id ? `Ocultar ${item.title}` : `Ver ${item.title}`}
+                          aria-label={openRequirementId === item.id ? `${t('request_detail_hide')} ${item.title}` : `${t('request_detail_show')} ${item.title}`}
                           aria-expanded={openRequirementId === item.id}
                           onClick={() => toggleRequirement(item.id)}
                         >
@@ -309,7 +317,7 @@ function PedidoSLL() {
                                     onClick={() => handleDownloadAttachment(attachment)}
                                   >
                                     <Download size={16} />
-                                    Download
+                                    {t('request_detail_download')}
                                   </button>
                                 </li>
                               ))}
@@ -326,7 +334,7 @@ function PedidoSLL() {
 
           <aside className="sll-order-sidebar">
             <div className="sll-order-review-card">
-              <h3>Submissão por:</h3>
+              <h3>{t('request_detail_submitted_by')}</h3>
               <div className="sll-order-person-card">
                 <img
                   src={request.submittedByAvatar}
@@ -342,7 +350,7 @@ function PedidoSLL() {
                 </div>
               </div>
 
-              <h3 className="sll-order-subtitle">Avaliado por:</h3>
+              <h3 className="sll-order-subtitle">{t('request_detail_verdict_by')}</h3>
               <div className="sll-order-person-card compact">
                 <img
                   src={request.reviewerAvatar}
@@ -362,7 +370,7 @@ function PedidoSLL() {
               <p className="sll-order-note">{request.notes}</p>
               {requestMotives.length > 0 && (
                 <div className="sll-order-motives">
-                  <h4>Motivos registados</h4>
+                  <h4>{t('request_detail_registered_reasons')}</h4>
                   <ul className="sll-order-motives-list">
                     {requestMotives.map((item, index) => (
                       <li key={`${item.authorName}-${index}`}>
@@ -395,7 +403,7 @@ function PedidoSLL() {
 
             {showVerdict && (
               <div className="sll-order-verdict-card">
-                <h3>Veredito da Candidatura:</h3>
+                <h3>{t('request_detail_verdict')}</h3>
                 {verdictOptions.map((option) => (
                   <button
                     key={option.id}
@@ -410,7 +418,7 @@ function PedidoSLL() {
 
                 <textarea
                   className="sll-order-comment"
-                  placeholder="Adicionar motivo para esta decisao..."
+                  placeholder={t('request_detail_add_reason')}
                   value={comment}
                   onChange={(event) => setComment(event.target.value)}
                 />
@@ -422,7 +430,7 @@ function PedidoSLL() {
                   disabled={!selectedVerdict || isSubmittingVerdict}
                 >
                   <SendHorizontal size={18} />
-                  {isSubmittingVerdict ? 'A submeter...' : 'Submeter'}
+                  {isSubmittingVerdict ? t('request_detail_submitting') : t('request_detail_submit')}
                 </button>
 
                 {statusMessage && (
@@ -431,7 +439,7 @@ function PedidoSLL() {
 
                 {requestMotives.length > 0 && (
                   <div className="sll-order-motives">
-                    <h4>Motivos registados</h4>
+                    <h4>{t('request_detail_registered_reasons')}</h4>
                     <ul className="sll-order-motives-list">
                       {requestMotives.map((item, index) => (
                         <li key={`${item.authorName}-${index}`}>

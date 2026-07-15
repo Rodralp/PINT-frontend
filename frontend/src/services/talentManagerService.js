@@ -79,3 +79,32 @@ export async function fetchDetalhesServiceLine(serviceLineId) {
   const response = await apiClient.get(`/talent-manager/historico/service-line?serviceLineId=${serviceLineId}`);
   return response.data;
 }
+
+export async function fetchHistoricoPorEstadoTM(type, estado, entityId, extraParams = {}) {
+  let endpoint = '';
+  let params = `estado=${encodeURIComponent(estado)}`;
+
+  if (type.includes('serviceLine')) {
+    endpoint = '/talent-manager/historico/service-line-estado';
+    if (extraParams.serviceLineId) {
+      params += `&serviceLineId=${encodeURIComponent(extraParams.serviceLineId)}`;
+    }
+  } else if (type.includes('area')) {
+    endpoint = '/talent-manager/historico/area-estado';
+    params += `&areaId=${encodeURIComponent(entityId)}`;
+  } else if (type.includes('badge')) {
+    endpoint = '/talent-manager/historico/badge-estado';
+    params += `&badgeId=${encodeURIComponent(entityId)}`;
+  } else if (type.includes('consultor')) {
+    endpoint = '/talent-manager/historico/consultor-estado';
+    params += `&consultorId=${encodeURIComponent(entityId)}`;
+  }
+
+  const response = await apiClient.get(`${endpoint}?${params}`);
+  return response.data;
+}
+
+export async function fetchHistoricoCandidaturaTM(pedidoId) {
+  const response = await apiClient.get(`/talent-manager/historico/candidatura?pedidoId=${encodeURIComponent(pedidoId)}`);
+  return response.data;
+}

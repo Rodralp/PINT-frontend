@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   Bell,
@@ -41,6 +42,7 @@ const getIsoDateFromDisplay = (dateValue) => {
 };
 
 function EquipasSLAAG() {
+  const { t } = useTranslation();
   const [teams, setTeams] = useState([]);
   const [alertTeams, setAlertTeams] = useState([]);
   const [selectableMembers, setSelectableMembers] = useState([]);
@@ -88,7 +90,7 @@ function EquipasSLAAG() {
       setSelectableMembers(normalizedUsers);
     } catch (err) {
       console.error('Error loading data:', err);
-      setError('Failed to load teams data');
+      setError(t('equipas_load_error'));
     } finally {
       setLoading(false);
     }
@@ -202,7 +204,7 @@ function EquipasSLAAG() {
   };
 
   const handleDeleteTeam = async (team) => {
-    const confirmed = window.confirm(`Tem a certeza que pretende remover a equipa ${team.name}?`);
+    const confirmed = window.confirm(t('equipas_delete_confirm', { name: team.name }));
     if (!confirmed) {
       return;
     }
@@ -212,7 +214,7 @@ function EquipasSLAAG() {
       await loadData(); // Reload data
     } catch (error) {
       console.error('Error deleting team:', error);
-      alert('Failed to delete team');
+      alert(t('equipas_delete_error'));
     }
   };
 
@@ -234,7 +236,7 @@ function EquipasSLAAG() {
       minDate.setDate(minDate.getDate() + 7); // Adicionar 7 dias
       
       if (selectedDate < minDate) {
-        alert('A data de expiração do SLA deve ser no mínimo 1 semana após a data atual.');
+        alert(t('equipas_sla_date_error'));
         return;
       }
     }
@@ -260,7 +262,7 @@ function EquipasSLAAG() {
       await loadData(); // Reload data
     } catch (error) {
       console.error('Error saving team:', error);
-      alert('Failed to save team');
+      alert(t('equipas_save_error'));
     }
   };
 
@@ -268,19 +270,19 @@ function EquipasSLAAG() {
     <Layout>
       <div className="page">
         <header className="page-header">
-          <h1>Equipas e SLA</h1>
+          <h1>{t('equipas_title')}</h1>
         </header>
 
         {loading && (
           <div className="ag-loading">
-            <p>A carregar dados...</p>
+            <p>{t('equipas_loading')}</p>
           </div>
         )}
 
         {error && (
           <div className="ag-error">
             <p>{error}</p>
-            <button onClick={loadData}>Tentar novamente</button>
+            <button onClick={loadData}>{t('equipas_retry')}</button>
           </div>
         )}
 
@@ -289,12 +291,12 @@ function EquipasSLAAG() {
             <section className="ag-sla-alerts-card">
               <h2>
                 <AlertTriangle size={20} />
-                SLAs prestes a expirar/expirados
+                {t('equipas_sla_expiring')}
               </h2>
 
               <div className="ag-sla-cards-grid">
                 {alertTeams.length === 0 ? (
-                  <p>Nenhuns SLAs prestes a expirar</p>
+                  <p>{t('equipas_no_sla_expiring')}</p>
                 ) : (
                   alertTeams.map((team) => (
                     <article key={`${team.id}-alert`} className="ag-sla-team-card">
@@ -310,8 +312,8 @@ function EquipasSLAAG() {
                         </button>
                       </div>
 
-                      <span className={`ag-sla-status-pill ${team.priority || 'warning'}`}>{team.daysLabel || 'Sem SLA'}</span>
-                      <p>{team.slaDescription || 'Sem descrição de SLA'}</p>
+                      <span className={`ag-sla-status-pill ${team.priority || 'warning'}`}>{team.daysLabel || t('equipas_no_sla')}</span>
+                      <p>{team.slaDescription || t('equipas_no_sla_desc')}</p>
 
                       {team.expiryDate && (
                         <div className="ag-sla-date">
@@ -322,7 +324,7 @@ function EquipasSLAAG() {
 
                       <button type="button" className="ag-notify-btn">
                         <Bell size={14} />
-                        Notificar equipa
+                        {t('equipas_notify_team')}
                       </button>
                     </article>
                   ))
@@ -334,18 +336,18 @@ function EquipasSLAAG() {
               <div className="ag-teams-list-header">
                 <h2>
                   <UserRoundPlus size={20} />
-                  Equipas
+                  {t('equipas_teams_section')}
                 </h2>
 
                 <button type="button" className="ag-add-team-btn" onClick={openCreateModal}>
                   <Plus size={16} />
-                  Adicionar equipa
+                  {t('equipas_add_team')}
                 </button>
               </div>
 
               <div className="ag-team-list">
                 {teams.length === 0 ? (
-                  <p>Nenhuma equipa encontrada</p>
+                  <p>{t('equipas_no_teams')}</p>
                 ) : (
                   teams.map((team) => {
                     const visibleMembers = (team.members || []).slice(0, 11);
@@ -357,9 +359,9 @@ function EquipasSLAAG() {
                           <div>
                             <h3>
                               {team.name}{' '}
-                              <span className="ag-members-count-pill">{team.membersCount || 0} membros</span>
+                              <span className="ag-members-count-pill">{team.membersCount || 0} {t('equipas_members')}</span>
                             </h3>
-                            <p>{team.slaDescription || 'Sem SLA'}</p>
+                            <p>{team.slaDescription || t('equipas_no_sla')}</p>
                           </div>
 
                           <div className="ag-team-actions">
@@ -421,26 +423,26 @@ function EquipasSLAAG() {
 
               <div className="ag-team-modal-grid">
                 <div className="ag-team-form-column">
-                  <label htmlFor="team-name">Nome de equipa</label>
+                  <label htmlFor="team-name">{t('equipas_field_name')}</label>
                   <input
                     id="team-name"
                     value={newTeamName}
                     onChange={(event) => setNewTeamName(event.target.value)}
-                    placeholder="Insira nome da equipa"
+                    placeholder={t('equipas_placeholder_name')}
                     disabled={isEditing}
                   />
 
-                  <label htmlFor="team-sla">Service Level Agreement</label>
+                  <label htmlFor="team-sla">{t('equipas_field_sla')}</label>
                   <textarea
                     id="team-sla"
                     value={newSlaText}
                     onChange={(event) => setNewSlaText(event.target.value)}
-                    placeholder="Insira os detalhes do SLA"
+                    placeholder={t('equipas_placeholder_sla')}
                     rows={6}
                     disabled={isEditing}
                   />
 
-                  <label htmlFor="team-expiry">Data de expiracao do SLA (mínimo 1 semana)</label>
+                  <label htmlFor="team-expiry">{t('equipas_field_sla_date')}</label>
                   <input
                     id="team-expiry"
                     type="date"
@@ -456,7 +458,7 @@ function EquipasSLAAG() {
 
                 <div className="ag-member-picker-column">
                   <div className="ag-member-picker-head">
-                    <h3>{showAddMemberList ? 'Adicionar pessoas' : 'Pessoas selecionadas'}</h3>
+                    <h3>{showAddMemberList ? t('equipas_add_people') : t('equipas_selected_people')}</h3>
                     <button
                       type="button"
                       className={`ag-member-add-tile ${showAddMemberList ? 'active' : ''}`}
@@ -477,7 +479,7 @@ function EquipasSLAAG() {
                           type="text"
                           value={memberSearchTerm}
                           onChange={(event) => setMemberSearchTerm(event.target.value)}
-                          placeholder="Pesquisar pessoa para adicionar"
+                          placeholder={t('equipas_search_person')}
                         />
                       </label>
 
@@ -500,7 +502,7 @@ function EquipasSLAAG() {
                         ))}
 
                         {filteredMembers.length === 0 && (
-                          <p className="ag-member-search-empty">Nenhuma pessoa disponivel para adicionar.</p>
+                          <p className="ag-member-search-empty">{t('equipas_no_available')}</p>
                         )}
                       </div>
                     </div>
@@ -521,13 +523,13 @@ function EquipasSLAAG() {
                             onClick={() => removeMemberFromSelection(member.id)}
                             aria-label={`Remover ${member.name}`}
                           >
-                            Remover
+                            {t('equipas_remove')}
                           </button>
                         </article>
                       ))}
 
                       {selectedMemberObjects.length === 0 && (
-                        <p className="ag-member-search-empty">Nenhuma pessoa selecionada.</p>
+                        <p className="ag-member-search-empty">{t('equipas_no_selected')}</p>
                       )}
                     </div>
                   )}
@@ -536,10 +538,10 @@ function EquipasSLAAG() {
 
               <footer className="ag-team-modal-footer">
                 <button type="button" className="ag-modal-cancel" onClick={closeModal}>
-                  Cancelar
+                  {t('cancel')}
                 </button>
                 <button type="button" className="ag-modal-submit" onClick={handleSaveTeam}>
-                  {isEditing ? 'Guardar alteracoes' : 'Adicionar'}
+                  {isEditing ? t('equipas_btn_save') : t('equipas_btn_add')}
                 </button>
               </footer>
             </section>

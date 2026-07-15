@@ -434,10 +434,10 @@ function CatalogoBadges() {
                   tabIndex={0}
                   onClick={() => handleOpenBadgeDetails(item)}
                   onKeyDown={(event) => handleCardKeyDown(event, item)}
-                  style={currentState ? {
-                    background: currentState.tint,
-                    borderColor: currentState.border,
-                  } : undefined}
+                  style={{
+                    background: '#ffffff',
+                    borderColor: '#f6f7fa',
+                  }}
                 >
                   {expirationInfo && expirationInfo.status === 'expiring' && (
                     <div style={{
@@ -473,6 +473,11 @@ function CatalogoBadges() {
                   </div>
 
                   <div className="catalog-card-title">{badgeTitle}</div>
+                  {item.description && (
+                    <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '4px', lineHeight: '1.4' }}>
+                      {item.description}
+                    </div>
+                  )}
                   <div className="catalog-card-level">{levelLabel}</div>
 
                   <div className="catalog-card-meta">

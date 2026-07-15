@@ -36,29 +36,7 @@ const defaultBadgeDetails = {
   points: 0,
   badgeImage: '',
   date: '',
-};
-
-const statusConfig = {
-  candidatura_em_progresso: {
-    label: 'Candidatura em progresso',
-    className: 'is-progress',
-    Icon: TimerReset,
-  },
-  pendente: {
-    label: 'Candidatura submetida - Em Validação',
-    className: 'is-validation',
-    Icon: SearchCheck,
-  },
-  evidencias_insuficientes: {
-    label: 'Candidatura submetida - Evidências Insuficientes',
-    className: 'is-rejected',
-    Icon: AlertTriangle,
-  },
-  obtido: {
-    label: 'Badge obtido',
-    className: 'is-obtained',
-    Icon: CheckCircle2,
-  },
+  description: '',
 };
 
 const normalizeBadgeStatus = (badge) => {
@@ -151,6 +129,13 @@ function BadgeDetalhe() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+
+  const statusConfig = useMemo(() => ({
+    candidatura_em_progresso: { label: t('badge_status_in_progress'), className: 'is-progress', Icon: TimerReset },
+    pendente: { label: t('badge_status_in_review'), className: 'is-validation', Icon: SearchCheck },
+    evidencias_insuficientes: { label: t('badge_status_insufficient_evidence'), className: 'is-rejected', Icon: AlertTriangle },
+    obtido: { label: t('badge_status_obtained'), className: 'is-obtained', Icon: CheckCircle2 },
+  }), [t]);
   const [openRequirementId, setOpenRequirementId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -168,12 +153,12 @@ function BadgeDetalhe() {
   const [badgeStatus, setBadgeStatus] = useState(() => normalizeBadgeStatus(badge));
   const hasBadgeId = Number.isInteger(Number(badge?.badgeDbId)) && Number(badge.badgeDbId) > 0;
   const isSpecialBadge = Boolean(badge?.isSpecial) || badge?.typeId === 'special' || !badge?.levelKey;
-  const levelLabel = isSpecialBadge ? 'Especial' : t(badge?.levelKey || '');
+  const levelLabel = isSpecialBadge ? t('special') : t(badge?.levelKey || '');
   const resolvedBadgeDbId = useMemo(
     () => resolveBadgeDbId(badgeId, badge),
     [badgeId, badge],
   );
-  const badgeTitle = badge.name || badge.area || 'Badge';
+  const badgeTitle = badge.name || badge.area || t('badge');
 
   useEffect(() => {
     if (location.state?.badge) {
@@ -296,7 +281,7 @@ function BadgeDetalhe() {
     }
 
     return sourceRequirements.map((item, index) => {
-      const rawTitle = String(item?.title || item?.requisito || `Requisito ${index + 1}`).trim();
+      const rawTitle = String(item?.title || item?.requisito || t('badge_requirement_fallback', { num: index + 1 })).trim();
       const hasPrefixedTitle = /^[A-E]\d+\s*-\s*/i.test(rawTitle);
       const filesCount = Number(item?.files);
 
@@ -313,7 +298,7 @@ function BadgeDetalhe() {
         image: item?.image || item?.imagem || badge.badgeImage,
       };
     });
-  }, [badge.requirements, badge.levelKey, badgeStatus, badge.badgeImage, hasBadgeId, isSpecialBadge, dynamicRequirements]);
+  }, [badge.requirements, badge.levelKey, badgeStatus, badge.badgeImage, hasBadgeId, isSpecialBadge, dynamicRequirements, t]);
 
   const fallbackBackRoute =
     typeof location.state?.backTo === 'string' && location.state.backTo.trim().length > 0
@@ -368,25 +353,25 @@ function BadgeDetalhe() {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(getPublicUrl()).then(() => {
-      setStatusMessage('Link copiado para a area de transferencia!');
+      setStatusMessage(t('badge_link_copied'));
       setTimeout(() => setStatusMessage(''), 3000);
     });
   };
 
   const handleRequestBadge = async () => {
-    setStatusMessage('A processar submissão...');
+    setStatusMessage(t('badge_processing_submission'));
 
     if (isSubmitting) {
       return;
     }
 
     if (!canSubmitProgress) {
-      setStatusMessage('Este badge não pode ser submetido no estado atual.');
+      setStatusMessage(t('badge_cannot_submit'));
       return;
     }
 
     if (!badge?.badgeDbId) {
-      setStatusMessage('Não foi possível identificar o badge para submissão. Volte a abrir a partir de "Meus Badges".');
+      setStatusMessage(t('badge_identify_error'));
       return;
     }
 
@@ -398,7 +383,7 @@ function BadgeDetalhe() {
       if (shouldUploadEvidence) {
         const requestId = Number(currentRequestId);
         if (!Number.isInteger(requestId) || requestId <= 0) {
-          throw new Error('Pedido inválido para submissão de evidências.');
+          throw new Error(t('badge_invalid_request'));
         }
 
         const entries = Object.entries(filesByRequirement);
@@ -420,7 +405,7 @@ function BadgeDetalhe() {
         }
 
         if (uploads.length === 0) {
-          throw new Error('Adicione pelo menos um ficheiro antes de submeter.');
+          throw new Error(t('badge_add_file_required'));
         }
 
         await Promise.all(uploads);
@@ -460,14 +445,14 @@ function BadgeDetalhe() {
 
       setBadgeStatus(nextStatus);
       if (nextStatus === 'obtido') {
-        setStatusMessage('Este badge ja foi adquirido.');
+        setStatusMessage(t('badge_already_obtained'));
       } else if (isProgressStatus) {
-        setStatusMessage('Candidatura já se encontra em progresso.');
+        setStatusMessage(t('badge_already_in_progress'));
       } else {
-        setStatusMessage('Candidatura submetida com sucesso.');
+        setStatusMessage(t('badge_submission_success'));
       }
     } catch (error) {
-      setStatusMessage(error?.message || 'Nao foi possivel submeter a candidatura.');
+      setStatusMessage(error?.message || t('badge_submission_error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -483,12 +468,12 @@ function BadgeDetalhe() {
     const baseCount = submittedCount > 0 ? submittedCount : countFromProp;
     const total = baseCount + pendingCount;
 
-    if (total > 0) return `${String(total).padStart(2, '0')} Arquivos Submetidos`;
-    return 'Nenhum Arquivo Submetido';
+    if (total > 0) return `${String(total).padStart(2, '0')} ${t('badge_submitted_files')}`;
+    return t('badge_no_files_submitted');
   };
 
   const getAttachmentLabel = (attachment) =>
-    String(attachment?.label || attachment?.name || attachment?.fileName || attachment?.filename || 'Arquivo').trim();
+    String(attachment?.label || attachment?.name || attachment?.fileName || attachment?.filename || t('file')).trim();
 
   const handleFilesSelected = (requirementId, fileList) => {
     const files = Array.from(fileList || []);
@@ -510,10 +495,10 @@ function BadgeDetalhe() {
           <button type="button" className="badge-details-back-btn" onClick={handleGoBack} aria-label={t('back')}>
             <ArrowLeft size={22} />
           </button>
-          <h1>Badge</h1>
+          <h1>{t('badge')}</h1>
         </header>
 
-        <section className="badge-hero-card" aria-label={`Detalhes do badge ${badgeId || ''}`}>
+        <section className="badge-hero-card" aria-label={`${t('badge_details_aria')} ${badgeId || ''}`}>
           <div className="badge-hero-media">
             <BadgeImage
               className="badge-hero-image"
@@ -533,28 +518,34 @@ function BadgeDetalhe() {
             <div className="badge-hero-meta">
               <span>
                 <Clock3 size={16} />
-                <strong>Obtida</strong>
+                <strong>{t('obtained')}</strong>
                 {badge.date}
               </span>
 
               <span>
                 <Trophy size={16} />
-                {badge.points} pontos
+                {badge.points} {t('points')}
               </span>
 
               <span>
                 <FileText size={16} />
-                {requirements.length} requisitos
+                {requirements.length} {t('requirements').toLowerCase()}
               </span>
 
               {badge.validade && (
                 <span>
                   <Clock3 size={16} />
-                  <strong>Expira em</strong>
+                  <strong>{t('export_expires')}</strong>
                   {new Date(badge.validade).toLocaleDateString('pt-PT')}
                 </span>
               )}
             </div>
+
+            {badge.description && (
+              <p className="badge-description" style={{ marginTop: '12px', color: '#64748B', fontSize: '14px', lineHeight: '1.5' }}>
+                {badge.description}
+              </p>
+            )}
 
             {hasStatusBanner && statusMeta && (
               <div className={`badge-status-banner ${statusMeta.className}`}>
@@ -571,13 +562,13 @@ function BadgeDetalhe() {
         </p>
 
         <section className="badge-requirements-card">
-          <h3>Requisitos</h3>
+          <h3>{t('requirements')}</h3>
           {!hasBadgeId && (
-            <p className="badge-requirements-empty">Este nivel ainda nao tem badge associado.</p>
+            <p className="badge-requirements-empty">{t('badge_no_level_badge')}</p>
           )}
 
           {hasBadgeId && requirements.length === 0 && (
-            <p className="badge-requirements-empty">Sem requisitos definidos para este badge.</p>
+            <p className="badge-requirements-empty">{t('badge_no_requirements')}</p>
           )}
 
           {hasBadgeId && requirements.map((requirement, index) => {
@@ -597,8 +588,8 @@ function BadgeDetalhe() {
                   <button
                     type="button"
                     className="badge-requirement-view-btn"
-                    aria-label={isOpen ? `Ocultar requisito ${index + 1}` : `Ver requisito ${index + 1}`}
-                    title={isOpen ? 'Ocultar requisito' : 'Ver requisito'}
+                    aria-label={isOpen ? `${t('badge_hide_requirement')} ${index + 1}` : `${t('badge_view_requirement')} ${index + 1}`}
+                    title={isOpen ? t('badge_hide_requirement') : t('badge_view_requirement')}
                     aria-expanded={isOpen}
                     onClick={() => toggleRequirement(requirement.id)}
                   >
@@ -610,7 +601,7 @@ function BadgeDetalhe() {
                   <div className="badge-requirement-detail">
                     <BadgeImage
                       src={requirement.image || badge.badgeImage}
-                      alt={`Ilustracao do requisito ${index + 1}`}
+                      alt={`${t('badge_requirement_illustration')} ${index + 1}`}
                       className="badge-requirement-detail-image"
                       levelKey={badge.levelKey}
                       typeId={badge.typeId}
@@ -620,7 +611,7 @@ function BadgeDetalhe() {
                       <p>{requirement.description}</p>
                       {badgeStatus !== 'visualizar' && (
                         <div className="badge-requirement-files">
-                          <label className="badge-file-input-label">Arquivos submetidos</label>
+                          <label className="badge-file-input-label">{t('badge_submitted_files')}</label>
                           <div className="badge-file-list">
                             {Array.isArray(requirement.attachments) && requirement.attachments.length > 0 ? (
                               requirement.attachments.map((attachment, index) => (
@@ -629,20 +620,20 @@ function BadgeDetalhe() {
                                 </div>
                               ))
                             ) : (
-                              <div className="badge-file-none">Nenhum ficheiro submetido.</div>
+                              <div className="badge-file-none">{t('badge_no_file_submitted')}</div>
                             )}
                           </div>
                         </div>
                       )}
                       {(badgeStatus === 'candidatura_em_progresso' || badgeStatus === 'evidencias_insuficientes') && (
                         <div className="badge-requirement-files">
-                          <label className="badge-file-input-label">Anexar arquivos</label>
+                          <label className="badge-file-input-label">{t('badge_attach_files')}</label>
                           <input
                             className="badge-file-input"
                             type="file"
                             multiple
                             onChange={(e) => handleFilesSelected(requirement.id, e.target.files)}
-                            aria-label={`Anexar arquivos ao requisito ${index + 1}`}
+                            aria-label={`${t('badge_attach_files_to_requirement')} ${index + 1}`}
                           />
 
                           <div className="badge-file-list">
@@ -656,14 +647,14 @@ function BadgeDetalhe() {
                                       type="button"
                                       className="badge-file-remove-btn"
                                       onClick={() => handleRemoveFile(requirement.id, fi)}
-                                      aria-label={`Remover arquivo ${f.name}`}
+                                      aria-label={`${t('remove_file')} ${f.name}`}
                                     >
-                                      Remover
+                                      {t('remove')}
                                     </button>
                                   </div>
                                 ))
                             ) : (
-                              <div className="badge-file-none">Nenhum ficheiro anexado.</div>
+                              <div className="badge-file-none">{t('badge_no_file_attached')}</div>
                             )}
                           </div>
                         </div>
@@ -679,7 +670,7 @@ function BadgeDetalhe() {
         {showReviewMessage && (
           <section className="badge-review-card">
             <div className="badge-review-head">
-              <h3>Mensagem do Talent Manager:</h3>
+              <h3>{t('badge_talent_manager_message')}</h3>
               <span>{badge.reviewerDate || '23 de dezembro de 2025'}</span>
             </div>
             <p>{badge.reviewMessage || 'Evidências insuficientes para a conclusão da submissão.'}</p>
@@ -689,7 +680,7 @@ function BadgeDetalhe() {
         <div className="badge-actions-row">
           {showShareActions && (
             <>
-              <button type="button" className="badge-share-icon-btn" aria-label="Copiar link" onClick={handleCopyLink}>
+              <button type="button" className="badge-share-icon-btn" aria-label={t('badge_copy_link')} onClick={handleCopyLink}>
                 <Link size={24} />
               </button>
               <LinkedInShareButton url={getShareUrl()} className="badge-share-primary-btn" />
@@ -705,10 +696,10 @@ function BadgeDetalhe() {
             >
               {badgeStatus === 'visualizar' ? null : <SendHorizontal size={20} />}
               {isSubmitting
-                ? 'A submeter...'
+                ? t('badge_submitting')
                 : badgeStatus === 'visualizar'
-                  ? 'Iniciar Candidatura'
-                  : 'Submeter'}
+                  ? t('badge_start_application')
+                  : t('badge_submit')}
             </button>
           )}
         </div>

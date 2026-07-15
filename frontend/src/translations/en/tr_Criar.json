@@ -24,5 +24,12 @@
   "legal_agree_prefix": "By clicking continue, you agree to our",
   "legal_terms": "Terms of Service",
   "legal_and": "and",
-  "legal_privacy": "Privacy Policy"
+  "legal_privacy": "Privacy Policy",
+
+  "register_rgpd_consent_label": "I have read and accept the Privacy Policy and personal data processing",
+  "rgpd_consent_title": "Privacy and Data Protection Policy",
+  "rgpd_consent_loading": "Loading terms...",
+  "rgpd_consent_no_topics": "No topics available.",
+  "rgpd_consent_accept": "Accept",
+  "rgpd_consent_decline": "Decline"
 }

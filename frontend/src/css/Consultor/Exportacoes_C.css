@@ -1,9 +1,11 @@
 .exports-shell {
   padding: 16px 16px 14px;
+  border: none;
 }
 
-.exports-page:has(.exports-tabs .exports-tab:first-of-type.active) .exports-shell {
-  border-top-left-radius: 0;
+.exports-page:has(.exports-tabs .exports-tab:first-of-type.active) .exports-shell,
+.exports-shell.no-top-left-radius {
+  border-top-left-radius: 0 !important;
 }
 
 .exports-tabs {
@@ -60,9 +62,11 @@
   border: none;
   background: transparent;
   color: #1b84f4;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  padding: 0;
+  padding: 6px 12px;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .exports-selected-count {
@@ -144,7 +148,7 @@
 .exports-certificate-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .exports-certificate-item-text {
@@ -209,7 +213,7 @@
 .exports-certificate-badge img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .exports-certificate-copy {
