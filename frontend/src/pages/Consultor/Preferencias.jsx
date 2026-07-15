@@ -168,23 +168,22 @@ function Preferencias() {
                   <div className="preferences-card-head">
                     <div className="preferences-card-title-group">
                       <strong>{area.name}</strong>
-                          <span>{area.serviceLine || '-'}</span>
-                        </div>
-                        <CheckCircle2 size={22} className={`preferences-card-check ${isSelected ? 'is-visible' : ''}`} />
-                      </div>
+                      <span>{area.serviceLine || '-'}</span>
+                    </div>
+                    <CheckCircle2 size={22} className={`preferences-card-check ${isSelected ? 'is-visible' : ''}`} />
+                  </div>
 
-                      <p>{area.description || '-'}</p>
+                  <p>{area.description || '-'}</p>
 
-                      <footer>{t('preferences_badges_count', { count: Number(area.badgeCount) || 0 })}</footer>
-                    </article>
-                  );
-                })}
-              </div>
+                  <footer>{t('preferences_badges_count', { count: Number(area.badgeCount) || 0 })}</footer>
+                </article>
+              );
+            })}
 
-              {filteredAreas.length === 0 && (
-                <div className="preferences-empty">{t('preferences_empty')}</div>
-              )}
-            </div>
+            {filteredAreas.length === 0 && (
+              <div className="preferences-empty">{t('preferences_empty')}</div>
+            )}
+          </div>
 
           <div className="preferences-footer">
             <span>{t('preferences_selected_count', { count: selectedAreaIds.length })}</span>
@@ -198,7 +197,7 @@ function Preferencias() {
           </div>
         </section>
       </main>
-      </div>
+    </div>
     </Layout>
   );
 }

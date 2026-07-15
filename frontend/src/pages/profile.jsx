@@ -235,7 +235,7 @@ function Profile() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar perfil..." />
+        <LoadingSpinner fullPage message={t('loading_profile')} />
       </Layout>
     );
   }
