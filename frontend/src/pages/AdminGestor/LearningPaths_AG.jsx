@@ -1130,7 +1130,7 @@ function LearningPathsAG() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('learning_paths_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

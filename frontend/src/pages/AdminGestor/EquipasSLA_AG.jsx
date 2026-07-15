@@ -270,7 +270,7 @@ function EquipasSLAAG() {
   if (loading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('equipas_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

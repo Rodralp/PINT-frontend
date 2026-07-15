@@ -382,7 +382,7 @@ function Notificacoes() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('notifications_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

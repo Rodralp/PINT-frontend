@@ -195,7 +195,7 @@ function PerfilPublico() {
 		return (
 			<div className="pp-root">
 				<Navbar />
-				<LoadingSpinner fullPage message="A carregar perfil..." />
+				<LoadingSpinner fullPage message={t('loading')} />
 			</div>
 		);
 	}

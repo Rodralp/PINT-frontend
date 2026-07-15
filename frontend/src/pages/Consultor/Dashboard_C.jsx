@@ -241,7 +241,7 @@ function DashboardC() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading_dashboard')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

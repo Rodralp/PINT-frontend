@@ -322,7 +322,7 @@ function ComunicadosAvisosAG() {
   if (isLoadingRecipients) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('comunicados_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

@@ -118,7 +118,7 @@ function Preferencias() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('preferences_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

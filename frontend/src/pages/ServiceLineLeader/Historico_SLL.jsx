@@ -270,7 +270,7 @@ function HistoricoSLL() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('historico_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

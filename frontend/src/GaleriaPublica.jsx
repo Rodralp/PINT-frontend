@@ -196,7 +196,7 @@ function GaleriaPublica() {
     return (
       <div className="gp-root">
         <Navbar />
-        <LoadingSpinner fullPage message="A carregar galeria..." />
+        <LoadingSpinner fullPage message={t('loading')} />
       </div>
     );
   }

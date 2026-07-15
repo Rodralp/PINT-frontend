@@ -514,7 +514,7 @@ function Definicoes() {
 
           {isLoadingNotifications && (
             <div className="settings-inline-status info" role="status">
-              A carregar definicoes de notificacoes...
+              {t('loading_settings')}
             </div>
           )}
 

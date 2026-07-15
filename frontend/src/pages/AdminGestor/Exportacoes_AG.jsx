@@ -1183,7 +1183,7 @@ function ExportacoesAG() {
   if (loading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('export_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

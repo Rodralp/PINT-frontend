@@ -225,7 +225,7 @@ function Lembretes() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('lembretes_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

@@ -266,7 +266,7 @@ function GestaoGeralAG() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('gestao_geral_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

@@ -246,7 +246,7 @@ function MeusBadges() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading_badges')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

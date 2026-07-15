@@ -226,7 +226,7 @@ export default function ProfileEdit() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading_profile')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     )
   }

@@ -325,7 +325,7 @@ function CatalogoBadges() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message="A carregar catálogo..." />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }

@@ -231,7 +231,7 @@ function GestaoPedidosAG() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('pedidos_loading')} />
+        <LoadingSpinner fullPage message={t('loading')} />
       </Layout>
     );
   }
