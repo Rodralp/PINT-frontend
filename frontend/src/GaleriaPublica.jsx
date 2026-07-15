@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Clock3, Search, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import BadgeImage from './components/BadgeImage';
 import LoadingSpinner from './components/LoadingSpinner';
+import Pagination from './components/Pagination';
 import { fetchCatalogBadges, fetchRankingConsultores } from './services/consultorService';
 import './css/GaleriaPublica.css';
 import './css/Consultor/CatalogoBadges_C.css';
@@ -88,6 +89,28 @@ function GaleriaPublica() {
   const [consultores, setConsultores] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [columnsCount, setColumnsCount] = useState(() => {
+    const width = window.innerWidth;
+    if (width > 1400) return 5;
+    if (width > 1200) return 4;
+    if (width > 900) return 3;
+    return 2;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width > 1400) setColumnsCount(5);
+      else if (width > 1200) setColumnsCount(4);
+      else if (width > 900) setColumnsCount(3);
+      else setColumnsCount(2);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const itemsPerPage = columnsCount * 2;
 
 
   useEffect(() => {
@@ -161,6 +184,18 @@ function GaleriaPublica() {
 
 
   const displayedBadges = filteredBadges;
+
+  const totalPages = Math.max(1, Math.ceil(displayedBadges.length / itemsPerPage));
+
+  const pagedBadges = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return displayedBadges.slice(start, end);
+  }, [displayedBadges, page, itemsPerPage]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
 
   const handleOpenBadgeDetails = (item) => {
     navigate(`/galeria-publica/badge/${encodeURIComponent(item.id)}`, {
@@ -267,7 +302,7 @@ function GaleriaPublica() {
             </section>*/
             <>
               <div className="catalog-grid">
-                {displayedBadges.map((item) => (
+                {pagedBadges.map((item) => (
                   <article
                     key={item.id}
                     className="catalog-card"
@@ -289,11 +324,6 @@ function GaleriaPublica() {
                     </div>
 
                     <div className="catalog-card-title">{item.name || item.area || 'Badge'}</div>
-                    {item.description && (
-                      <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '4px', lineHeight: '1.4' }}>
-                        {item.description}
-                      </div>
-                    )}
                     <div className="catalog-card-level">{item.levelKey ? t(item.levelKey) : item.levelLabel}</div>
 
                     <div className="catalog-card-meta">
@@ -312,6 +342,7 @@ function GaleriaPublica() {
               {displayedBadges.length === 0 && (
                 <div className="catalog-empty-state">Nenhum badge encontrado.</div>
               )}
+              <Pagination page={page} totalPages={totalPages} setPage={setPage} />
             </>
           ) : (
             <>
