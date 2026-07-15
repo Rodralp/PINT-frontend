@@ -82,8 +82,6 @@ export const renderMaskedBadge = async (badgeImageSrc, levelKey, size = 120) => 
     frameSrc ? loadImage(frameSrc) : Promise.resolve(null),
   ]);
 
-  if (!badgeImg) return badgeImageSrc || '';
-
   const canvas = document.createElement('canvas');
   canvas.width = size * 2;
   canvas.height = size * 2;
@@ -91,16 +89,26 @@ export const renderMaskedBadge = async (badgeImageSrc, levelKey, size = 120) => 
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (maskImg) {
-    ctx.drawImage(badgeImg, 0, 0, canvas.width, canvas.height);
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+  if (badgeImg) {
+    if (maskImg) {
+      ctx.drawImage(badgeImg, 0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'source-over';
+    } else {
+      ctx.beginPath();
+      ctx.roundRect(0, 0, canvas.width, canvas.height, 24);
+      ctx.clip();
+      ctx.drawImage(badgeImg, 0, 0, canvas.width, canvas.height);
+    }
+  } else if (maskImg) {
     ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
   } else {
+    ctx.fillStyle = '#e5e7eb';
     ctx.beginPath();
-    ctx.roundRect(0, 0, canvas.width, canvas.height, 24);
-    ctx.clip();
-    ctx.drawImage(badgeImg, 0, 0, canvas.width, canvas.height);
+    ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   if (frameImg) {
