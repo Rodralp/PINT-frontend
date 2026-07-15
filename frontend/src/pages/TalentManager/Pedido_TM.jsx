@@ -18,6 +18,7 @@ import {
   SquareCheckBig,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import BadgeImage from '../../components/BadgeImage';
 import '../../css/Shared/GestaoPedidosDetalhe.css';
 import '../../css/TalentManager/GestaoPedidos_TM.css';
@@ -108,16 +109,7 @@ function PedidoTM() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="page tm-order-detail-page">
-          <header className="page-header tm-order-detail-header">
-            <button type="button" className="tm-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
-              <ArrowLeft size={22} />
-            </button>
-            <div>
-              <h1>{t('request_detail_loading')}</h1>
-            </div>
-          </header>
-        </div>
+        <LoadingSpinner fullPage message={t('request_detail_loading')} />
       </Layout>
     );
   }

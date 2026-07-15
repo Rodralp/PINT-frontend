@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import '../../css/AdminGestor/EquipasSLA_AG.css';
 import { teamService } from '../../services/teamService';
 
@@ -266,18 +267,20 @@ function EquipasSLAAG() {
     }
   };
 
+  if (loading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('equipas_loading')} />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
         <header className="page-header">
           <h1>{t('equipas_title')}</h1>
         </header>
-
-        {loading && (
-          <div className="ag-loading">
-            <p>{t('equipas_loading')}</p>
-          </div>
-        )}
 
         {error && (
           <div className="ag-error">

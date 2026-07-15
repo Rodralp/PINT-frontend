@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchMyServiceLine } from '../../services/serviceLineLeaderService';
 import '../../css/Consultor/LearningPaths_C.css';
 
@@ -127,7 +128,7 @@ function MinhaServiceLineSLL() {
           </div>
         </header>
 
-        {isLoading && <p className="lp-progress-label">{t('loading')}</p>}
+        {isLoading && <LoadingSpinner fullPage message={t('loading')} />}
 
         {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 

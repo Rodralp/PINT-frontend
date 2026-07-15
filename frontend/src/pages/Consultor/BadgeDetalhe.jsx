@@ -17,6 +17,7 @@ import {
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import BadgeImage from '../../components/BadgeImage';
 import LinkedInShareButton from '../../components/LinkedInShareButton';
 import {
@@ -137,6 +138,7 @@ function BadgeDetalhe() {
     obtido: { label: t('badge_status_obtained'), className: 'is-obtained', Icon: CheckCircle2 },
   }), [t]);
   const [openRequirementId, setOpenRequirementId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [filesByRequirement, setFilesByRequirement] = useState({});
@@ -168,6 +170,10 @@ function BadgeDetalhe() {
 
     setBadge(defaultBadgeDetails);
   }, [location.state?.badge, badgeId]);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     setDynamicRequirements(null);
@@ -487,6 +493,14 @@ function BadgeDetalhe() {
       return { ...current, [requirementId]: arr };
     });
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('badge_loading')} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

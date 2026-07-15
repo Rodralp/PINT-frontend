@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ChevronDown, ChevronRight, Eye, EyeOff, FileText, Folder, FolderOpen, Pencil, Plus, X } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   fetchAdminLearningPaths,
   createAdminLearningPath,
@@ -1125,6 +1126,14 @@ function LearningPathsAG() {
   const editorTitle = editor
     ? `${editor.mode === 'create' ? t('learning_paths_modal_new') : t('learning_paths_modal_edit')} ${getEntityLabel(editor.type, t)}`
     : '';
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('learning_paths_loading')} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

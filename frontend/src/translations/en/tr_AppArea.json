@@ -643,6 +643,7 @@
   "comunicados_send_success": "Message sent to {{count}} recipients.",
   "comunicados_send_error": "Failed to send message.",
   "comunicados_load_error": "Could not load data.",
+  "comunicados_loading": "Loading recipients...",
   "comunicados_invalid_format": "Invalid format",
   "comunicados_file_too_large": "File above 10MB",
 
@@ -714,6 +715,7 @@
   "badge_admin_editar": "Edit badge",
   "badge_admin_btn_cancel": "Cancel",
   "badge_admin_saving": "Saving...",
+  "badge_admin_loading": "Loading badges...",
   "badge_admin_btn_save": "Save",
   "badge_admin_field_name": "Badge name",
   "badge_admin_placeholder_name": "E.g.: Badge MVP",

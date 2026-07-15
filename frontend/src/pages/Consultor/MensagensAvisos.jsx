@@ -11,6 +11,7 @@ import {
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import Pagination from '../../components/Pagination';
 import { fetchUserAnnouncements, getAnnouncementAttachmentDownloadUrl } from '../../services/communicationService';
 import '../../css/Consultor/MensagensAvisos.css';
@@ -112,6 +113,7 @@ function MensagensAvisos() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
@@ -141,6 +143,10 @@ function MensagensAvisos() {
         if (isMounted) {
           setMessages([]);
           setStatusMessage('Não foi possível carregar as mensagens. Tente novamente em alguns segundos.');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     };
@@ -259,6 +265,14 @@ function MensagensAvisos() {
   const hasActiveFilter = activeFilter !== 'todos';
   const hasActiveSort = sortBy !== 'recentes';
   const selectedMessage = sortedMessages.find((message) => message.id === selectedMessageId) || sortedMessages[0] || messages[0];
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('announcements_loading')} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

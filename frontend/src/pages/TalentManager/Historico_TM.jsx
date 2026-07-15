@@ -41,7 +41,7 @@ function HistoricoTM() {
   const [activeTab, setActiveTab] = useState('service-lines');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [serviceLines, setServiceLines] = useState([]);
@@ -260,6 +260,14 @@ function HistoricoTM() {
       </button>
     </div>
   );
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('historico_loading')} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

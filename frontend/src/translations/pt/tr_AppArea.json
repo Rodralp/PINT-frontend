@@ -644,6 +644,7 @@
   "comunicados_send_success": "Mensagem enviada para {{count}} destinatários.",
   "comunicados_send_error": "Falha ao enviar a mensagem.",
   "comunicados_load_error": "Não foi possível carregar os dados.",
+  "comunicados_loading": "A carregar destinatários...",
   "comunicados_invalid_format": "Formato inválido",
   "comunicados_file_too_large": "Ficheiro acima de 10MB",
 
@@ -715,6 +716,7 @@
   "badge_admin_editar": "Editar badge",
   "badge_admin_btn_cancel": "Cancelar",
   "badge_admin_saving": "A guardar...",
+  "badge_admin_loading": "A carregar badges...",
   "badge_admin_btn_save": "Guardar",
   "badge_admin_field_name": "Nome do badge",
   "badge_admin_placeholder_name": "Ex: MVP de Badges",

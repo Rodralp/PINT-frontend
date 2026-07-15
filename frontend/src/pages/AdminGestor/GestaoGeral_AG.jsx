@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   fetchAdminGeneralManagement,
   updateAdminNotificationSettings,
@@ -261,6 +262,14 @@ function GestaoGeralAG() {
       setIsSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('gestao_geral_loading')} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

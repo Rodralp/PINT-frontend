@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, Plus, Save, Trash2, XCircle } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import BadgeImage from '../../components/BadgeImage';
 import { fetchAdminLearningPaths } from '../../services/adminLearningPathService';
 import { createAdminBadge, fetchAdminBadge, updateAdminBadge } from '../../services/adminBadgeService';
@@ -189,6 +190,7 @@ function BadgeAdmin() {
   const [formErrors, setFormErrors] = useState({});
   const [statusMessage, setStatusMessage] = useState('');
   const [levelOptions, setLevelOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingLevels, setIsLoadingLevels] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -271,6 +273,10 @@ function BadgeAdmin() {
       isMounted = false;
     };
   }, [badgeId, isCreate, location.state?.badge]);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     setForm(buildFormState(initialBadge, isCreate));
@@ -620,6 +626,14 @@ function BadgeAdmin() {
       setIsSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('badge_admin_loading')} />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

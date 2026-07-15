@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, Search } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navbar from '../../components/Navbar';
+import Layout from '../../components/Layout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchPreferenceAreas, saveUserPreferences } from '../../services/consultorService';
 import '../../css/Consultor/Preferencias_C.css';
 
@@ -115,10 +116,9 @@ function Preferencias() {
   };
 
   return (
-    <div className="preferences-page">
-      <Navbar />
-
-      <main className="preferences-main">
+    <Layout>
+      <div className="preferences-page">
+        <main className="preferences-main">
         <section className="preferences-panel">
           <header className="preferences-header">
             <h1>{t('preferences_title')}</h1>
@@ -144,7 +144,7 @@ function Preferencias() {
           )}
 
           {isLoading ? (
-            <div className="preferences-loading">{t('preferences_loading')}</div>
+            <LoadingSpinner fullPage message={t('preferences_loading')} />
           ) : (
             <>
               <div className="preferences-grid">
@@ -195,7 +195,8 @@ function Preferencias() {
           </div>
         </section>
       </main>
-    </div>
+      </div>
+    </Layout>
   );
 }
 
