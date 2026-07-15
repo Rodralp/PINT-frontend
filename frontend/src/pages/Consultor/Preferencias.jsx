@@ -115,6 +115,14 @@ function Preferencias() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('preferences_loading')} />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="preferences-page">
@@ -143,27 +151,23 @@ function Preferencias() {
             </div>
           )}
 
-          {isLoading ? (
-            <LoadingSpinner fullPage message={t('preferences_loading')} />
-          ) : (
-            <>
-              <div className="preferences-grid">
-                {filteredAreas.map((area) => {
-                  const areaId = Number(area.id);
-                  const isSelected = selectedAreaIds.includes(areaId);
+          <div className="preferences-grid">
+            {filteredAreas.map((area) => {
+              const areaId = Number(area.id);
+              const isSelected = selectedAreaIds.includes(areaId);
 
-                  return (
-                    <article
-                      key={areaId}
-                      className={`preferences-card ${isSelected ? 'is-selected' : ''}`}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => toggleAreaSelection(areaId)}
-                      onKeyDown={(event) => handleCardKeyDown(event, areaId)}
-                    >
-                      <div className="preferences-card-head">
-                        <div className="preferences-card-title-group">
-                          <strong>{area.name}</strong>
+              return (
+                <article
+                  key={areaId}
+                  className={`preferences-card ${isSelected ? 'is-selected' : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => toggleAreaSelection(areaId)}
+                  onKeyDown={(event) => handleCardKeyDown(event, areaId)}
+                >
+                  <div className="preferences-card-head">
+                    <div className="preferences-card-title-group">
+                      <strong>{area.name}</strong>
                           <span>{area.serviceLine || '-'}</span>
                         </div>
                         <CheckCircle2 size={22} className={`preferences-card-check ${isSelected ? 'is-visible' : ''}`} />
@@ -180,8 +184,7 @@ function Preferencias() {
               {filteredAreas.length === 0 && (
                 <div className="preferences-empty">{t('preferences_empty')}</div>
               )}
-            </>
-          )}
+            </div>
 
           <div className="preferences-footer">
             <span>{t('preferences_selected_count', { count: selectedAreaIds.length })}</span>

@@ -521,6 +521,14 @@ function UtilizadoresAG() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('loading')} />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page">
@@ -621,15 +629,7 @@ function UtilizadoresAG() {
               </thead>
 
               <tbody>
-                {isLoading && (
-                  <tr>
-                    <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
-                      <LoadingSpinner message={t('loading')} />
-                    </td>
-                  </tr>
-                )}
-
-                {!isLoading && pagedUsers.length === 0 && (
+                {pagedUsers.length === 0 && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
                       {t('users_no_results')}
@@ -637,7 +637,7 @@ function UtilizadoresAG() {
                   </tr>
                 )}
 
-                {!isLoading && pagedUsers.map((user) => (
+                {pagedUsers.map((user) => (
                   activeTab === 'users'
                     ? (
                       <tr key={user.id}>

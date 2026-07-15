@@ -117,6 +117,14 @@ function MinhaServiceLineSLL() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingSpinner fullPage message={t('loading')} />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="page learning-paths-page is-classic">
@@ -128,11 +136,9 @@ function MinhaServiceLineSLL() {
           </div>
         </header>
 
-        {isLoading && <LoadingSpinner fullPage message={t('loading')} />}
+        {errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
 
-        {!isLoading && errorMessage && <p className="lp-progress-label">{errorMessage}</p>}
-
-        {!isLoading && !errorMessage && serviceLines.length > 0 && serviceLines.map((serviceLine) => (
+        {!errorMessage && serviceLines.length > 0 && serviceLines.map((serviceLine) => (
           <section key={serviceLine.id} className="lp-shell lp-shell-surface">
             <article className="lp-path-card">
               <header className="lp-path-banner">
