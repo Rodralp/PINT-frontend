@@ -2,13 +2,9 @@
   gap: 18px;
 }
 
-.historico-page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .shell,
-.historico-page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .tm-export-shell {
+.historico-page.page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .shell,
+.historico-page.tm-export-page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .tm-export-shell {
   border-radius: 20px !important;
-  border-top-left-radius: 20px !important;
-}
-
-.historico-page:has(.exports-tabs .exports-tab:first-of-type.active) .exports-shell {
   border-top-left-radius: 20px !important;
 }
 
