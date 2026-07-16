@@ -42,9 +42,6 @@
   padding: 16px 16px 14px;
 }
 
-.tm-export-page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .tm-export-shell {
-  border-top-left-radius: 0 !important;
-}
 
 .tm-export-tabs {
   display: inline-flex;

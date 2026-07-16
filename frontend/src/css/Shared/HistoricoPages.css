@@ -2,12 +2,6 @@
   gap: 18px;
 }
 
-.historico-page.page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .shell,
-.historico-page.tm-export-page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .tm-export-shell {
-  border-radius: 20px !important;
-  border-top-left-radius: 20px !important;
-}
-
 .historico-page .tm-export-header h1 {
   font-size: 30px;
   color: #1f2a37;
