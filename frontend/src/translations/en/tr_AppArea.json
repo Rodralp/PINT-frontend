@@ -473,7 +473,7 @@
   "gestao_geral_aria_web": "Web app for {{name}}",
 
   "export_title_ag": "Exports Administrator / Manager",
-  "export_title_tm": "Exports TM",
+  "export_title_tm": "Exports Talent Manager",
   "export_title_sll": "Exports Service Line Leader",
   "export_tab_requests": "Badge Requests",
   "export_tab_badges": "Badges",

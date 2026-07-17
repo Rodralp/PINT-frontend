@@ -189,7 +189,38 @@
   padding-top: var(--sp-2);
 }
 
+/* Override catalog badge card sizes for public gallery (keep fixed) */
+.gp-shell .catalog-card {
+  min-height: 226px;
+}
+
+.gp-shell .catalog-badge-frame {
+  width: 92px;
+  height: 92px;
+  aspect-ratio: auto;
+}
+
+.gp-shell .catalog-badge-image {
+  width: 74px;
+  height: 74px;
+  aspect-ratio: auto;
+}
+
 @media (max-width: 768px) {
+  .gp-shell .catalog-card {
+    min-height: 196px;
+  }
+
+  .gp-shell .catalog-badge-frame {
+    width: 92px;
+    height: 92px;
+  }
+
+  .gp-shell .catalog-badge-image {
+    width: 58px;
+    height: 58px;
+  }
+
   .gp-main {
     padding-top: 84px;
   }

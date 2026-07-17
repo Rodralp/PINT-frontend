@@ -46,7 +46,7 @@
   border: 2px solid #f6f7fa;
   border-radius: 14px;
   background: #ffffff;
-  min-height: 226px;
+  min-height: clamp(180px, 18vw, 240px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -77,8 +77,8 @@
 }
 
 .catalog-badge-frame {
-  width: 92px;
-  height: 92px;
+  width: clamp(64px, 38%, 96px);
+  aspect-ratio: 1 / 1;
   margin-bottom: 12px;
   display: flex;
   align-items: center;
@@ -86,8 +86,8 @@
 }
 
 .catalog-badge-image {
-  width: 74px;
-  height: 74px;
+  width: 80%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
 }
@@ -177,26 +177,6 @@
   .catalog-search-wrap,
   .catalog-action-btn {
     height: 38px;
-  }
-
-  .catalog-card {
-    min-height: 196px;
-  }
-
-  .catalog-badge-frame {
-    width: 92px;
-    height: 92px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .catalog-badge-image {
-    width: 58px;
-    height: 58px;
-    object-fit: cover;
-    display: block;
   }
 
   .catalog-card-level {

@@ -6,10 +6,6 @@
   gap: var(--sp-4);
 }
 
-.badge-details-page {
-  max-width: 1120px;
-}
-
 :is(.sll-order-detail-header, .tm-order-detail-header, .ag-order-detail-header, .badge-details-header) {
   display: flex;
   align-items: center;
