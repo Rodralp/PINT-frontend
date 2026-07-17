@@ -59,7 +59,7 @@ function HistoricoSLL() {
   const [activeTab, setActiveTab] = useState('minha-sl');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [serviceLineData, setServiceLineData] = useState(null);
@@ -266,14 +266,6 @@ function HistoricoSLL() {
     const label = statusLabels[mappedStatus] || mappedStatus || '-';
     return <span className={`ag-user-status ${mappedStatus}`}>{label}</span>;
   };
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
-      </Layout>
-    );
-  }
 
   return (
     <Layout>

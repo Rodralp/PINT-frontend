@@ -203,7 +203,7 @@ function GestaoPedidosTM() {
     ));
   };
   const renderSortIcon = (key) => {
-    if (sortConfig.key !== key) return null;
+    if (sortConfig.key !== key) return <ArrowUp size={12} aria-hidden="true" style={{ opacity: 0 }} />;
     return sortConfig.direction === 'asc'
       ? <ArrowUp size={12} aria-hidden="true" />
       : <ArrowDown size={12} aria-hidden="true" />;

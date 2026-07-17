@@ -26,6 +26,9 @@
   padding: var(--sp-4) var(--sp-4) var(--sp-3);
 }
 
+.page:has(.tm-export-tabs .tm-export-tab:first-of-type.active) .shell {
+  border-top-left-radius: 0 !important;
+}
 
 .tm-export-tabs {
   display: inline-flex;
@@ -245,6 +248,17 @@
 
 .tm-export-table tr:last-child td {
   border-bottom: none;
+}
+
+.tm-export-table th.sortable {
+  cursor: pointer;
+}
+
+.ag-orders-sort-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
 .tm-export-checkbox {

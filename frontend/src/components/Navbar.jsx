@@ -66,6 +66,15 @@ const IconSearch = () => (
   </svg>
 );
 
+const IconDownload = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+);
+
 const IconGlobe = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -135,6 +144,9 @@ function Navbar() {
 
         <div className="collapse navbar-collapse bg-white navbar-menu-panel" id="navbarContent">
           <div className="navbar-nav ms-auto mb-0 mb-md-0 d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 gap-md-4 mt-0 mt-md-0 px-0">
+            <a href="/Plataforma Softinsa.apk" download className="nav-link text-dark fw-medium d-flex align-items-center gap-1 p-0">
+              <IconDownload /> App mobile
+            </a>
             <a href="https://www.softinsa.pt" className="nav-link text-dark fw-medium d-flex align-items-center gap-1 p-0" target="_blank" rel="noreferrer">
               <IconLink /> www.softinsa.pt
             </a>

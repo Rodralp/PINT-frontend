@@ -246,7 +246,7 @@ function MeusBadges() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message={t('loading_badges')} />
       </Layout>
     );
   }
@@ -384,11 +384,6 @@ function MeusBadges() {
                   </div>
 
                   <div className="catalog-card-title">{item.name || item.area || t('badge')}</div>
-                  {item.description && (
-                    <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '4px', lineHeight: '1.4' }}>
-                      {item.description}
-                    </div>
-                  )}
                   <div className="catalog-card-level">{levelLabel}</div>
 
                   <div className="catalog-card-meta">

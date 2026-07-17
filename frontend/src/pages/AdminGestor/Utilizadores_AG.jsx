@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, Search, ShieldCheck, UserPlus2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Search, ShieldCheck, UserPlus2, X } from 'lucide-react';
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -142,6 +142,8 @@ function UtilizadoresAG() {
   const [permissionsModalError, setPermissionsModalError] = useState('');
   const [createModalError, setCreateModalError] = useState('');
 
+  const [tableSortConfig, setTableSortConfig] = useState({ key: 'name', direction: 'asc' });
+
   const [createForm, setCreateForm] = useState({
     nome: '',
     email: '',
@@ -264,15 +266,55 @@ function UtilizadoresAG() {
     };
   }, [activeTab, searchTerm, accountType]);
 
+  const sortedUsers = useMemo(() => {
+    const parseDate = (dateString) => {
+      const [day, month, year] = String(dateString || '').split('/');
+      const parsedDate = new Date(Number(year), Number(month) - 1, Number(day));
+      return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
+    };
+
+    const getSortValue = (user) => {
+      switch (tableSortConfig.key) {
+        case 'name':
+          return String(user.nome || '').toLowerCase();
+        case 'joinedAt':
+          return parseDate(user.joinedAt);
+        case 'roles':
+          return String(user.roles || '').toLowerCase();
+        case 'points':
+          return Number(user.points || 0);
+        case 'badges':
+          return Number(user.badges || 0);
+        case 'status':
+          return String(user.status || '').toLowerCase();
+        default:
+          return String(user.nome || '').toLowerCase();
+      }
+    };
+
+    return [...users].sort((left, right) => {
+      const leftValue = getSortValue(left);
+      const rightValue = getSortValue(right);
+
+      if (typeof leftValue === 'number' && typeof rightValue === 'number') {
+        return tableSortConfig.direction === 'asc' ? leftValue - rightValue : rightValue - leftValue;
+      }
+
+      const compare = String(leftValue).localeCompare(String(rightValue), 'pt');
+      return tableSortConfig.direction === 'asc' ? compare : -compare;
+    });
+  }, [users, tableSortConfig]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedUsers.length / PAGE_SIZE));
+
   const pagedUsers = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
-    return users.slice(start, start + PAGE_SIZE);
-  }, [users, page]);
-
-  const totalPages = Math.max(1, Math.ceil(users.length / PAGE_SIZE));
+    return sortedUsers.slice(start, start + PAGE_SIZE);
+  }, [sortedUsers, page]);
 
   useEffect(() => {
     setPage(1);
+    setTableSortConfig({ key: 'name', direction: 'asc' });
   }, [activeTab, searchTerm, accountType]);
 
   useEffect(() => {
@@ -319,6 +361,21 @@ function UtilizadoresAG() {
       accountType,
     });
     setUsers(Array.isArray(data) ? data : []);
+  };
+
+  const toggleTableSort = (key) => {
+    setTableSortConfig((current) => (
+      current.key === key
+        ? { key, direction: current.direction === 'desc' ? 'asc' : 'desc' }
+        : { key, direction: 'desc' }
+    ));
+  };
+
+  const renderTableSortIcon = (key) => {
+    if (tableSortConfig.key !== key) return <ArrowUp size={12} aria-hidden="true" style={{ opacity: 0 }} />;
+    return tableSortConfig.direction === 'asc'
+      ? <ArrowUp size={12} aria-hidden="true" />
+      : <ArrowDown size={12} aria-hidden="true" />;
   };
 
   const handleCreateUser = async () => {
@@ -521,14 +578,6 @@ function UtilizadoresAG() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <div className="page">
@@ -611,25 +660,49 @@ function UtilizadoresAG() {
               <thead>
                 {activeTab === 'users' ? (
                   <tr>
-                    <th>{t('users_th_name')}</th>
-                    <th>{t('users_th_entry')}</th>
-                    <th>{t('users_th_type')}</th>
-                    <th>{t('users_th_points')}</th>
-                    <th>{t('users_th_badges')}</th>
-                    <th>{t('users_th_status')}</th>
+                    <th className="sortable" onClick={() => toggleTableSort('name')}>
+                      <span className="ag-users-sort-head">{t('users_th_name')} {renderTableSortIcon('name')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleTableSort('joinedAt')}>
+                      <span className="ag-users-sort-head">{t('users_th_entry')} {renderTableSortIcon('joinedAt')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleTableSort('roles')}>
+                      <span className="ag-users-sort-head">{t('users_th_type')} {renderTableSortIcon('roles')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleTableSort('points')}>
+                      <span className="ag-users-sort-head">{t('users_th_points')} {renderTableSortIcon('points')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleTableSort('badges')}>
+                      <span className="ag-users-sort-head">{t('users_th_badges')} {renderTableSortIcon('badges')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleTableSort('status')}>
+                      <span className="ag-users-sort-head">{t('users_th_status')} {renderTableSortIcon('status')}</span>
+                    </th>
                     <th>{t('users_th_actions')}</th>
                   </tr>
                 ) : (
                   <tr>
-                    <th>{t('users_th_name')}</th>
-                    <th>{t('users_th_request_date')}</th>
+                    <th className="sortable" onClick={() => toggleTableSort('name')}>
+                      <span className="ag-users-sort-head">{t('users_th_name')} {renderTableSortIcon('name')}</span>
+                    </th>
+                    <th className="sortable" onClick={() => toggleTableSort('joinedAt')}>
+                      <span className="ag-users-sort-head">{t('users_th_request_date')} {renderTableSortIcon('joinedAt')}</span>
+                    </th>
                     <th>{t('users_th_actions')}</th>
                   </tr>
                 )}
               </thead>
 
               <tbody>
-                {pagedUsers.length === 0 && (
+                {isLoading && (
+                  <tr>
+                    <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
+                      <LoadingSpinner message={t('loading')} />
+                    </td>
+                  </tr>
+                )}
+
+                {!isLoading && pagedUsers.length === 0 && (
                   <tr>
                     <td className="empty-state" colSpan={activeTab === 'users' ? 7 : 3}>
                       {t('users_no_results')}
@@ -637,7 +710,7 @@ function UtilizadoresAG() {
                   </tr>
                 )}
 
-                {pagedUsers.map((user) => (
+                {!isLoading && pagedUsers.map((user) => (
                   activeTab === 'users'
                     ? (
                       <tr key={user.id}>

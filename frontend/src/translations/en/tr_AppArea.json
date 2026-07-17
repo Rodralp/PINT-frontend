@@ -473,7 +473,7 @@
   "gestao_geral_aria_web": "Web app for {{name}}",
 
   "export_title_ag": "Exports Administrator / Manager",
-  "export_title_tm": "Exports Talent Manager",
+  "export_title_tm": "Exports TM",
   "export_title_sll": "Exports Service Line Leader",
   "export_tab_requests": "Badge Requests",
   "export_tab_badges": "Badges",
@@ -643,7 +643,6 @@
   "comunicados_send_success": "Message sent to {{count}} recipients.",
   "comunicados_send_error": "Failed to send message.",
   "comunicados_load_error": "Could not load data.",
-  "comunicados_loading": "Loading recipients...",
   "comunicados_invalid_format": "Invalid format",
   "comunicados_file_too_large": "File above 10MB",
 
@@ -715,7 +714,6 @@
   "badge_admin_editar": "Edit badge",
   "badge_admin_btn_cancel": "Cancel",
   "badge_admin_saving": "Saving...",
-  "badge_admin_loading": "Loading badges...",
   "badge_admin_btn_save": "Save",
   "badge_admin_field_name": "Badge name",
   "badge_admin_placeholder_name": "E.g.: Badge MVP",

@@ -10,7 +10,6 @@ import {
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import BadgeImage from '../../components/BadgeImage';
 import { fetchBadgeRequirements } from '../../services/consultorService';
 import '../../css/Consultor/BadgeDetalhe.css';
@@ -82,7 +81,6 @@ function BadgeDetalheSLL() {
   const location = useLocation();
   const { t } = useTranslation();
   const [openRequirementId, setOpenRequirementId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [dynamicRequirements, setDynamicRequirements] = useState(null);
 
   const [badge] = useState(() => {
@@ -104,10 +102,6 @@ function BadgeDetalheSLL() {
   useEffect(() => {
     setDynamicRequirements(null);
   }, [badgeId, badge?.badgeDbId]);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -195,14 +189,6 @@ function BadgeDetalheSLL() {
   const toggleRequirement = (requirementId) => {
     setOpenRequirementId((current) => (current === requirementId ? null : requirementId));
   };
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
-      </Layout>
-    );
-  }
 
   return (
     <Layout>

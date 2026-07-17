@@ -464,7 +464,7 @@ function Exportacoes() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message="A carregar exportações..." />
       </Layout>
     );
   }

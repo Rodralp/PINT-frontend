@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
+  ArrowDown,
+  ArrowUp,
   CheckCircle2,
   Clock3,
   SearchCheck,
@@ -68,6 +70,7 @@ function MeusPedidos() {
   const [activeFilters, setActiveFilters] = useState(filtersFromUrl);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
 
   useEffect(() => {
     let isMounted = true;
@@ -110,8 +113,40 @@ function MeusPedidos() {
       return [];
     }
 
-    return allRequests.filter((item) => activeFilters.includes(item.status));
-  }, [activeFilters, allRequests]);
+    const parseRequestDate = (dateString) => {
+      const [day, month, year] = String(dateString || '').split('/');
+      const parsedDate = new Date(Number(year), Number(month) - 1, Number(day));
+      return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
+    };
+
+    const getSortValue = (request) => {
+      switch (sortConfig.key) {
+        case 'badge':
+          return String(request.badge || '').toLowerCase();
+        case 'level':
+          return String(request.level || '').toLowerCase();
+        case 'status':
+          return String(request.status || '').toLowerCase();
+        case 'date':
+        default:
+          return parseRequestDate(request.date);
+      }
+    };
+
+    return allRequests
+      .filter((item) => activeFilters.includes(item.status))
+      .sort((left, right) => {
+        const leftValue = getSortValue(left);
+        const rightValue = getSortValue(right);
+
+        if (typeof leftValue === 'number' && typeof rightValue === 'number') {
+          return sortConfig.direction === 'asc' ? leftValue - rightValue : rightValue - leftValue;
+        }
+
+        const compare = String(leftValue).localeCompare(String(rightValue), 'pt');
+        return sortConfig.direction === 'asc' ? compare : -compare;
+      });
+  }, [activeFilters, allRequests, sortConfig]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRequests.length / ITEMS_PER_PAGE));
 
@@ -137,6 +172,21 @@ function MeusPedidos() {
     navigate(`/consultor/meus-pedidos/${request.id}`, {
       state: { request },
     });
+  };
+
+  const toggleSort = (key) => {
+    setSortConfig((current) => (
+      current.key === key
+        ? { key, direction: current.direction === 'desc' ? 'asc' : 'desc' }
+        : { key, direction: 'desc' }
+    ));
+  };
+
+  const renderSortIcon = (key) => {
+    if (sortConfig.key !== key) return <ArrowUp size={12} aria-hidden="true" style={{ opacity: 0 }} />;
+    return sortConfig.direction === 'asc'
+      ? <ArrowUp size={12} aria-hidden="true" />
+      : <ArrowDown size={12} aria-hidden="true" />;
   };
 
   if (isLoading) {
@@ -225,10 +275,18 @@ function MeusPedidos() {
             <table className="table orders-table">
               <thead>
                 <tr>
-                  <th>{t('meus_pedidos_badge_requested')}</th>
-                  <th>{t('meus_pedidos_level')}</th>
-                  <th>{t('meus_pedidos_request_date')}</th>
-                  <th>{t('meus_pedidos_request_status')}</th>
+                  <th className="sortable" onClick={() => toggleSort('badge')}>
+                    <span className="ag-orders-sort-head">{t('meus_pedidos_badge_requested')} {renderSortIcon('badge')}</span>
+                  </th>
+                  <th className="sortable" onClick={() => toggleSort('level')}>
+                    <span className="ag-orders-sort-head">{t('meus_pedidos_level')} {renderSortIcon('level')}</span>
+                  </th>
+                  <th className="sortable" onClick={() => toggleSort('date')}>
+                    <span className="ag-orders-sort-head">{t('meus_pedidos_request_date')} {renderSortIcon('date')}</span>
+                  </th>
+                  <th className="sortable" onClick={() => toggleSort('status')}>
+                    <span className="ag-orders-sort-head">{t('meus_pedidos_request_status')} {renderSortIcon('status')}</span>
+                  </th>
                   <th>{t('meus_pedidos_request_details')}</th>
                 </tr>
               </thead>

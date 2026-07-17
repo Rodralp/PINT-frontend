@@ -183,7 +183,7 @@ function DashboardSLL() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message={t('loading_dashboard')} />
       </Layout>
     );
   }

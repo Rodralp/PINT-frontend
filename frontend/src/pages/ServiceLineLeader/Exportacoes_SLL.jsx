@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { downloadHtmlAsPdf, resolveImageUrl, resolveBadgeFrameImage, renderMaskedBadge } from '../../utils/pdfExport.js';
 import { useNavigate } from 'react-router-dom';
 import {
+  ArrowDown,
   ArrowDownToLine,
   ArrowLeft,
+  ArrowUp,
   Clock3,
   FileDown,
   Filter,
@@ -624,6 +626,7 @@ function ExportacoesSLL() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState(tabDefaults.pedidos.filter);
   const [sortBy, setSortBy] = useState(tabDefaults.pedidos.sort);
+  const [tableSortConfig, setTableSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [activeRequestStatuses, setActiveRequestStatuses] = useState(requestStatusFilters.map((item) => item.id));
   const [selectedRequestIds, setSelectedRequestIds] = useState([]);
   const [selectedBadgeIds, setSelectedBadgeIds] = useState([]);
@@ -697,21 +700,40 @@ function ExportacoesSLL() {
   }, [scopedRequestItems, searchTerm, activeFilter, activeRequestStatuses]);
 
   const sortedRequests = useMemo(() => {
-    const nextRows = [...filteredRequests];
+    const parseRequestDate = (dateString) => {
+      const [day, month, year] = String(dateString || '').split('/');
+      const parsedDate = new Date(Number(year), Number(month) - 1, Number(day));
+      return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
+    };
 
-    if (sortBy === 'antigas') {
-      nextRows.sort((a, b) => parsePtDate(a.date) - parsePtDate(b.date));
-      return nextRows;
-    }
+    const getSortValue = (item) => {
+      switch (tableSortConfig.key) {
+        case 'consultant':
+          return String(item.consultant || '').toLowerCase();
+        case 'badge':
+          return String(item.badge || '').toLowerCase();
+        case 'level':
+          return String(item.level || '').toLowerCase();
+        case 'status':
+          return String(item.status || '').toLowerCase();
+        case 'date':
+        default:
+          return parseRequestDate(item.date);
+      }
+    };
 
-    if (sortBy === 'consultor_az') {
-      nextRows.sort((a, b) => (a.consultant || '').localeCompare(b.consultant || ''));
-      return nextRows;
-    }
+    return [...filteredRequests].sort((left, right) => {
+      const leftValue = getSortValue(left);
+      const rightValue = getSortValue(right);
 
-    nextRows.sort((a, b) => parsePtDate(b.date) - parsePtDate(a.date));
-    return nextRows;
-  }, [filteredRequests, sortBy]);
+      if (typeof leftValue === 'number' && typeof rightValue === 'number') {
+        return tableSortConfig.direction === 'asc' ? leftValue - rightValue : rightValue - leftValue;
+      }
+
+      const compare = String(leftValue).localeCompare(String(rightValue), 'pt');
+      return tableSortConfig.direction === 'asc' ? compare : -compare;
+    });
+  }, [filteredRequests, tableSortConfig]);
 
   const filteredBadges = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -765,36 +787,37 @@ function ExportacoesSLL() {
   }, [scopedConsultantItems, searchTerm, activeFilter]);
 
   const sortedConsultants = useMemo(() => {
-    const nextRows = [...filteredConsultants];
+    const getSortValue = (item) => {
+      switch (tableSortConfig.key) {
+        case 'name':
+          return String(item.name || '').toLowerCase();
+        case 'email':
+          return String(item.email || '').toLowerCase();
+        case 'points':
+          return Number(item.points || 0);
+        case 'joinedAt':
+          return String(item.joinedAt || '').toLowerCase();
+        case 'badges':
+          return Number(item.badges || 0);
+        case 'status':
+          return String(item.status || '').toLowerCase();
+        default:
+          return Number(item.points || 0);
+      }
+    };
 
-    if (sortBy === 'points_asc') {
-      nextRows.sort((a, b) => a.points - b.points || (a.name || '').localeCompare(b.name || ''));
-      return nextRows;
-    }
+    return [...filteredConsultants].sort((left, right) => {
+      const leftValue = getSortValue(left);
+      const rightValue = getSortValue(right);
 
-    if (sortBy === 'badges_desc') {
-      nextRows.sort((a, b) => (b.badges || 0) - (a.badges || 0) || b.points - a.points || (a.name || '').localeCompare(b.name || ''));
-      return nextRows;
-    }
+      if (typeof leftValue === 'number' && typeof rightValue === 'number') {
+        return tableSortConfig.direction === 'asc' ? leftValue - rightValue : rightValue - leftValue;
+      }
 
-    if (sortBy === 'badges_asc') {
-      nextRows.sort((a, b) => (a.badges || 0) - (b.badges || 0) || a.points - b.points || (a.name || '').localeCompare(b.name || ''));
-      return nextRows;
-    }
-
-    if (sortBy === 'nome_az') {
-      nextRows.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-      return nextRows;
-    }
-
-    if (sortBy === 'entrada_recente') {
-      nextRows.sort((a, b) => parsePtDate(b.joinedAt) - parsePtDate(a.joinedAt));
-      return nextRows;
-    }
-
-    nextRows.sort((a, b) => b.points - a.points || (a.name || '').localeCompare(b.name || ''));
-    return nextRows;
-  }, [filteredConsultants, sortBy]);
+      const compare = String(leftValue).localeCompare(String(rightValue), 'pt');
+      return tableSortConfig.direction === 'asc' ? compare : -compare;
+    });
+  }, [filteredConsultants, tableSortConfig]);
 
   const pageSize = 10;
 
@@ -896,6 +919,21 @@ function ExportacoesSLL() {
     if (tabId === 'pedidos') {
       setActiveRequestStatuses(requestStatusFilters.map((item) => item.id));
     }
+  };
+
+  const toggleTableSort = (key) => {
+    setTableSortConfig((current) => (
+      current.key === key
+        ? { key, direction: current.direction === 'desc' ? 'asc' : 'desc' }
+        : { key, direction: 'desc' }
+    ));
+  };
+
+  const renderTableSortIcon = (key) => {
+    if (tableSortConfig.key !== key) return <ArrowUp size={12} aria-hidden="true" style={{ opacity: 0 }} />;
+    return tableSortConfig.direction === 'asc'
+      ? <ArrowUp size={12} aria-hidden="true" />
+      : <ArrowDown size={12} aria-hidden="true" />;
   };
 
   const toggleRequestStatusFilter = (statusId) => {
@@ -1456,11 +1494,21 @@ function ExportacoesSLL() {
                   <thead>
                     <tr>
                       <th />
-                      <th>{t('export_th_consultant')}</th>
-                      <th>{t('export_th_badge_requested')}</th>
-                      <th>{t('export_th_level')}</th>
-                      <th>{t('export_th_request_date')}</th>
-                      <th>{t('export_th_request_status')}</th>
+                      <th className="sortable" onClick={() => toggleTableSort('consultant')}>
+                        <span className="ag-orders-sort-head">{t('export_th_consultant')} {renderTableSortIcon('consultant')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('badge')}>
+                        <span className="ag-orders-sort-head">{t('export_th_badge_requested')} {renderTableSortIcon('badge')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('level')}>
+                        <span className="ag-orders-sort-head">{t('export_th_level')} {renderTableSortIcon('level')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('date')}>
+                        <span className="ag-orders-sort-head">{t('export_th_request_date')} {renderTableSortIcon('date')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('status')}>
+                        <span className="ag-orders-sort-head">{t('export_th_request_status')} {renderTableSortIcon('status')}</span>
+                      </th>
                       <th>{t('export_th_request_details')}</th>
                     </tr>
                   </thead>
@@ -1625,12 +1673,24 @@ function ExportacoesSLL() {
                     <tr>
                       <th />
                       <th>{t('export_th_ranking')}</th>
-                      <th>{t('export_th_name')}</th>
-                      <th>{t('export_th_email')}</th>
-                      <th>{t('export_th_points')}</th>
-                      <th>{t('export_th_entry_date')}</th>
-                      <th>{t('export_th_badges')}</th>
-                      <th>{t('export_th_status')}</th>
+                      <th className="sortable" onClick={() => toggleTableSort('name')}>
+                        <span className="ag-orders-sort-head">{t('export_th_name')} {renderTableSortIcon('name')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('email')}>
+                        <span className="ag-orders-sort-head">{t('export_th_email')} {renderTableSortIcon('email')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('points')}>
+                        <span className="ag-orders-sort-head">{t('export_th_points')} {renderTableSortIcon('points')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('joinedAt')}>
+                        <span className="ag-orders-sort-head">{t('export_th_entry_date')} {renderTableSortIcon('joinedAt')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('badges')}>
+                        <span className="ag-orders-sort-head">{t('export_th_badges')} {renderTableSortIcon('badges')}</span>
+                      </th>
+                      <th className="sortable" onClick={() => toggleTableSort('status')}>
+                        <span className="ag-orders-sort-head">{t('export_th_status')} {renderTableSortIcon('status')}</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>

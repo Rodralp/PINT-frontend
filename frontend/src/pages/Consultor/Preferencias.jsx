@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, Search } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/Layout';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import Navbar from '../../components/Navbar';
 import { fetchPreferenceAreas, saveUserPreferences } from '../../services/consultorService';
 import '../../css/Consultor/Preferencias_C.css';
 
@@ -115,18 +114,11 @@ function Preferencias() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
-      </Layout>
-    );
-  }
-
   return (
-    <Layout>
-      <div className="preferences-page">
-        <main className="preferences-main">
+    <div className="preferences-page">
+      <Navbar />
+
+      <main className="preferences-main">
         <section className="preferences-panel">
           <header className="preferences-header">
             <h1>{t('preferences_title')}</h1>
@@ -151,39 +143,45 @@ function Preferencias() {
             </div>
           )}
 
-          <div className="preferences-grid">
-            {filteredAreas.map((area) => {
-              const areaId = Number(area.id);
-              const isSelected = selectedAreaIds.includes(areaId);
+          {isLoading ? (
+            <div className="preferences-loading">{t('preferences_loading')}</div>
+          ) : (
+            <>
+              <div className="preferences-grid">
+                {filteredAreas.map((area) => {
+                  const areaId = Number(area.id);
+                  const isSelected = selectedAreaIds.includes(areaId);
 
-              return (
-                <article
-                  key={areaId}
-                  className={`preferences-card ${isSelected ? 'is-selected' : ''}`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleAreaSelection(areaId)}
-                  onKeyDown={(event) => handleCardKeyDown(event, areaId)}
-                >
-                  <div className="preferences-card-head">
-                    <div className="preferences-card-title-group">
-                      <strong>{area.name}</strong>
-                      <span>{area.serviceLine || '-'}</span>
-                    </div>
-                    <CheckCircle2 size={22} className={`preferences-card-check ${isSelected ? 'is-visible' : ''}`} />
-                  </div>
+                  return (
+                    <article
+                      key={areaId}
+                      className={`preferences-card ${isSelected ? 'is-selected' : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => toggleAreaSelection(areaId)}
+                      onKeyDown={(event) => handleCardKeyDown(event, areaId)}
+                    >
+                      <div className="preferences-card-head">
+                        <div className="preferences-card-title-group">
+                          <strong>{area.name}</strong>
+                          <span>{area.serviceLine || '-'}</span>
+                        </div>
+                        <CheckCircle2 size={22} className={`preferences-card-check ${isSelected ? 'is-visible' : ''}`} />
+                      </div>
 
-                  <p>{area.description || '-'}</p>
+                      <p>{area.description || '-'}</p>
 
-                  <footer>{t('preferences_badges_count', { count: Number(area.badgeCount) || 0 })}</footer>
-                </article>
-              );
-            })}
+                      <footer>{t('preferences_badges_count', { count: Number(area.badgeCount) || 0 })}</footer>
+                    </article>
+                  );
+                })}
+              </div>
 
-            {filteredAreas.length === 0 && (
-              <div className="preferences-empty">{t('preferences_empty')}</div>
-            )}
-          </div>
+              {filteredAreas.length === 0 && (
+                <div className="preferences-empty">{t('preferences_empty')}</div>
+              )}
+            </>
+          )}
 
           <div className="preferences-footer">
             <span>{t('preferences_selected_count', { count: selectedAreaIds.length })}</span>
@@ -198,7 +196,6 @@ function Preferencias() {
         </section>
       </main>
     </div>
-    </Layout>
   );
 }
 

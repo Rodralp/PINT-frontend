@@ -396,3 +396,14 @@
   white-space: normal;
   max-width: none;
 }
+
+.shell .table th.sortable {
+  cursor: pointer;
+}
+
+.ag-users-sort-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}

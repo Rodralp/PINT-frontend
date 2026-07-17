@@ -226,7 +226,7 @@ export default function ProfileEdit() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <LoadingSpinner fullPage message="A carregar dados do perfil..." />
       </Layout>
     )
   }

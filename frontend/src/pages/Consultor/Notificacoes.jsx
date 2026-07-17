@@ -3,7 +3,6 @@ import { Filter, Search, SlidersHorizontal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/Layout';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import Pagination from '../../components/Pagination';
 import { fetchUserNotifications, markNotificationRead } from '../../services/communicationService';
 import '../../css/Consultor/Notificacoes.css';
@@ -104,7 +103,6 @@ function Notificacoes() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
@@ -133,10 +131,6 @@ function Notificacoes() {
         if (isMounted) {
           setNotifications([]);
           setStatusMessage('Não foi possível carregar as notificações. Tente novamente em alguns segundos.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
         }
       }
     };
@@ -379,15 +373,7 @@ function Notificacoes() {
                     const canOpen = Boolean(notification.actionPath) || isExpandable;
                     const isExpanded = isExpandable && expandedNotificationId === notification.id;
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
-      </Layout>
-    );
-  }
-
-  return (
+                    return (
                       <Fragment key={notification.id}>
                         <tr>
                           <td>

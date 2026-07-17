@@ -18,7 +18,6 @@ import {
   SendHorizontal,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import BadgeImage from '../../components/BadgeImage';
 import '../../css/Shared/GestaoPedidosDetalhe.css';
 import '../../css/ServiceLineLeader/GestaoPedidos_SLL.css';
@@ -110,7 +109,16 @@ function PedidoSLL() {
   if (isLoading) {
     return (
       <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
+        <div className="page sll-order-detail-page">
+          <header className="page-header sll-order-detail-header">
+            <button type="button" className="sll-orders-back-btn" onClick={handleGoBack} aria-label={t('back')}>
+              <ArrowLeft size={22} />
+            </button>
+            <div>
+              <h1>{t('request_detail_loading')}</h1>
+            </div>
+          </header>
+        </div>
       </Layout>
     );
   }
@@ -213,8 +221,6 @@ function PedidoSLL() {
                   className="sll-order-badge-image"
                   src={request.badgeImage}
                   alt={request.badge}
-                  frameSrc={request.badgeFrameImage}
-                  levelKey={request.levelKey}
                   levelLabel={request.levelLabel}
                 />
               </div>

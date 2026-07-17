@@ -1,39 +1,3 @@
-.ag-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: var(--radius-xl);
-  padding: var(--sp-5) var(--sp-6);
-  margin-bottom: var(--sp-5);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.ag-error p {
-  margin: 0;
-  color: #991b1b;
-  font-size: var(--fs-lg);
-  font-weight: 500;
-}
-
-.ag-error button {
-  border: 0;
-  background: #dc2626;
-  color: #ffffff;
-  border-radius: var(--radius-lg);
-  height: 40px;
-  padding: var(--sp-2) var(--sp-4);
-  font-size: var(--fs-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.ag-error button:hover {
-  background: #b91c1c;
-}
-
 .ag-sla-alerts-card,
 .ag-teams-list-card {
   background: #ffffff;

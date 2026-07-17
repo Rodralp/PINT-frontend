@@ -14,21 +14,6 @@
   color: var(--pp-text);
 }
 
-.pp-root .loading-fullpage {
-  min-height: calc(100vh - 96px);
-}
-
-.pp-root .loading-fullpage-content {
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: var(--radius-2xl);
-  padding: 28px 40px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-.pp-root .loading-fullpage-text {
-  color: #1f2937;
-}
-
 .pp-main {
   padding: 96px var(--sp-4) 36px;
   display: flex;

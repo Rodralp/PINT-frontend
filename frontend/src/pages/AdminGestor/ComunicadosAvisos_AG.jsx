@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Paperclip, Search, SendHorizontal, UploadCloud, UserRoundPlus, X } from 'lucide-react';
 import Layout from '../../components/Layout';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchAnnouncementRecipients, sendAnnouncement } from '../../services/communicationService';
 import '../../css/AdminGestor/ComunicadosAvisos_AG.css';
 
@@ -54,7 +53,6 @@ function ComunicadosAvisosAG() {
 
   const [recipientsDirectory, setRecipientsDirectory] = useState([]);
   const [serviceLines, setServiceLines] = useState([]);
-  const [isLoadingRecipients, setIsLoadingRecipients] = useState(true);
   const [title, setTitle] = useState('');
   const [messageType, setMessageType] = useState('mensagem');
   const [message, setMessage] = useState('');
@@ -114,10 +112,6 @@ function ComunicadosAvisosAG() {
           setRecipientsDirectory([]);
           setServiceLines([]);
           setStatusMessage(t('comunicados_load_error'));
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoadingRecipients(false);
         }
       }
     };
@@ -318,14 +312,6 @@ function ComunicadosAvisosAG() {
       setSendStatus(error?.message || t('comunicados_send_error'));
     }
   };
-
-  if (isLoadingRecipients) {
-    return (
-      <Layout>
-        <LoadingSpinner fullPage message={t('loading')} />
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
