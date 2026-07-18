@@ -145,7 +145,12 @@ function BadgeImage({
         aria-label={alt || undefined}
         aria-hidden={alt ? undefined : true}
       >
-        <span className="badge-image-composite-stage" aria-hidden="true" style={{ background: '#fff' }}>
+        <span className="badge-image-composite-stage" aria-hidden="true">
+          <img
+            className="badge-image-composite-inner"
+            src={BADGE_NOT_FOUND}
+            alt=""
+          />
           <img
             className="badge-image-composite-frame"
             src={frameFailed ? null : resolvedFrameSrc}
