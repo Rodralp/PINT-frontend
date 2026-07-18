@@ -13,6 +13,10 @@
   overflow: hidden !important;
 }
 
+.linkedin-share-button-wrapper.badge-share-primary-btn {
+  padding: 0;
+}
+
 .linkedin-share-button-fallback.linkedin-share-button-fallback {
   display: inline-flex;
   align-items: center;
