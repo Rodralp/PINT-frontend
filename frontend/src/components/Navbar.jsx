@@ -144,7 +144,7 @@ function Navbar() {
 
         <div className="collapse navbar-collapse bg-white navbar-menu-panel" id="navbarContent">
           <div className="navbar-nav ms-auto mb-0 mb-md-0 d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 gap-md-4 mt-0 mt-md-0 px-0">
-            <a href="/Plataforma Softinsa.apk" download className="nav-link text-dark fw-medium d-flex align-items-center gap-1 p-0">
+            <a href="https://github.com/Rodralp/PINT-frontend/releases/download/apk/Plataforma.Softinsa.apk" download className="nav-link text-dark fw-medium d-flex align-items-center gap-1 p-0">
               <IconDownload /> App mobile
             </a>
             <a href="https://www.softinsa.pt" className="nav-link text-dark fw-medium d-flex align-items-center gap-1 p-0" target="_blank" rel="noreferrer">
