@@ -219,6 +219,7 @@ function PedidoAG() {
                   className="ag-order-badge-image"
                   src={request.badgeImage}
                   alt={request.badge}
+                  levelKey={request.levelKey}
                   levelLabel={request.levelLabel}
                 />
               </div>
@@ -292,6 +293,7 @@ function PedidoAG() {
                             src={item.image || request.badgeImage}
                             alt={request.badge}
                             className="ag-order-requirement-detail-image"
+                            levelKey={request.levelKey}
                             levelLabel={request.levelLabel}
                           />
                         </div>

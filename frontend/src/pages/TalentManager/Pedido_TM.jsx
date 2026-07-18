@@ -213,6 +213,7 @@ function PedidoTM() {
                   className="tm-order-badge-image"
                   src={request.badgeImage}
                   alt={request.badge}
+                  levelKey={request.levelKey}
                   levelLabel={request.levelLabel}
                 />
               </div>
@@ -283,6 +284,7 @@ function PedidoTM() {
                             src={item.image || request.badgeImage}
                             alt={request.badge}
                             className="tm-order-requirement-detail-image"
+                            levelKey={request.levelKey}
                             levelLabel={request.levelLabel}
                           />
                         </div>

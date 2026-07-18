@@ -221,6 +221,7 @@ function PedidoSLL() {
                   className="sll-order-badge-image"
                   src={request.badgeImage}
                   alt={request.badge}
+                  levelKey={request.levelKey}
                   levelLabel={request.levelLabel}
                 />
               </div>
@@ -295,6 +296,7 @@ function PedidoSLL() {
                               src={item.image || request.badgeImage}
                               alt={request.badge}
                               className="sll-order-requirement-detail-image"
+                              levelKey={request.levelKey}
                               levelLabel={request.levelLabel}
                             />
                           </div>

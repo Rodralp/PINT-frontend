@@ -135,6 +135,7 @@ function PedidoDetalheC() {
                   src={request.badgeImage}
                   alt={request.badge}
                   className="tm-order-badge-image"
+                  levelKey={request.levelKey}
                   levelLabel={request.levelLabel}
                 />
               </div>
@@ -205,6 +206,7 @@ function PedidoDetalheC() {
                             src={item.image || request.badgeImage}
                             alt={request.badge}
                             className="tm-order-requirement-detail-image"
+                            levelKey={request.levelKey}
                             levelLabel={request.levelLabel}
                           />
                         </div>
