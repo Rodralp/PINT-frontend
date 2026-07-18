@@ -288,10 +288,11 @@ function PedidoAG() {
                     {openRequirementId === item.id && (
                       <div className="ag-order-requirement-detail">
                         <div className="ag-order-requirement-detail-media">
-                          <img
+                          <BadgeImage
                             src={item.image || request.badgeImage}
                             alt={request.badge}
                             className="ag-order-requirement-detail-image"
+                            levelLabel={request.levelLabel}
                           />
                         </div>
                         <div className="ag-order-requirement-detail-content">

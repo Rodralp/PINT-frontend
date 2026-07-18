@@ -245,10 +245,14 @@ function BadgePublica() {
 
                         {isOpen && (
                           <div className="bp-requirement-detail">
-                            <img
+                            <BadgeImage
                               src={requirement.image || badge.badgeImage}
                               alt={`Ilustracao do requisito ${index + 1}`}
                               className="bp-requirement-detail-image"
+                              frameSrc={badge.badgeFrameImage}
+                              levelKey={badge.levelKey}
+                              typeId={badge.typeId}
+                              levelLabel={levelLabel}
                             />
                             <p>{requirement.description}</p>
                           </div>

@@ -291,10 +291,11 @@ function PedidoSLL() {
                       {openRequirementId === item.id && (
                         <div className="sll-order-requirement-detail">
                           <div className="sll-order-requirement-detail-media">
-                            <img
+                            <BadgeImage
                               src={item.image || request.badgeImage}
                               alt={request.badge}
                               className="sll-order-requirement-detail-image"
+                              levelLabel={request.levelLabel}
                             />
                           </div>
                           <div className="sll-order-requirement-detail-content">
