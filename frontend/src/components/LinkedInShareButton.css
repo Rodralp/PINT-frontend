@@ -13,22 +13,21 @@
   overflow: hidden !important;
 }
 
-.linkedin-share-button-fallback {
+.linkedin-share-button-fallback.linkedin-share-button-fallback {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-5);
-  border: 1px solid #0077b5;
+  border: none;
   border-radius: var(--radius-lg);
-  background: #ffffff;
+  background: transparent;
   color: #0077b5;
   font-size: var(--fs-base);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: opacity 0.15s;
 }
 
-.linkedin-share-button-fallback:hover {
-  background: #0077b5;
-  color: #ffffff;
+.linkedin-share-button-fallback.linkedin-share-button-fallback:hover {
+  opacity: 0.8;
 }
