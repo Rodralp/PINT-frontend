@@ -17,18 +17,21 @@
   padding: 0;
 }
 
+.linkedin-wordmark {
+  height: 20px;
+  width: auto;
+  display: block;
+}
+
 .linkedin-share-button-fallback.linkedin-share-button-fallback {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-2);
-  padding: 0;
+  padding: 0 14px;
   border: none;
   border-radius: var(--radius-lg);
   background: transparent;
   color: #ffffff;
-  font-size: var(--fs-base);
-  font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
 }
