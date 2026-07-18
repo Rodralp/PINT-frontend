@@ -3,11 +3,10 @@ import './LinkedInShareButton.css';
 
 function LinkedInIcon() {
   return (
-    <svg viewBox="0 0 120 30" fill="currentColor" className="linkedin-wordmark">
-      <path d="M4.5 2.25A2.25 2.25 0 016.75 0h16.5A2.25 2.25 0 0121.5 2.25v25.5A2.25 2.25 0 0119.25 30H6.75A2.25 2.25 0 014.5 27.75V2.25z" fillOpacity="0" />
-      <text x="0" y="22" fontFamily="Arial, Helvetica, sans-serif" fontSize="22" fontWeight="700" letterSpacing="-0.5">Linked</text>
-      <rect x="73" y="2" width="24" height="24" rx="4" fill="currentColor" />
-      <text x="77.5" y="20.5" fontFamily="Arial, Helvetica, sans-serif" fontSize="17" fontWeight="700" fill="#1b84f4">in</text>
+    <svg viewBox="0 0 100 28" fill="currentColor" className="linkedin-wordmark">
+      <text x="0" y="21" fontFamily="Arial, Helvetica, sans-serif" fontSize="21" fontWeight="700" letterSpacing="-0.5">Linked</text>
+      <rect x="70" y="2" width="22" height="22" rx="3.5" fill="currentColor" />
+      <text x="74" y="19" fontFamily="Arial, Helvetica, sans-serif" fontSize="16" fontWeight="700" fill="#1b84f4">in</text>
     </svg>
   );
 }
