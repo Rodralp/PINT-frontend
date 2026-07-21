@@ -30,7 +30,7 @@
 
 .badge-image-composite-inner {
   z-index: 1;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 
