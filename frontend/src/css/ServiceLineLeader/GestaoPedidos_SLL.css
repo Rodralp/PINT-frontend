@@ -837,3 +837,15 @@
     height: 72px;
   }
 }
+
+.sll-orders-badge-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sll-orders-badge-thumb {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
