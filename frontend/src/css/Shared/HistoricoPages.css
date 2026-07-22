@@ -105,7 +105,7 @@
 }
 
 .historico-page .orders-table colgroup .col-actions {
-  width: 28%;
+  width: 32%;
 }
 
 .historico-page .orders-table colgroup .col-email {
@@ -123,11 +123,11 @@
 }
 
 .modal-body .orders-table colgroup .col-name {
-  width: 16%;
+  width: 15%;
 }
 
 .modal-body .orders-table colgroup .col-desc {
-  width: 22%;
+  width: 20%;
 }
 
 .modal-body .orders-table colgroup .col-date {
@@ -139,7 +139,7 @@
 }
 
 .modal-body .orders-table colgroup .col-actions {
-  width: 18%;
+  width: 20%;
 }
 
 .historico-page .orders-table th,
@@ -184,6 +184,7 @@
 }
 
 .historico-action-btn {
+  width: auto;
   height: 34px;
   border: 1px solid #8db7dd;
   background: #ecf5ff;
@@ -381,7 +382,7 @@
   }
 
   .historico-page .orders-table colgroup .col-actions {
-    width: 24%;
+    width: 30%;
   }
 }
 
