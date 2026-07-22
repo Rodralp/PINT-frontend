@@ -4,13 +4,13 @@
   flex-direction: row !important;
   gap: 4px;
   align-items: center;
-  min-width: 120px;
-  flex-wrap: nowrap;
+  min-width: 0;
+  flex-wrap: wrap;
   justify-content: flex-start;
 }
 
 .historico-action-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -24,6 +24,8 @@
   color: #666;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .historico-action-btn:hover {
@@ -38,14 +40,26 @@
 }
 
 /* Responsividade para tabelas com ações */
+@media (max-width: 1100px) {
+  .historico-actions-group {
+    gap: 3px;
+  }
+
+  .historico-action-btn {
+    padding: 5px 7px;
+    font-size: 11px;
+  }
+}
+
 @media (max-width: 768px) {
   .historico-actions-group {
-    min-width: 100px;
+    gap: 2px;
   }
-  
+
   .historico-action-btn {
-    padding: 4px 6px;
-    font-size: 11px;
+    padding: 4px 5px;
+    font-size: 10px;
+    gap: 3px;
   }
 }
 
@@ -57,9 +71,9 @@
   }
   
   .historico-action-btn {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
     padding: 3px 4px;
-    font-size: 10px;
+    font-size: 9px;
   }
 }

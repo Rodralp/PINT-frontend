@@ -83,13 +83,63 @@
 
 .historico-page .orders-table {
   width: 100%;
-  min-width: 760px;
+  table-layout: fixed;
   border-collapse: collapse;
+}
+
+.historico-page .orders-table colgroup .col-sl {
+  width: 30%;
+}
+
+.historico-page .orders-table colgroup .col-name {
+  width: 22%;
+}
+
+.historico-page .orders-table colgroup .col-badges,
+.historico-page .orders-table colgroup .col-consultores,
+.historico-page .orders-table colgroup .col-area,
+.historico-page .orders-table colgroup .col-level,
+.historico-page .orders-table colgroup .col-points,
+.historico-page .orders-table colgroup .col-status {
+  width: 14%;
+}
+
+.historico-page .orders-table colgroup .col-actions {
+  width: 28%;
+}
+
+.historico-page .orders-table colgroup .col-email {
+  width: 22%;
 }
 
 .modal-body .orders-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
+}
+
+.modal-body .orders-table colgroup .col-id {
+  width: 6%;
+}
+
+.modal-body .orders-table colgroup .col-name {
+  width: 18%;
+}
+
+.modal-body .orders-table colgroup .col-desc {
+  width: 24%;
+}
+
+.modal-body .orders-table colgroup .col-date {
+  width: 14%;
+}
+
+.modal-body .orders-table colgroup .col-status {
+  width: 14%;
+}
+
+.modal-body .orders-table colgroup .col-actions {
+  width: 14%;
 }
 
 .historico-page .orders-table th,
@@ -102,6 +152,8 @@
   font-weight: 800;
   padding: 12px 14px;
   border-bottom: 1px solid #d7e4f2;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .historico-page .orders-table td,
@@ -110,6 +162,8 @@
   font-size: 14px;
   padding: 12px 14px;
   border-bottom: 1px solid #edf2f8;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .historico-page .orders-table tr:last-child td,
@@ -185,8 +239,8 @@
 .modal-content {
   background: #ffffff;
   border-radius: 16px;
-  width: 92%;
-  max-width: 960px;
+  width: 95%;
+  max-width: 1100px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -285,7 +339,49 @@
 
   .historico-page .orders-table th,
   .historico-page .orders-table td {
-    padding: 10px 10px;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .historico-page .orders-table th {
+    font-size: 10px;
+  }
+
+  .modal-content {
+    width: 98%;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    padding: 12px 14px;
+  }
+
+  .modal-header h2 {
+    font-size: 15px;
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+
+  .modal-body .orders-table th,
+  .modal-body .orders-table td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  .modal-body .orders-table th {
+    font-size: 9px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .historico-page .orders-table colgroup .col-sl {
+    width: 28%;
+  }
+
+  .historico-page .orders-table colgroup .col-actions {
+    width: 24%;
   }
 }
 

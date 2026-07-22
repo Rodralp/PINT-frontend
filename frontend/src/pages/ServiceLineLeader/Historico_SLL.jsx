@@ -315,12 +315,18 @@ function HistoricoSLL() {
                 <>
                   <div className="table-wrap orders-table-wrap">
                     <table className="table orders-table">
+                      <colgroup>
+                        <col className="col-sl" />
+                        <col className="col-badges" />
+                        <col className="col-consultores" />
+                        <col className="col-actions" />
+                      </colgroup>
                       <thead>
                         <tr>
                           <th>{t('header_service_line')}</th>
-                           <th>{t('header_total_badges')}</th>
-                           <th>{t('header_consultants')}</th>
-                           <th>{t('header_actions')}</th>
+                          <th>{t('header_total_badges')}</th>
+                          <th>{t('header_consultants')}</th>
+                          <th>{t('header_actions')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -371,6 +377,11 @@ function HistoricoSLL() {
                   <h3 className="historico-section-title">{t('historico_areas_title')}</h3>
                   <div className="table-wrap orders-table-wrap">
                     <table className="table orders-table">
+                      <colgroup>
+                        <col className="col-area" />
+                        <col className="col-badges" />
+                        <col className="col-actions" />
+                      </colgroup>
                       <thead>
                         <tr>
                           <th>{t('header_area')}</th>
@@ -427,6 +438,13 @@ function HistoricoSLL() {
               {activeTab === 'badges' && (
                 <div className="table-wrap orders-table-wrap">
                   <table className="table orders-table">
+                    <colgroup>
+                      <col className="col-name" />
+                      <col className="col-area" />
+                      <col className="col-desc" />
+                      <col className="col-level" />
+                      <col className="col-actions" />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>{t('header_badge')}</th>
@@ -486,6 +504,13 @@ function HistoricoSLL() {
               {activeTab === 'consultores' && (
                 <div className="table-wrap orders-table-wrap">
                   <table className="table orders-table">
+                    <colgroup>
+                      <col className="col-name" />
+                      <col className="col-email" />
+                      <col className="col-points" />
+                      <col className="col-status" />
+                      <col className="col-actions" />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>{t('header_consultant')}</th>
@@ -595,6 +620,13 @@ function HistoricoSLL() {
                           <h4>{t('badges_obtained')} ({modalData.badgesObtidos?.length || 0})</h4>
                           {modalData.badgesObtidos?.length > 0 ? (
                             <table className="table orders-table">
+                              <colgroup>
+                                <col className="col-name" />
+                                <col className="col-area" />
+                                <col className="col-sl" />
+                                <col className="col-points" />
+                                <col className="col-date" />
+                              </colgroup>
                               <thead>
                                 <tr>
                                   <th>{t('header_badge')}</th>
@@ -622,6 +654,13 @@ function HistoricoSLL() {
                           <h4 style={{ marginTop: '20px' }}>{t('badges_in_progress')} ({modalData.badgesEmProgresso?.length || 0})</h4>
                           {modalData.badgesEmProgresso?.length > 0 ? (
                             <table className="table orders-table">
+                              <colgroup>
+                                <col className="col-name" />
+                                <col className="col-area" />
+                                <col className="col-sl" />
+                                <col className="col-status" />
+                                <col className="col-date" />
+                              </colgroup>
                               <thead>
                                 <tr>
                                   <th>{t('header_badge')}</th>
@@ -666,6 +705,11 @@ function HistoricoSLL() {
                           <h4>{t('consultants_obtained')} ({modalData.totalObtidos})</h4>
                           {modalData.consultoresObtidos?.length > 0 ? (
                             <table className="table orders-table">
+                              <colgroup>
+                                <col className="col-name" />
+                                <col className="col-email" />
+                                <col className="col-date" />
+                              </colgroup>
                               <thead>
                                 <tr>
                                   <th>{t('header_consultant')}</th>
@@ -689,6 +733,12 @@ function HistoricoSLL() {
                           <h4 style={{ marginTop: '20px' }}>{t('consultants_in_progress')} ({modalData.totalEmProgresso})</h4>
                           {modalData.consultoresEmProgresso?.length > 0 ? (
                             <table className="table orders-table">
+                              <colgroup>
+                                <col className="col-name" />
+                                <col className="col-email" />
+                                <col className="col-status" />
+                                <col className="col-date" />
+                              </colgroup>
                               <thead>
                                 <tr>
                                   <th>{t('header_consultant')}</th>
@@ -719,6 +769,14 @@ function HistoricoSLL() {
                         <div className="modal-section">
                           {Array.isArray(modalData) && modalData.length > 0 ? (
                             <table className="table orders-table">
+                              <colgroup>
+                                <col className="col-id" />
+                                <col className="col-name" />
+                                <col className="col-desc" />
+                                <col className="col-date" />
+                                <col className="col-status" />
+                                <col className="col-actions" />
+                              </colgroup>
                               <thead>
                                 <tr>
                                   {modalType.includes('serviceLine') && (

@@ -305,6 +305,12 @@ function HistoricoTM() {
                 <>
                   <div className="table-wrap orders-table-wrap">
                     <table className="table orders-table">
+                      <colgroup>
+                        <col className="col-sl" />
+                        <col className="col-badges" />
+                        <col className="col-consultores" />
+                        <col className="col-actions" />
+                      </colgroup>
                       <thead>
                         <tr>
                           <th>{t('header_service_line')}</th>
@@ -343,6 +349,11 @@ function HistoricoTM() {
                       <h3 className="historico-section-title">{t('historico_areas_title')}</h3>
                       <div className="table-wrap orders-table-wrap">
                         <table className="table orders-table">
+                          <colgroup>
+                            <col className="col-area" />
+                            <col className="col-badges" />
+                            <col className="col-actions" />
+                          </colgroup>
                           <thead>
                             <tr>
                               <th>{t('header_area')}</th>
@@ -379,6 +390,12 @@ function HistoricoTM() {
               {activeTab === 'badges' && (
                 <div className="table-wrap orders-table-wrap">
                   <table className="table orders-table">
+                    <colgroup>
+                      <col className="col-name" />
+                      <col className="col-area" />
+                      <col className="col-level" />
+                      <col className="col-actions" />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>{t('header_badge')}</th>
@@ -409,6 +426,13 @@ function HistoricoTM() {
               {activeTab === 'consultores' && (
                 <div className="table-wrap orders-table-wrap">
                   <table className="table orders-table">
+                    <colgroup>
+                      <col className="col-name" />
+                      <col className="col-email" />
+                      <col className="col-points" />
+                      <col className="col-status" />
+                      <col className="col-actions" />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th>{t('header_consultant')}</th>
@@ -481,6 +505,14 @@ function HistoricoTM() {
                     <div className="modal-section">
                       {Array.isArray(modalData) && modalData.length > 0 ? (
                         <table className="table orders-table">
+                          <colgroup>
+                            <col className="col-id" />
+                            <col className="col-name" />
+                            <col className="col-desc" />
+                            <col className="col-date" />
+                            <col className="col-status" />
+                            <col className="col-actions" />
+                          </colgroup>
                           <thead>
                             <tr>
                               {modalType?.includes('serviceLine') && (
