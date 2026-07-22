@@ -185,20 +185,26 @@
 
 .historico-action-btn {
   width: auto;
-  height: 34px;
+  padding: 4px 8px;
   border: 1px solid #8db7dd;
   background: #ecf5ff;
   color: #1268b8;
   border-radius: 9px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   justify-content: center;
-  gap: 6px;
+  gap: 3px;
 }
 
 .historico-action-btn:hover {
   background: #dcebff;
   border-color: #75a8d6;
+}
+
+.modal-body .historico-action-btn {
+  padding: 3px 6px;
+  font-size: 11px;
+  gap: 2px;
 }
 
 .historico-section-title {
