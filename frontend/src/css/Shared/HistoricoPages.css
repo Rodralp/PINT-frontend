@@ -119,27 +119,27 @@
 }
 
 .modal-body .orders-table colgroup .col-id {
-  width: 6%;
+  width: 5%;
 }
 
 .modal-body .orders-table colgroup .col-name {
-  width: 18%;
+  width: 16%;
 }
 
 .modal-body .orders-table colgroup .col-desc {
-  width: 24%;
+  width: 22%;
 }
 
 .modal-body .orders-table colgroup .col-date {
-  width: 14%;
+  width: 12%;
 }
 
 .modal-body .orders-table colgroup .col-status {
-  width: 14%;
+  width: 13%;
 }
 
 .modal-body .orders-table colgroup .col-actions {
-  width: 14%;
+  width: 18%;
 }
 
 .historico-page .orders-table th,
