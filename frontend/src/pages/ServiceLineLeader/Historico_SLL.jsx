@@ -833,8 +833,13 @@ function HistoricoSLL() {
                                         <td>{item.data}</td>
                                         <td>{renderStatusBadge(item.estado)}</td>
                                         <td>
-                                          <button className="btn btn-sm btn-outline-primary" onClick={() => openHistoricoCandidatura(item.id)}>
-                                            <Clock3 size={14} />
+                                          <button
+                                            type="button"
+                                            className="action-btn tm-export-control-btn historico-action-btn"
+                                            onClick={() => openHistoricoCandidatura(item.id)}
+                                          >
+                                            <Clock3 size={16} />
+                                            {t('ver_historico')}
                                           </button>
                                         </td>
                                       </>
@@ -848,8 +853,13 @@ function HistoricoSLL() {
                                         <td>{item.data}</td>
                                         <td>{renderStatusBadge(item.estado)}</td>
                                         <td>
-                                          <button className="btn btn-sm btn-outline-primary" onClick={() => openHistoricoCandidatura(item.id)}>
-                                            <Clock3 size={14} />
+                                          <button
+                                            type="button"
+                                            className="action-btn tm-export-control-btn historico-action-btn"
+                                            onClick={() => openHistoricoCandidatura(item.id)}
+                                          >
+                                            <Clock3 size={16} />
+                                            {t('ver_historico')}
                                           </button>
                                         </td>
                                       </>
@@ -862,8 +872,13 @@ function HistoricoSLL() {
                                         <td>{item.data}</td>
                                         <td>{renderStatusBadge(item.estado)}</td>
                                         <td>
-                                          <button className="btn btn-sm btn-outline-primary" onClick={() => openHistoricoCandidatura(item.id)}>
-                                            <Clock3 size={14} />
+                                          <button
+                                            type="button"
+                                            className="action-btn tm-export-control-btn historico-action-btn"
+                                            onClick={() => openHistoricoCandidatura(item.id)}
+                                          >
+                                            <Clock3 size={16} />
+                                            {t('ver_historico')}
                                           </button>
                                         </td>
                                       </>
@@ -876,8 +891,13 @@ function HistoricoSLL() {
                                         <td>{item.data}</td>
                                         <td>{renderStatusBadge(item.estado)}</td>
                                         <td>
-                                          <button className="btn btn-sm btn-outline-primary" onClick={() => openHistoricoCandidatura(item.id)}>
-                                            <Clock3 size={14} />
+                                          <button
+                                            type="button"
+                                            className="action-btn tm-export-control-btn historico-action-btn"
+                                            onClick={() => openHistoricoCandidatura(item.id)}
+                                          >
+                                            <Clock3 size={16} />
+                                            {t('ver_historico')}
                                           </button>
                                         </td>
                                       </>
