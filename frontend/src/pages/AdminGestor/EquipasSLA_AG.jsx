@@ -9,7 +9,6 @@ import {
   Search,
   Trash2,
   UserRoundPlus,
-  X,
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import '../../css/AdminGestor/EquipasSLA_AG.css';
@@ -417,10 +416,6 @@ function EquipasSLAAG() {
               aria-label={isEditing ? 'Editar equipa' : 'Adicionar nova equipa'}
               onClick={(event) => event.stopPropagation()}
             >
-              <button type="button" className="ag-team-modal-close" onClick={closeModal} aria-label="Fechar">
-                <X size={18} />
-              </button>
-
               <div className="ag-team-modal-grid">
                 <div className="ag-team-form-column">
                   <label htmlFor="team-name">{t('equipas_field_name')}</label>

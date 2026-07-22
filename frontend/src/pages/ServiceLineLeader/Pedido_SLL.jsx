@@ -222,6 +222,7 @@ function PedidoSLL() {
                   src={request.badgeImage}
                   alt={request.badge}
                   levelKey={request.levelKey}
+                  typeId={request.typeId}
                   levelLabel={request.levelLabel}
                 />
               </div>
@@ -297,6 +298,7 @@ function PedidoSLL() {
                               alt={request.badge}
                               className="sll-order-requirement-detail-image"
                               levelKey={request.levelKey}
+                              typeId={request.typeId}
                               levelLabel={request.levelLabel}
                             />
                           </div>
@@ -338,9 +340,10 @@ function PedidoSLL() {
               <h3>{t('request_detail_submitted_by')}</h3>
               <div className="sll-order-person-card">
                 <img
-                  src={request.submittedByAvatar}
+                  src={request.submittedByAvatar || '/avatars/default-avatar.svg'}
                   alt={request.submittedBy}
                   className="sll-order-person-avatar"
+                  onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
                 />
                 <div>
                   <strong>{request.submittedBy}</strong>
@@ -354,9 +357,10 @@ function PedidoSLL() {
               <h3 className="sll-order-subtitle">{t('request_detail_verdict_by')}</h3>
               <div className="sll-order-person-card compact">
                 <img
-                  src={request.reviewerAvatar}
+                  src={request.reviewerAvatar || '/avatars/default-avatar.svg'}
                   alt={request.reviewer}
                   className="sll-order-person-avatar"
+                  onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
                 />
                 <div>
                   <strong>{request.reviewer}</strong>
@@ -387,9 +391,10 @@ function PedidoSLL() {
               {request.finalReviewer && (
                 <div className="sll-order-person-card compact final">
                   <img
-                    src={request.finalReviewerAvatar}
+                    src={request.finalReviewerAvatar || '/avatars/default-avatar.svg'}
                     alt={request.finalReviewer}
                     className="sll-order-person-avatar"
+                    onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
                   />
                   <div>
                     <strong>{request.finalReviewer}</strong>

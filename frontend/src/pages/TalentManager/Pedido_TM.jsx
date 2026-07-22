@@ -214,6 +214,7 @@ function PedidoTM() {
                   src={request.badgeImage}
                   alt={request.badge}
                   levelKey={request.levelKey}
+                  typeId={request.typeId}
                   levelLabel={request.levelLabel}
                 />
               </div>
@@ -285,6 +286,7 @@ function PedidoTM() {
                             alt={request.badge}
                             className="tm-order-requirement-detail-image"
                             levelKey={request.levelKey}
+                            typeId={request.typeId}
                             levelLabel={request.levelLabel}
                           />
                         </div>
@@ -327,7 +329,12 @@ function PedidoTM() {
             <div className="tm-order-submission-card">
               <h3>{t('request_detail_submitted_by')}</h3>
               <div className="tm-order-person-card">
-                <div className="tm-order-person-avatar">{request.consultant.slice(0, 1)}</div>
+                <img
+                  src={request.submittedByAvatar || '/avatars/default-avatar.svg'}
+                  alt={request.consultant}
+                  className="tm-order-person-avatar"
+                  onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
+                />
                 <div>
                   <strong>{request.consultant}</strong>
                   <span>
@@ -394,7 +401,12 @@ function PedidoTM() {
               <div className="tm-order-evaluated-card">
                 <h3>{t('request_detail_reviewed_by')}</h3>
                 <div className="tm-order-person-card compact">
-                  <div className="tm-order-person-avatar evaluated">{reviewedBy.slice(0, 1)}</div>
+                  <img
+                    src={request.reviewerAvatar || '/avatars/default-avatar.svg'}
+                    alt={reviewedBy}
+                    className="tm-order-person-avatar evaluated"
+                    onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
+                  />
                   <div>
                     <strong>{reviewedBy}</strong>
                     {reviewedRole && <span>{reviewedRole}</span>}

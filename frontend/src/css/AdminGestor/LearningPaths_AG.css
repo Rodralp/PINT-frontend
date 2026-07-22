@@ -269,7 +269,9 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
   color: var(--lp-admin-text);
   text-align: left;
   font-size: 13px;
@@ -351,6 +353,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .lp-admin-tree-child {

@@ -248,16 +248,6 @@ function Exportacoes() {
   }, []);
 
   useEffect(() => {
-    setSelectedBadgeIds((current) => {
-      const validIds = current.filter((badgeId) => badgeItems.some((item) => item.id === badgeId));
-
-      if (validIds.length > 0) {
-        return validIds;
-      }
-
-      return badgeItems.map((item) => item.id);
-    });
-
     setSelectedCertificateId((current) => {
       if (current && badgeItems.some((item) => item.id === current)) {
         return current;

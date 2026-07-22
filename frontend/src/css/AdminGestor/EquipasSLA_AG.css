@@ -290,18 +290,6 @@
   padding: var(--sp-3) var(--sp-4);
 }
 
-.ag-team-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  border: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  color: #4b5563;
-  background: transparent;
-}
-
 .ag-team-modal-grid {
   display: grid;
   grid-template-columns: minmax(300px, 1fr) minmax(320px, 1.2fr);

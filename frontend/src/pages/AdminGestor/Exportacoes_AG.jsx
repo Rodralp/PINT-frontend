@@ -177,21 +177,6 @@ const toConsultantStatusLabel = (status, t) => {
   return t('inactive');
 };
 
-const getLoginName = () => {
-  const storedLoginData = sessionStorage.getItem('loginData') || localStorage.getItem('loginData');
-
-  if (!storedLoginData) {
-    return '';
-  }
-
-  try {
-    const parsed = JSON.parse(storedLoginData);
-    return parsed?.nome || '';
-  } catch {
-    return '';
-  }
-};
-
 const translateLevel = (levelKey, t) => {
   const map = {
     'badge_level_junior': 'badge_level_junior',
@@ -229,7 +214,7 @@ const generateBadgesCSV = (badges, t) => {
   ].join('\n');
 };
 
-const generateBadgePagesPDF = async (badges, userName, t) => {
+const generateBadgePagesPDF = async (badges, t) => {
   const renderedBadges = await Promise.all(
     badges.map((badge) =>
       renderMaskedBadge(resolveImageUrl(badge.badgeImage), badge.levelId || badge.level, 120)
@@ -269,7 +254,6 @@ const generateBadgePagesPDF = async (badges, userName, t) => {
             <span style="font-weight:700;color:#0066ff;">${badge.date || ''}</span>
           </div>
           <div style="font-size:16px;color:#868e96;margin:12px 0;">${t('export_badge_data')}</div>
-          <div style="font-size:22px;font-weight:700;color:#343a40;margin:8px 0;">${userName}</div>
         </div>`;
       }).join('')}
     </body>
@@ -827,8 +811,6 @@ function ExportacoesAG() {
 
   const searchPlaceholder = activeTab === 'consultores' ? t('export_search_consultants') : t('export_search_badges');
 
-  const userName = getLoginName() || 'João Gomes';
-
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     setSearchTerm('');
@@ -922,7 +904,7 @@ function ExportacoesAG() {
       return;
     }
     try {
-      const htmlContent = await generateBadgePagesPDF(selected, userName, t);
+      const htmlContent = await generateBadgePagesPDF(selected, t);
       const date = new Date().toISOString().split('T')[0];
       downloadHtmlAsPdf(htmlContent, `badges-${date}.pdf`);
     } catch (error) {
