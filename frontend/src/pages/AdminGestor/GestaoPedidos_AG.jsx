@@ -14,7 +14,6 @@ import {
 import Layout from '../../components/Layout';
 import Pagination from '../../components/Pagination';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import BadgeImage from '../../components/BadgeImage';
 import '../../css/AdminGestor/GestaoPedidos_AG.css';
 import { fetchManagedRequests } from '../../services/requestManagementService';
 
@@ -332,20 +331,7 @@ function GestaoPedidosAG() {
                           <span>{request.consultant}</span>
                         </div>
                       </td>
-                      <td>
-                        <div className="ag-orders-badge-cell">
-                          <BadgeImage
-                            src={request.badgeImage}
-                            alt={request.badge}
-                            className="ag-orders-badge-thumb"
-                            levelKey={request.levelKey}
-                            typeId={request.typeId}
-                            levelLabel={request.levelLabel}
-                            frameSrc={false}
-                          />
-                          <span>{request.badge}</span>
-                        </div>
-                      </td>
+                      <td>{request.badge}</td>
                       <td>{request.level}</td>
                       <td>{request.date}</td>
                       <td>
