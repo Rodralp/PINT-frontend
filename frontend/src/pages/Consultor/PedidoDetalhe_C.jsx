@@ -226,7 +226,12 @@ function PedidoDetalheC() {
             <div className="tm-order-submission-card">
               <h3>{t('request_detail_submitted_by')}</h3>
               <div className="tm-order-person-card">
-                <div className="tm-order-person-avatar">{String(request.submittedBy || 'U').slice(0, 1)}</div>
+                <img
+                  src={request.submittedByAvatar || '/avatars/default-avatar.svg'}
+                  alt={request.submittedBy || 'Utilizador'}
+                  className="tm-order-person-avatar"
+                  onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
+                />
                 <div>
                   <strong>{request.submittedBy || 'Utilizador'}</strong>
                   <span>
@@ -241,7 +246,12 @@ function PedidoDetalheC() {
               <div className="tm-order-evaluated-card">
                 <h3>{t('request_detail_verdict_by')}</h3>
                 <div className="tm-order-person-card compact">
-                  <div className="tm-order-person-avatar evaluated">{(request.reviewerName || '?').slice(0, 1)}</div>
+                  <img
+                    src={request.reviewerAvatar || '/avatars/default-avatar.svg'}
+                    alt={request.reviewerName || '?'}
+                    className="tm-order-person-avatar evaluated"
+                    onError={(event) => { event.currentTarget.src = '/avatars/default-avatar.svg'; }}
+                  />
                   <div>
                     <strong>{request.reviewerName}</strong>
                     <span>

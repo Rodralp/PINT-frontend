@@ -386,7 +386,7 @@ function DashboardSLL() {
                   </a>
                 </div>
                 <div className="activities-list">
-                  {recentActivities.map((activity) => {
+                  {recentActivities.slice(0, 4).map((activity) => {
                     const IconComponent = iconByKey[activity.iconKey] || FileText;
                     return (
                       <div key={activity.id} className="activity-item">

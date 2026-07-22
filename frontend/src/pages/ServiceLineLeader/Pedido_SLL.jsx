@@ -151,16 +151,7 @@ function PedidoSLL() {
 
   const getRequirementFilesLabel = (item) => {
     const filesCount = Number(item?.files);
-
-    if (Number.isInteger(filesCount) && filesCount > 1) {
-      return `${String(filesCount).padStart(2, '0')} arquivos carregados`;
-    }
-
-    if (filesCount === 1) {
-      return '01 arquivo carregado';
-    }
-
-    return 'XX arquivos carregados';
+    return t('request_detail_files_loaded', { count: filesCount || 0 });
   };
 
   const showVerdict = Boolean(request.canReview);
