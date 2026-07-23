@@ -2,7 +2,6 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
-  Bell,
   CalendarDays,
   Pencil,
   Plus,
@@ -321,10 +320,7 @@ function EquipasSLAAG() {
                         </div>
                       )}
 
-                      <button type="button" className="ag-notify-btn">
-                        <Bell size={14} />
-                        {t('equipas_notify_team')}
-                      </button>
+
                     </article>
                   ))
                 )}
