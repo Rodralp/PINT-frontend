@@ -146,7 +146,7 @@ export const downloadHtmlAsPdf = (htmlString, filename, options = {}) => {
               if (img.complete && img.naturalWidth > 0) return res();
               img.onload = res;
               img.onerror = res;
-              setTimeout(res, 5000);
+              setTimeout(res, 10000);
             })
         )
       );
